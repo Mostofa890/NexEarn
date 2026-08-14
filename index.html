@@ -9,15 +9,12 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-    <!-- Monetag SDK -->
     <script src='//libtl.com/sdk.js' data-zone='11573980' data-sdk='show_11573980'></script>
 
     <script>
-        // --- INSTANT THEME APPLY SCRIPT ---
         (function() {
             try {
                 const tg = window.Telegram.WebApp;
@@ -113,9 +110,14 @@
         #multiAccountModal .modal-content { text-align: center; border-radius: 20px; max-height: initial;}
         #multiAccountModal { align-items: center; justify-content: center; }
 
-        /* Cat Coins Theme */
         .cat-icon { color: var(--primary-color); }
         .balance-card .cat-icon-bg { position: absolute; right: 10px; bottom: 10px; font-size: 80px; opacity: 0.15; }
+
+        /* Withdraw method specific styles */
+        .method-field { display: none; margin-top: 10px; }
+        .method-field.active { display: block; }
+        .method-field label { font-size: 14px; font-weight: 600; color: var(--text-color); display: block; margin-bottom: 4px; }
+        .method-field .field-hint { font-size: 12px; color: var(--text-light); margin-bottom: 8px; }
     </style>
 </head>
 <body>
@@ -162,11 +164,39 @@
             <h3 class="card-title">Withdraw Funds</h3>
             <p id="min-withdraw-text"></p>
             <form id="withdraw-form">
-                <select id="method" name="method" required>
-                    <option value="" disabled selected>Select Payment Method</option>
-                </select>
-                <input type="text" id="account-number" placeholder="Enter Binance UID or Email" required>
-                <input type="number" step="0.001" id="withdraw-amount" placeholder="Amount in USD" required>
+                <div class="form-group">
+                    <label>Select Payment Method</label>
+                    <select id="method" name="method" required>
+                        <option value="" disabled selected>Select Payment Method</option>
+                    </select>
+                </div>
+                
+                <!-- Binance Field -->
+                <div id="binance-field" class="method-field">
+                    <label>Binance UID / Email</label>
+                    <div class="field-hint">Enter your Binance UID or registered email address</div>
+                    <input type="text" id="binance-account" placeholder="Enter Binance UID or Email">
+                </div>
+                
+                <!-- Bikash Field -->
+                <div id="bikash-field" class="method-field">
+                    <label>Bikash Number</label>
+                    <div class="field-hint">Enter your Bikash account number</div>
+                    <input type="text" id="bikash-account" placeholder="Enter Bikash Number">
+                </div>
+                
+                <!-- Nogad Field -->
+                <div id="nogad-field" class="method-field">
+                    <label>Nogad Number</label>
+                    <div class="field-hint">Enter your Nogad account number</div>
+                    <input type="text" id="nogad-account" placeholder="Enter Nogad Number">
+                </div>
+                
+                <div class="form-group">
+                    <label>Amount (USD)</label>
+                    <input type="number" step="0.001" id="withdraw-amount" placeholder="Amount in USD" required>
+                </div>
+                
                 <button type="submit" class="action-button" id="withdraw-submit-button">
                     <span class="button-text">Submit Request</span>
                     <div class="spinner" style="display: none;"></div>
@@ -195,9 +225,6 @@
             appId: "1:616291442045:android:9de76c46bfdc5edec60014"
         };
 
-        // ============================================================
-        // CONFIGURATION (Load from Firebase)
-        // ============================================================
         let config = {
             BOT_TOKEN: '8072034659:AAE_I05sswA8gBYVOSHtjGEf1LE6i6aq0T8',
             ADMIN_IDS: [6624254778],
@@ -209,7 +236,7 @@
             DAILY_AD_LIMIT: 15,
             MINIMUM_WITHDRAWAL: 0.10,
             COOLDOWN_MINUTES: 30,
-            withdrawalMethods: ['Binance UID', 'Bikash', 'Nogad'],
+            withdrawalMethods: ['Binance', 'Bikash', 'Nogad'],
             REFERRAL_REWARD: 0.01,
             bonusTasks: [],
             welcomeNotice: {
@@ -219,10 +246,6 @@
         };
 
         let firebaseDb;
-
-        // ============================================================
-        // MAIN APP LOGIC
-        // ============================================================
         const tg = window.Telegram ? window.Telegram.WebApp : null;
         
         let state = { 
@@ -241,7 +264,6 @@
         
         let currentUserId = null;
         let currentIpAddress = null;
-        let userDataRef = null;
 
         const allDOMElements = { 
             preloader: document.getElementById('preloader'), 
@@ -283,7 +305,6 @@
             }
         }
 
-        // Load config from Firebase
         function loadConfigFromFirebase() {
             return new Promise((resolve) => {
                 if (!firebaseDb) { resolve(); return; }
@@ -310,22 +331,24 @@
             });
         }
 
-        // Load bonus tasks from Firebase
         function loadBonusTasksFromFirebase() {
             return new Promise((resolve) => {
                 if (!firebaseDb) { resolve(); return; }
-                firebaseDb.ref('bonusTasks').once('value').then(snapshot => {
+                firebaseDb.ref('bonusTasks').on('value', (snapshot) => {
                     const data = snapshot.val();
                     if (data && Array.isArray(data)) {
                         config.bonusTasks = data;
                         console.log("✅ Bonus tasks loaded from Firebase");
+                        // Re-render bonus tasks if modal is open
+                        if (document.getElementById('bonusTasksModal').style.display === 'flex') {
+                            renderBonusTasks();
+                        }
                     }
                     resolve();
-                }).catch(() => resolve());
+                });
             });
         }
 
-        // Save user data to Firebase
         function saveUserDataToFirebase() {
             if (!firebaseDb || !currentUserId) return;
             
@@ -349,7 +372,6 @@
             });
         }
 
-        // Load user data from Firebase
         function loadUserDataFromFirebase() {
             return new Promise((resolve) => {
                 if (!firebaseDb || !currentUserId) { resolve(); return; }
@@ -368,7 +390,6 @@
                         state.rewardedReferrals = data.rewardedReferrals || 0;
                         state.lastUsedIp = data.lastUsedIp || null;
                         
-                        // Check if it's a new day
                         const today = new Date().toLocaleDateString();
                         if (state.lastAdWatchedDate !== today) {
                             state.adsWatchedToday = 0;
@@ -399,7 +420,7 @@
             const referrerRef = firebaseDb.ref(`users/${referrerId}/referrals`);
             await referrerRef.transaction((currentCount) => (currentCount || 0) + 1);
 
-            const message = `🎉 Congratulations! User ${currentUser.first_name} (@${currentUser.username}) joined using your link. You will receive your bonus next time you open the app.`;
+            const message = `🎉 New user joined using your link! User: ${currentUser.first_name} (@${currentUser.username || 'N/A'})`;
             await fetch(`https://api.telegram.org/bot${config.BOT_TOKEN}/sendMessage`, { 
                 method: 'POST', 
                 headers: { 'Content-Type': 'application/json' }, 
@@ -421,8 +442,8 @@
                 const bonus = newReferrals * config.REFERRAL_REWARD;
                 state.totalEarning += bonus;
                 state.rewardedReferrals = totalReferrals;
-                safeTgAlert(`You received a bonus of $${bonus.toFixed(3)} for ${newReferrals} new referral(s)!`);
                 saveUserDataToFirebase();
+                safeTgAlert(`You received a bonus of $${bonus.toFixed(3)} for ${newReferrals} new referral(s)!`);
             }
         }
 
@@ -464,6 +485,18 @@
                 option.value = method;
                 option.textContent = method;
                 methodSelect.appendChild(option);
+            });
+            
+            // Add event listener for method change
+            methodSelect.addEventListener('change', function() {
+                const selected = this.value;
+                // Hide all fields
+                document.querySelectorAll('.method-field').forEach(el => el.classList.remove('active'));
+                // Show selected field
+                if (selected) {
+                    const field = document.getElementById(selected.toLowerCase() + '-field');
+                    if (field) field.classList.add('active');
+                }
             });
         }
 
@@ -563,7 +596,7 @@
         }
 
         // ============================================================
-        // WITHDRAWAL FUNCTION
+        // WITHDRAWAL FUNCTION (UPDATED)
         // ============================================================
         async function handleWithdrawal(event) {
             event.preventDefault();
@@ -571,10 +604,23 @@
             const submitButton = document.getElementById('withdraw-submit-button');
             const buttonText = submitButton.querySelector('.button-text');
             const spinner = submitButton.querySelector('.spinner');
-            const amount = parseFloat(withdrawForm.elements['withdraw-amount'].value);
-            const method = withdrawForm.elements.method.value;
-            const accountNumber = withdrawForm.elements['account-number'].value;
             
+            const method = document.getElementById('method').value;
+            let accountNumber = '';
+            
+            // Get account number based on method
+            if (method === 'Binance') {
+                accountNumber = document.getElementById('binance-account').value.trim();
+            } else if (method === 'Bikash') {
+                accountNumber = document.getElementById('bikash-account').value.trim();
+            } else if (method === 'Nogad') {
+                accountNumber = document.getElementById('nogad-account').value.trim();
+            }
+            
+            const amount = parseFloat(document.getElementById('withdraw-amount').value);
+            
+            if (!method) return safeTgAlert('Please select a payment method.');
+            if (!accountNumber) return safeTgAlert(`Please enter your ${method} account number.`);
             if (amount > state.totalEarning) return safeTgAlert('You do not have enough balance.');
             if (isNaN(amount) || amount < config.MINIMUM_WITHDRAWAL) return safeTgAlert(`Minimum withdrawal amount is $${config.MINIMUM_WITHDRAWAL}.`);
 
@@ -584,7 +630,6 @@
             
             const user = tg ? tg.initDataUnsafe?.user : { first_name: 'Test', last_name: 'User', username: 'testuser', id: '12345' };
             
-            // Create withdrawal record
             const withdrawalId = Date.now().toString();
             const withdrawalData = {
                 id: withdrawalId,
@@ -598,11 +643,9 @@
                 status: 'Pending'
             };
             
-            // Save to Firebase withdrawals
             try {
                 await firebaseDb.ref(`withdrawals/${withdrawalId}`).set(withdrawalData);
                 
-                // Update user balance
                 state.totalEarning -= amount;
                 state.withdrawalHistory.unshift({ 
                     method, 
@@ -616,10 +659,14 @@
                 updateUI(); 
                 closeModal('withdrawModal'); 
                 withdrawForm.reset();
+                
+                // Reset method fields
+                document.querySelectorAll('.method-field').forEach(el => el.classList.remove('active'));
+                document.getElementById('method').selectedIndex = 0;
+                
                 safeTgAlert('Your withdrawal request has been sent and is now pending. It will be processed within 2 hours.');
                 safeTgAction(tg => tg.HapticFeedback.notificationOccurred('success'));
                 
-                // Send notification to admin
                 const message = `<b>💰 New Withdrawal Request 💰</b>\n\n👤 <b>User:</b> ${escapeHTML(user.first_name)} ${escapeHTML(user.last_name || '')} (@${escapeHTML(user.username || 'N/A')})\n🆔 <b>User ID:</b> <code>${currentUserId}</code>\n---------------------------------------\n💳 <b>Method:</b> ${escapeHTML(method)}\n🔢 <b>Account:</b> <code>${escapeHTML(accountNumber)}</code>\n💵 <b>Amount:</b> $${amount.toFixed(3)}`;
                 
                 const url = `https://api.telegram.org/bot${config.BOT_TOKEN}/sendMessage`;
@@ -674,7 +721,7 @@
                         <span class="title">${escapeHTML(task.title)}</span>
                         <span class="reward"><i class="fa-solid fa-gift"></i>+ $${task.reward.toFixed(3)}</span>
                     </div>
-                    <button class="claim-button" ${isCompleted ? 'disabled' : ''}>${isCompleted ? 'Completed' : 'Claim'}</button>
+                    <button class="claim-button" ${isCompleted ? 'disabled' : ''}>${isCompleted ? '✅ Completed' : 'Claim'}</button>
                 `;
                 if (!isCompleted) { 
                     item.querySelector('.claim-button').addEventListener('click', (e) => handleBonusTask(task, e.target)); 
@@ -693,7 +740,7 @@
                 state.completedBonusTasks.push(task.id);
                 saveUserDataToFirebase();
                 updateUI(); 
-                button.textContent = 'Completed';
+                button.textContent = '✅ Completed';
                 safeTgAlert(`Bonus of $${task.reward.toFixed(3)} added successfully!`);
                 safeTgAction(tg => tg.HapticFeedback.notificationOccurred('success'));
             }, task.duration * 1000);
@@ -720,7 +767,7 @@
         }
 
         // ============================================================
-        // REFERRAL LINK FUNCTIONS
+        // REFERRAL LINK FUNCTIONS (FIXED)
         // ============================================================
         function getReferralLink() { 
             const userId = currentUserId || 'testuser'; 
@@ -735,7 +782,7 @@
         
         function shareReferralLink() { 
             const link = getReferralLink(); 
-            const text = `Earn money by watching ads! Join using my link:\n${link}`; 
+            const text = `💰 Earn money by watching ads! Join using my referral link:\n\n${link}\n\nJoin and start earning today! 🚀`; 
             safeTgAction(tg => tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`)); 
         }
 
@@ -829,44 +876,34 @@
             }, 60);
 
             try {
-                // Initialize Firebase
                 if (!initFirebase()) {
                     throw new Error("Firebase initialization failed");
                 }
                 
-                // Load config from Firebase
                 await loadConfigFromFirebase();
                 await loadBonusTasksFromFirebase();
                 
-                // Get user info
                 const user = tg ? tg.initDataUnsafe?.user : { first_name: 'User', id: 'testuser' };
                 currentUserId = user.id || 'testuser';
                 
-                // Load user data
                 await loadUserDataFromFirebase();
                 
-                // Populate withdrawal methods
                 populateWithdrawalMethods();
                 
-                // Setup welcome message
                 allDOMElements.welcomeTitle.textContent = config.welcomeNotice.title || "Welcome!";
                 allDOMElements.welcomeMessage.textContent = config.welcomeNotice.message || "Welcome to the app!";
                 
-                // Handle referral
                 await handleReferral();
                 await processReferralRewards();
                 listenForReferralCount();
                 
-                // Update UI
                 if (user?.first_name) {
                     allDOMElements.greetingEl.textContent = `Welcome, ${escapeHTML(user.first_name)}!`;
                     allDOMElements.profilePicEl.innerHTML = `<span>${escapeHTML(user.first_name.charAt(0))}</span>`;
                 }
                 
-                // Check for multi-account
                 currentIpAddress = await getIpAddress();
                 
-                // Setup event listeners
                 allDOMElements.watchAdButton.addEventListener('click', watchAd);
                 allDOMElements.withdrawForm.addEventListener('submit', handleWithdrawal);
                 allDOMElements.joinChannelButton.addEventListener('click', () => safeTgAction(tg => tg.openTelegramLink(config.TELEGRAM_CHANNEL_LINK)));
@@ -886,10 +923,8 @@
                     });
                 });
                 
-                // Update UI
                 updateUI();
                 
-                // Show welcome modal
                 if (!sessionStorage.getItem('alreadyVisited')) { 
                     showModal('welcomeModal'); 
                     sessionStorage.setItem('alreadyVisited', 'true'); 
