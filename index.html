@@ -339,7 +339,6 @@
                     if (data && Array.isArray(data)) {
                         config.bonusTasks = data;
                         console.log("✅ Bonus tasks loaded from Firebase");
-                        // Re-render bonus tasks if modal is open
                         if (document.getElementById('bonusTasksModal').style.display === 'flex') {
                             renderBonusTasks();
                         }
@@ -476,10 +475,17 @@
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); 
         }
 
+        // ============================================================
+        // POPULATE WITHDRAWAL METHODS (FIXED)
+        // ============================================================
         function populateWithdrawalMethods() {
             const methodSelect = document.getElementById('method');
             if (!methodSelect) return;
+            
+            // Clear existing options
             methodSelect.innerHTML = '<option value="" disabled selected>Select Payment Method</option>';
+            
+            // Add methods from config
             config.withdrawalMethods.forEach(method => {
                 const option = document.createElement('option');
                 option.value = method;
@@ -487,17 +493,37 @@
                 methodSelect.appendChild(option);
             });
             
+            // Remove old event listener by cloning and replacing
+            const newSelect = methodSelect.cloneNode(true);
+            methodSelect.parentNode.replaceChild(newSelect, methodSelect);
+            
             // Add event listener for method change
-            methodSelect.addEventListener('change', function() {
+            newSelect.addEventListener('change', function() {
                 const selected = this.value;
+                console.log("Selected method:", selected);
+                
                 // Hide all fields
-                document.querySelectorAll('.method-field').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('.method-field').forEach(el => {
+                    el.classList.remove('active');
+                });
+                
                 // Show selected field
                 if (selected) {
-                    const field = document.getElementById(selected.toLowerCase() + '-field');
-                    if (field) field.classList.add('active');
+                    const fieldId = selected.toLowerCase() + '-field';
+                    const field = document.getElementById(fieldId);
+                    if (field) {
+                        field.classList.add('active');
+                        console.log("Showing field:", fieldId);
+                    } else {
+                        console.log("Field not found:", fieldId);
+                    }
                 }
             });
+            
+            // Trigger change event if a method is already selected
+            if (newSelect.value) {
+                newSelect.dispatchEvent(new Event('change'));
+            }
         }
 
         // ============================================================
@@ -596,16 +622,17 @@
         }
 
         // ============================================================
-        // WITHDRAWAL FUNCTION (UPDATED)
+        // WITHDRAWAL FUNCTION (FIXED)
         // ============================================================
         async function handleWithdrawal(event) {
             event.preventDefault();
-            const { withdrawForm } = allDOMElements;
+            
+            const methodSelect = document.getElementById('method');
             const submitButton = document.getElementById('withdraw-submit-button');
             const buttonText = submitButton.querySelector('.button-text');
             const spinner = submitButton.querySelector('.spinner');
             
-            const method = document.getElementById('method').value;
+            const method = methodSelect.value;
             let accountNumber = '';
             
             // Get account number based on method
@@ -619,6 +646,7 @@
             
             const amount = parseFloat(document.getElementById('withdraw-amount').value);
             
+            // Validation
             if (!method) return safeTgAlert('Please select a payment method.');
             if (!accountNumber) return safeTgAlert(`Please enter your ${method} account number.`);
             if (amount > state.totalEarning) return safeTgAlert('You do not have enough balance.');
@@ -658,11 +686,11 @@
                 saveUserDataToFirebase();
                 updateUI(); 
                 closeModal('withdrawModal'); 
-                withdrawForm.reset();
                 
-                // Reset method fields
+                // Reset form
+                document.getElementById('withdraw-form').reset();
                 document.querySelectorAll('.method-field').forEach(el => el.classList.remove('active'));
-                document.getElementById('method').selectedIndex = 0;
+                methodSelect.selectedIndex = 0;
                 
                 safeTgAlert('Your withdrawal request has been sent and is now pending. It will be processed within 2 hours.');
                 safeTgAction(tg => tg.HapticFeedback.notificationOccurred('success'));
@@ -767,7 +795,7 @@
         }
 
         // ============================================================
-        // REFERRAL LINK FUNCTIONS (FIXED)
+        // REFERRAL LINK FUNCTIONS
         // ============================================================
         function getReferralLink() { 
             const userId = currentUserId || 'testuser'; 
