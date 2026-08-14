@@ -12,7 +12,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-    <!-- Monetag SDK - FIXED -->
+    <!-- Monetag SDK -->
     <script src='//libtl.com/sdk.js' data-zone='11573980' data-sdk='show_11573980'></script>
 
     <script>
@@ -37,7 +37,7 @@
         html, body { overscroll-behavior-y: contain; }
         body { font-family: 'Inter', sans-serif; margin: 0; padding: 20px 15px 100px 15px; background-color: var(--background-color); color: var(--text-color); -webkit-font-smoothing: antialiased; transition: background-color 0.3s, color 0.3s; }
         
-        /* ===== PRELOADER - UPDATED ===== */
+        /* ===== PRELOADER ===== */
         #preloader {
             position: fixed;
             top: 0;
@@ -216,7 +216,7 @@
     </style>
 </head>
 <body>
-    <!-- ===== PRELOADER - UPDATED ===== -->
+    <!-- ===== PRELOADER ===== -->
     <div id="preloader">
         <div class="brand">Nex<span>Earn</span></div>
         <div class="loader-bar-container">
@@ -616,6 +616,65 @@
         }
 
         // ============================================================
+        // MONETAG IN-APP INTERSTITIAL - ADDED
+        // ============================================================
+        
+        // Flag to track if interstitial is initialized
+        let interstitialInitialized = false;
+        
+        // Initialize In-App Interstitial
+        function initInAppInterstitial() {
+            try {
+                if (typeof show_11573980 !== 'function') {
+                    console.warn("Monetag SDK not loaded, retrying...");
+                    setTimeout(initInAppInterstitial, 2000);
+                    return;
+                }
+
+                if (interstitialInitialized) return;
+                
+                // In-App Interstitial Ad
+                show_11573980({
+                    type: 'inApp',
+                    inAppSettings: {
+                        frequency: 2,        // Show 2 ads
+                        capping: 0.1,        // Within 0.1 hours (6 minutes)
+                        interval: 30,        // 30 seconds between ads
+                        timeout: 5,          // 5 seconds delay before first ad
+                        everyPage: false     // Don't reset on page navigation
+                    }
+                });
+                
+                interstitialInitialized = true;
+                console.log("✅ In-App Interstitial initialized");
+            } catch (e) {
+                console.error("Interstitial init error:", e);
+                setTimeout(initInAppInterstitial, 3000);
+            }
+        }
+
+        // Show In-App Ad manually
+        function showInAppAd() {
+            try {
+                if (typeof show_11573980 === 'function') {
+                    show_11573980({
+                        type: 'inApp',
+                        inAppSettings: {
+                            frequency: 1,
+                            capping: 0.05,
+                            interval: 30,
+                            timeout: 3,
+                            everyPage: false
+                        }
+                    });
+                    console.log("✅ In-App Ad triggered");
+                }
+            } catch (e) {
+                console.error("Error showing in-app ad:", e);
+            }
+        }
+
+        // ============================================================
         // UI FUNCTIONS
         // ============================================================
         let cooldownInterval;
@@ -663,7 +722,7 @@
         }
 
         // ============================================================
-        // WATCH AD FUNCTION - FIXED WITH MONETAG
+        // WATCH AD FUNCTION - UPDATED WITH MONETAG
         // ============================================================
         async function watchAd() {
             if (state.lastUsedIp && !state.cooldownUntil) {
@@ -681,8 +740,8 @@
             allDOMElements.adLoaderOverlay.style.display = 'flex';
             
             try {
-                // Call Monetag Rewarded Ad - FIXED
-                const result = await show_11573980();
+                // Call Monetag Rewarded Ad
+                await show_11573980();
                 
                 // Ad watched successfully - give reward
                 state.totalEarning += config.AD_REWARD; 
@@ -703,6 +762,10 @@
                 updateUI();
                 safeTgAction(tg => tg.HapticFeedback.notificationOccurred('success'));
                 safeTgAlert(alertMessage);
+                
+                // Show In-App Interstitial after rewarded ad (optional)
+                // Uncomment below if you want interstitial after rewarded ad
+                // setTimeout(showInAppAd, 2000);
                 
             } catch(e) { 
                 console.error("Ad Error:", e); 
@@ -1043,6 +1106,9 @@
                 });
                 
                 updateUI();
+                
+                // ===== INITIALIZE IN-APP INTERSTITIAL =====
+                setTimeout(initInAppInterstitial, 3000);
                 
                 if (!sessionStorage.getItem('alreadyVisited')) { 
                     showModal('welcomeModal'); 
