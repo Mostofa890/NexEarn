@@ -12,6 +12,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
+    <!-- Monetag SDK - FIXED -->
     <script src='//libtl.com/sdk.js' data-zone='11573980' data-sdk='show_11573980'></script>
 
     <script>
@@ -28,20 +29,114 @@
     </script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         :root { --primary-color: #FF6B35; --primary-color-rgb: 255, 107, 53; --secondary-color: #E85D04; --background-color: #F0F2F5; --card-background: #FFFFFF; --text-color: #1D1D1F; --text-light: #6E6E73; --border-color: #E5E5EA; --glass-bg: rgba(240, 242, 245, 0.8); }
         [data-theme="dark"] { --primary-color: #FF8C42; --primary-color-rgb: 255, 140, 66; --secondary-color: #E85D04; --background-color: #000000; --card-background: #1C1C1E; --text-color: #F5F5F7; --text-light: #8E8E93; --border-color: #3A3A3C; --glass-bg: rgba(28, 28, 30, 0.8); }
         
         * { box-sizing: border-box; }
         html, body { overscroll-behavior-y: contain; }
-        body { font-family: 'Noto Sans', sans-serif; margin: 0; padding: 20px 15px 100px 15px; background-color: var(--background-color); color: var(--text-color); -webkit-font-smoothing: antialiased; transition: background-color 0.3s, color 0.3s; }
+        body { font-family: 'Inter', sans-serif; margin: 0; padding: 20px 15px 100px 15px; background-color: var(--background-color); color: var(--text-color); -webkit-font-smoothing: antialiased; transition: background-color 0.3s, color 0.3s; }
         
-        #preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; background: var(--background-color); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; transition: opacity 0.5s ease; }
-        #preloader i { font-size: 48px; color: var(--primary-color); animation: spin 1.5s linear infinite; }
-        #preloader-percentage { font-size: 20px; font-weight: 700; color: var(--text-color); }
-        #preloader-footer { position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; padding: 15px; z-index: 10000; transition: opacity 0.5s ease; }
-        #preloader-footer a { font-size: 14px; font-weight: 500; color: var(--text-light); text-decoration: none; }
-
+        /* ===== PRELOADER - UPDATED ===== */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background: var(--background-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            transition: opacity 0.6s ease;
+        }
+        
+        #preloader .brand {
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--primary-color);
+            letter-spacing: -1px;
+            animation: pulseText 1.5s ease-in-out infinite;
+        }
+        
+        #preloader .brand span {
+            color: var(--text-color);
+        }
+        
+        @keyframes pulseText {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        
+        #preloader .loader-bar-container {
+            width: 200px;
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        #preloader .loader-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        #preloader-percentage {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-light);
+            letter-spacing: 2px;
+        }
+        
+        #preloader .dots {
+            display: flex;
+            gap: 8px;
+            margin-top: -10px;
+        }
+        
+        #preloader .dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            animation: dotBounce 1.4s ease-in-out infinite;
+        }
+        
+        #preloader .dots span:nth-child(2) { animation-delay: 0.2s; }
+        #preloader .dots span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes dotBounce {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+        
+        #preloader-footer {
+            position: fixed;
+            bottom: 30px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            padding: 15px;
+            z-index: 10000;
+            transition: opacity 0.5s ease;
+        }
+        
+        #preloader-footer a {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-light);
+            text-decoration: none;
+            opacity: 0.5;
+        }
+        
+        /* ===== MAIN APP ===== */
         .container { max-width: 500px; margin: 0 auto; display: none; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .profile-header { display: flex; align-items: center; gap: 15px; margin-bottom: 24px; animation: fadeIn 0.5s ease-out; }
@@ -81,7 +176,7 @@
         .modal-content { background-color: var(--card-background); padding: 20px; border-radius: 20px 20px 0 0; width: 100%; max-width: 500px; margin: 0 auto; box-sizing: border-box; animation: slideIn 0.3s ease-out; max-height: 80vh; overflow-y: auto;}
         @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .close-button { color: #aaa; float: right; font-size: 28px; line-height: 1; font-weight: bold; cursor: pointer; }
-        .modal-content input, .modal-content select { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid var(--border-color); border-radius: 10px; font-family: 'Noto Sans', sans-serif; font-size: 16px; background-color: var(--background-color); color: var(--text-color); transition: border-color 0.2s, box-shadow 0.2s; }
+        .modal-content input, .modal-content select { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid var(--border-color); border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 16px; background-color: var(--background-color); color: var(--text-color); transition: border-color 0.2s, box-shadow 0.2s; }
         .modal-content input:focus, .modal-content select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.2); }
         
         #bonus-tasks-list .bonus-item { display: flex; align-items: center; justify-content: space-between; padding: 15px; background-color: var(--background-color); border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border-color); }
@@ -110,20 +205,29 @@
         #multiAccountModal .modal-content { text-align: center; border-radius: 20px; max-height: initial;}
         #multiAccountModal { align-items: center; justify-content: center; }
 
-        .cat-icon { color: var(--primary-color); }
-        .balance-card .cat-icon-bg { position: absolute; right: 10px; bottom: 10px; font-size: 80px; opacity: 0.15; }
-
         /* Withdraw method specific styles */
         .method-field { display: none; margin-top: 10px; }
         .method-field.active { display: block; }
         .method-field label { font-size: 14px; font-weight: 600; color: var(--text-color); display: block; margin-bottom: 4px; }
         .method-field .field-hint { font-size: 12px; color: var(--text-light); margin-bottom: 8px; }
+        
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 600; color: var(--text-color); margin-bottom: 4px; }
     </style>
 </head>
 <body>
+    <!-- ===== PRELOADER - UPDATED ===== -->
     <div id="preloader">
-        <i class="fa-solid fa-cat cat-icon"></i>
+        <div class="brand">Nex<span>Earn</span></div>
+        <div class="loader-bar-container">
+            <div class="loader-bar" id="loader-bar"></div>
+        </div>
         <div id="preloader-percentage">0%</div>
+        <div class="dots">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </div>
     <div id="preloader-footer">
         <a href="https://t.me/NexEarn2_Bot" target="_blank">@NexEarn2_Bot</a>
@@ -132,9 +236,8 @@
     <div id="ad-loader-overlay"><div class="loader"></div><span>Loading Ad...</span></div>
     
     <div class="container">
-        <div class="profile-header"><div id="profile-pic"><i class="fa-solid fa-cat cat-icon"></i></div><h1 id="greeting">Welcome!</h1></div>
+        <div class="profile-header"><div id="profile-pic"><i class="fa-solid fa-user"></i></div><h1 id="greeting">Welcome!</h1></div>
         <div class="balance-card">
-            <i class="fa-solid fa-cat cat-icon-bg"></i>
             <h3>Your Balance</h3>
             <div class="amount" id="total-earning">$0.000</div>
         </div>
@@ -171,26 +274,8 @@
                     </select>
                 </div>
                 
-                <!-- Binance Field -->
-                <div id="binance-field" class="method-field">
-                    <label>Binance UID / Email</label>
-                    <div class="field-hint">Enter your Binance UID or registered email address</div>
-                    <input type="text" id="binance-account" placeholder="Enter Binance UID or Email">
-                </div>
-                
-                <!-- Bikash Field -->
-                <div id="bikash-field" class="method-field">
-                    <label>Bikash Number</label>
-                    <div class="field-hint">Enter your Bikash account number</div>
-                    <input type="text" id="bikash-account" placeholder="Enter Bikash Number">
-                </div>
-                
-                <!-- Nogad Field -->
-                <div id="nogad-field" class="method-field">
-                    <label>Nogad Number</label>
-                    <div class="field-hint">Enter your Nogad account number</div>
-                    <input type="text" id="nogad-account" placeholder="Enter Nogad Number">
-                </div>
+                <!-- Dynamic method fields will be shown here -->
+                <div id="method-fields-container"></div>
                 
                 <div class="form-group">
                     <label>Amount (USD)</label>
@@ -268,6 +353,7 @@
         const allDOMElements = { 
             preloader: document.getElementById('preloader'), 
             preloaderPercentage: document.getElementById('preloader-percentage'), 
+            loaderBar: document.getElementById('loader-bar'),
             preloaderFooter: document.getElementById('preloader-footer'),
             container: document.querySelector('.container'), 
             totalEarningEl: document.getElementById('total-earning'), 
@@ -476,31 +562,42 @@
         }
 
         // ============================================================
-        // POPULATE WITHDRAWAL METHODS (FIXED)
+        // POPULATE WITHDRAWAL METHODS (DYNAMIC)
         // ============================================================
         function populateWithdrawalMethods() {
             const methodSelect = document.getElementById('method');
+            const container = document.getElementById('method-fields-container');
             if (!methodSelect) return;
             
             // Clear existing options
             methodSelect.innerHTML = '<option value="" disabled selected>Select Payment Method</option>';
             
-            // Add methods from config
-            config.withdrawalMethods.forEach(method => {
+            // Clear container
+            container.innerHTML = '';
+            
+            // Add methods from config and create dynamic fields
+            config.withdrawalMethods.forEach((method, index) => {
+                // Add to select
                 const option = document.createElement('option');
                 option.value = method;
                 option.textContent = method;
                 methodSelect.appendChild(option);
+                
+                // Create dynamic field
+                const fieldDiv = document.createElement('div');
+                fieldDiv.id = method.toLowerCase() + '-field';
+                fieldDiv.className = 'method-field';
+                fieldDiv.innerHTML = `
+                    <label>${method} Account</label>
+                    <div class="field-hint">Enter your ${method} account details</div>
+                    <input type="text" id="${method.toLowerCase()}-account" placeholder="Enter ${method} Account">
+                `;
+                container.appendChild(fieldDiv);
             });
             
-            // Remove old event listener by cloning and replacing
-            const newSelect = methodSelect.cloneNode(true);
-            methodSelect.parentNode.replaceChild(newSelect, methodSelect);
-            
             // Add event listener for method change
-            newSelect.addEventListener('change', function() {
+            methodSelect.addEventListener('change', function() {
                 const selected = this.value;
-                console.log("Selected method:", selected);
                 
                 // Hide all fields
                 document.querySelectorAll('.method-field').forEach(el => {
@@ -513,17 +610,9 @@
                     const field = document.getElementById(fieldId);
                     if (field) {
                         field.classList.add('active');
-                        console.log("Showing field:", fieldId);
-                    } else {
-                        console.log("Field not found:", fieldId);
                     }
                 }
             });
-            
-            // Trigger change event if a method is already selected
-            if (newSelect.value) {
-                newSelect.dispatchEvent(new Event('change'));
-            }
         }
 
         // ============================================================
@@ -574,7 +663,7 @@
         }
 
         // ============================================================
-        // WATCH AD FUNCTION
+        // WATCH AD FUNCTION - FIXED WITH MONETAG
         // ============================================================
         async function watchAd() {
             if (state.lastUsedIp && !state.cooldownUntil) {
@@ -592,8 +681,10 @@
             allDOMElements.adLoaderOverlay.style.display = 'flex';
             
             try {
-                await show_11573980();
+                // Call Monetag Rewarded Ad - FIXED
+                const result = await show_11573980();
                 
+                // Ad watched successfully - give reward
                 state.totalEarning += config.AD_REWARD; 
                 state.adCount++; 
                 state.adsWatchedToday++; 
@@ -635,13 +726,12 @@
             const method = methodSelect.value;
             let accountNumber = '';
             
-            // Get account number based on method
-            if (method === 'Binance') {
-                accountNumber = document.getElementById('binance-account').value.trim();
-            } else if (method === 'Bikash') {
-                accountNumber = document.getElementById('bikash-account').value.trim();
-            } else if (method === 'Nogad') {
-                accountNumber = document.getElementById('nogad-account').value.trim();
+            // Get account number from dynamic field
+            if (method) {
+                const accountInput = document.getElementById(method.toLowerCase() + '-account');
+                if (accountInput) {
+                    accountNumber = accountInput.value.trim();
+                }
             }
             
             const amount = parseFloat(document.getElementById('withdraw-amount').value);
@@ -893,15 +983,16 @@
 
             let percentage = 0;
             const interval = setInterval(() => {
-                percentage += Math.floor(Math.random() * 5) + 1;
+                percentage += Math.floor(Math.random() * 3) + 1;
                 if (percentage > 100) percentage = 100;
                 allDOMElements.preloaderPercentage.textContent = `${percentage}%`;
+                allDOMElements.loaderBar.style.width = `${percentage}%`;
                 if (percentage >= 100) {
                     clearInterval(interval);
                     preloaderAnimationDone = true;
                     tryFinishLoading();
                 }
-            }, 60);
+            }, 80);
 
             try {
                 if (!initFirebase()) {
@@ -966,6 +1057,7 @@
                 if (percentage < 100) {
                     clearInterval(interval);
                     allDOMElements.preloaderPercentage.textContent = '100%';
+                    allDOMElements.loaderBar.style.width = '100%';
                     preloaderAnimationDone = true;
                 }
                 tryFinishLoading();
