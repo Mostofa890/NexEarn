@@ -124,7 +124,7 @@
         <div id="preloader-percentage">0%</div>
     </div>
     <div id="preloader-footer">
-        <a href="https://t.me/BasicTouchPro" target="_blank">@BasicTouchPro</a>
+        <a href="https://t.me/NexEarn2_Bot" target="_blank">@NexEarn2_Bot</a>
     </div>
     
     <div id="ad-loader-overlay"><div class="loader"></div><span>Loading Ad...</span></div>
@@ -182,74 +182,47 @@
     <div id="multiAccountModal" class="modal"><div class="modal-content"><h3 class="card-title" style="text-align:center;">⚠️ Warning</h3><p>Multiple accounts are not allowed. Only one Telegram account can be used on this device. Please use your original account to continue.</p></div></div>
 
     <script>
-        // --- CONFIGURATION (FULLY UPDATED WITH YOUR DATA) ---
-        const config = {
-            // ========== BOT CONFIGURATION ==========
+        // ============================================================
+        // FIREBASE CONFIG
+        // ============================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyC_WvNxSQQ58TcJhDcBw5NUrAZjOQe1T2g",
+            authDomain: "cat-coins-34d4c.firebaseapp.com",
+            databaseURL: "https://cat-coins-34d4c-default-rtdb.firebaseio.com",
+            projectId: "cat-coins-34d4c",
+            storageBucket: "cat-coins-34d4c.appspot.com",
+            messagingSenderId: "616291442045",
+            appId: "1:616291442045:android:9de76c46bfdc5edec60014"
+        };
+
+        // ============================================================
+        // CONFIGURATION (Load from Firebase)
+        // ============================================================
+        let config = {
             BOT_TOKEN: '8072034659:AAE_I05sswA8gBYVOSHtjGEf1LE6i6aq0T8',
             ADMIN_IDS: [6624254778],
             BOT_USERNAME: 'NexEarn2_Bot',
-
-            // ========== LINKS ==========
             TELEGRAM_CHANNEL_LINK: 'https://t.me/BasicTouchPro',
             ADMIN_SUPPORT_LINK: 'https://t.me/BasicTouch',
-
-            // ========== MONETAG AD ZONE ==========
             MONETAG_ZONE_ID: '11573980',
-
-            // ========== APP SETTINGS ==========
             AD_REWARD: 0.001,
             DAILY_AD_LIMIT: 15,
             MINIMUM_WITHDRAWAL: 0.10,
             COOLDOWN_MINUTES: 30,
-
-            // ========== WITHDRAWAL METHODS ==========
-            withdrawalMethods: [
-                'Binance UID',
-                'Bikash',
-                'Nogad'
-            ],
-
-            // ========== FIREBASE CONFIG (from google-services.json) ==========
-            firebase: {
-                apiKey: "AIzaSyC_WvNxSQQ58TcJhDcBw5NUrAZjOQe1T2g",
-                authDomain: "cat-coins-34d4c.firebaseapp.com",
-                databaseURL: "https://cat-coins-34d4c-default-rtdb.firebaseio.com",
-                projectId: "cat-coins-34d4c",
-                storageBucket: "cat-coins-34d4c.appspot.com",
-                messagingSenderId: "616291442045",
-                appId: "1:616291442045:android:9de76c46bfdc5edec60014",
-                measurementId: "YOUR_MEASUREMENT_ID"
-            },
-
-            // ========== REFERRAL ==========
+            withdrawalMethods: ['Binance UID', 'Bikash', 'Nogad'],
             REFERRAL_REWARD: 0.01,
-
-            // ========== BONUS TASKS ==========
-            bonusTasks: [
-                { 
-                    id: 'bonus_01', 
-                    title: 'আমাদের চ্যানেল ভিজিট করুন', 
-                    link: 'https://t.me/BasicTouchPro', 
-                    reward: 0.5, 
-                    duration: 10 
-                },
-                { 
-                    id: 'bonus_02', 
-                    title: 'অন্য অ্যাপটি দেখুন', 
-                    link: 'https://t.me/BasicTouchProBot', 
-                    reward: 0.01, 
-                    duration: 10 
-                }
-            ],
-
-            // ========== WELCOME NOTICE ==========
+            bonusTasks: [],
             welcomeNotice: {
                 title: "Welcome to Cat Coins!",
-                message: `Please follow the rules to ensure you receive your payment.\n\n💰 Reward per Ad: $0.001\n💝 After watching 15 ads, there is a 30-minute break.\n✅ 100% Payment Guarantee\n💸 Withdraw via Binance UID or Email\n🔥 Minimum withdrawal is only $0.10\n\n⛔ IMPORTANT RULES ⛔\n- Use mobile data for tasks. Do not use WiFi.\n- After each break, change your IP address. Simply turn Airplane Mode ON and then OFF.\n- Do NOT use any free or paid VPN.\n- Watch the complete guide video on our Telegram channel before starting.\n\nFollowing these rules is mandatory to get paid. Join our Telegram channel for updates and support! ✅`
+                message: "Please follow the rules to ensure you receive your payment.\n\n💰 Reward per Ad: $0.001\n💝 After watching 15 ads, there is a 30-minute break.\n✅ 100% Payment Guarantee\n💸 Withdraw via Binance UID or Email\n🔥 Minimum withdrawal is only $0.10"
             }
         };
 
-        // --- MAIN APP LOGIC ---
+        let firebaseDb;
+
+        // ============================================================
+        // MAIN APP LOGIC
+        // ============================================================
         const tg = window.Telegram ? window.Telegram.WebApp : null;
         
         let state = { 
@@ -265,10 +238,10 @@
             rewardedReferrals: 0, 
             originalUserId: null 
         };
-        const dbName = 'CatCoinsAppDB'; 
-        let db;
+        
+        let currentUserId = null;
         let currentIpAddress = null;
-        let firebaseApp, firebaseDb;
+        let userDataRef = null;
 
         const allDOMElements = { 
             preloader: document.getElementById('preloader'), 
@@ -294,95 +267,182 @@
             welcomeTitle: document.getElementById('welcome-title'), 
             welcomeMessage: document.getElementById('welcome-message')
         };
-        
-        function initDB() { 
-            return new Promise((resolve) => { 
-                try { 
-                    const request = indexedDB.open(dbName, 3); 
-                    request.onerror = (e) => { 
-                        console.error("DB Error:", e); 
-                        resolve(); 
-                    }; 
-                    request.onsuccess = event => { 
-                        db = event.target.result; 
-                        resolve(); 
-                    }; 
-                    request.onupgradeneeded = event => { 
-                        let db = event.target.result; 
-                        if (!db.objectStoreNames.contains('userState')) 
-                            db.createObjectStore('userState', { keyPath: 'id' }); 
-                        if (!db.objectStoreNames.contains('appUsage')) 
-                            db.createObjectStore('appUsage', { keyPath: 'ip' }); 
-                    }; 
-                } catch (e) { 
-                    resolve(); 
-                } 
-            }); 
-        }
-        
-        function saveState() { 
-            if (!db) return; 
-            const transaction = db.transaction(['userState'], 'readwrite'); 
-            transaction.objectStore('userState').put({ id: 'currentUser', ...state }); 
-        }
-        
-        function loadState() { 
-            return new Promise(resolve => { 
-                if (!db) { 
-                    resolve(); 
-                    return; 
-                } 
-                const request = db.transaction(['userState'], 'readonly').objectStore('userState').get('currentUser'); 
-                request.onsuccess = () => { 
-                    if (request.result) { 
-                        state = { ...state, ...request.result }; 
-                        if (!state.completedBonusTasks) state.completedBonusTasks = []; 
-                        if (!state.rewardedReferrals) state.rewardedReferrals = 0; 
-                        if(!state.originalUserId) state.originalUserId = null; 
-                    } 
-                    const today = new Date().toLocaleDateString(); 
-                    if (state.lastAdWatchedDate !== today) { 
-                        state.adsWatchedToday = 0; 
-                        state.lastAdWatchedDate = today; 
-                    } 
-                    resolve(); 
-                }; 
-                request.onerror = () => resolve(); 
-            }); 
-        }
-        
-        function checkIpInDB(ip) { 
-            return new Promise(resolve => { 
-                if(!db || !ip) return resolve(false); 
-                const request = db.transaction(['appUsage'], 'readonly').objectStore('appUsage').get(ip); 
-                request.onsuccess = () => resolve(!!request.result); 
-                request.onerror = () => resolve(false); 
-            }); 
-        }
-        
-        function saveIpToDB(ip) { 
-            if(!db || !ip) return; 
-            const transaction = db.transaction(['appUsage'], 'readwrite'); 
-            transaction.objectStore('appUsage').put({ ip: ip, timestamp: new Date().toISOString() }); 
+
+        // ============================================================
+        // FIREBASE FUNCTIONS
+        // ============================================================
+        function initFirebase() {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                firebaseDb = firebase.database();
+                console.log("✅ Firebase Connected");
+                return true;
+            } catch (e) {
+                console.error("Firebase init error:", e);
+                return false;
+            }
         }
 
-        async function getIpAddress() { 
-            try { 
-                const response = await fetch('https://api.ipify.org?format=json'); 
-                const data = await response.json(); 
-                return data.ip; 
-            } catch (error) { 
-                console.error("Could not fetch IP address.", error); 
-                return null; 
-            } 
+        // Load config from Firebase
+        function loadConfigFromFirebase() {
+            return new Promise((resolve) => {
+                if (!firebaseDb) { resolve(); return; }
+                firebaseDb.ref('adminConfig').once('value').then(snapshot => {
+                    const data = snapshot.val();
+                    if (data) {
+                        config.BOT_TOKEN = data.botToken || config.BOT_TOKEN;
+                        config.ADMIN_IDS = data.adminIds || config.ADMIN_IDS;
+                        config.BOT_USERNAME = data.botUsername || config.BOT_USERNAME;
+                        config.TELEGRAM_CHANNEL_LINK = data.channelLink || config.TELEGRAM_CHANNEL_LINK;
+                        config.ADMIN_SUPPORT_LINK = data.supportLink || config.ADMIN_SUPPORT_LINK;
+                        config.MONETAG_ZONE_ID = data.zoneId || config.MONETAG_ZONE_ID;
+                        config.AD_REWARD = data.adReward || config.AD_REWARD;
+                        config.DAILY_AD_LIMIT = data.dailyLimit || config.DAILY_AD_LIMIT;
+                        config.MINIMUM_WITHDRAWAL = data.minWithdraw || config.MINIMUM_WITHDRAWAL;
+                        config.COOLDOWN_MINUTES = data.cooldown || config.COOLDOWN_MINUTES;
+                        config.REFERRAL_REWARD = data.referralReward || config.REFERRAL_REWARD;
+                        if (data.withdrawMethods) config.withdrawalMethods = data.withdrawMethods;
+                        if (data.welcomeMessage) config.welcomeNotice.message = data.welcomeMessage;
+                        console.log("✅ Config loaded from Firebase");
+                    }
+                    resolve();
+                }).catch(() => resolve());
+            });
         }
-        
+
+        // Load bonus tasks from Firebase
+        function loadBonusTasksFromFirebase() {
+            return new Promise((resolve) => {
+                if (!firebaseDb) { resolve(); return; }
+                firebaseDb.ref('bonusTasks').once('value').then(snapshot => {
+                    const data = snapshot.val();
+                    if (data && Array.isArray(data)) {
+                        config.bonusTasks = data;
+                        console.log("✅ Bonus tasks loaded from Firebase");
+                    }
+                    resolve();
+                }).catch(() => resolve());
+            });
+        }
+
+        // Save user data to Firebase
+        function saveUserDataToFirebase() {
+            if (!firebaseDb || !currentUserId) return;
+            
+            const userData = {
+                totalEarning: state.totalEarning,
+                adCount: state.adCount,
+                adsWatchedToday: state.adsWatchedToday,
+                lastAdWatchedDate: state.lastAdWatchedDate,
+                cooldownUntil: state.cooldownUntil,
+                weeklyActivity: state.weeklyActivity,
+                withdrawalHistory: state.withdrawalHistory,
+                completedBonusTasks: state.completedBonusTasks,
+                rewardedReferrals: state.rewardedReferrals,
+                lastUsedIp: state.lastUsedIp,
+                name: tg ? tg.initDataUnsafe?.user?.first_name : 'User',
+                username: tg ? tg.initDataUnsafe?.user?.username : null
+            };
+            
+            firebaseDb.ref(`users/${currentUserId}`).update(userData).catch(err => {
+                console.error("Error saving user data:", err);
+            });
+        }
+
+        // Load user data from Firebase
+        function loadUserDataFromFirebase() {
+            return new Promise((resolve) => {
+                if (!firebaseDb || !currentUserId) { resolve(); return; }
+                
+                firebaseDb.ref(`users/${currentUserId}`).once('value').then(snapshot => {
+                    const data = snapshot.val();
+                    if (data) {
+                        state.totalEarning = data.totalEarning || 0;
+                        state.adCount = data.adCount || 0;
+                        state.adsWatchedToday = data.adsWatchedToday || 0;
+                        state.lastAdWatchedDate = data.lastAdWatchedDate || null;
+                        state.cooldownUntil = data.cooldownUntil || null;
+                        state.weeklyActivity = data.weeklyActivity || [0,0,0,0,0,0,0];
+                        state.withdrawalHistory = data.withdrawalHistory || [];
+                        state.completedBonusTasks = data.completedBonusTasks || [];
+                        state.rewardedReferrals = data.rewardedReferrals || 0;
+                        state.lastUsedIp = data.lastUsedIp || null;
+                        
+                        // Check if it's a new day
+                        const today = new Date().toLocaleDateString();
+                        if (state.lastAdWatchedDate !== today) {
+                            state.adsWatchedToday = 0;
+                            state.lastAdWatchedDate = today;
+                        }
+                        console.log("✅ User data loaded from Firebase");
+                    }
+                    resolve();
+                }).catch(() => resolve());
+            });
+        }
+
+        // ============================================================
+        // REFERRAL FUNCTIONS
+        // ============================================================
+        async function handleReferral() {
+            if (!firebaseDb || !tg || !tg.initDataUnsafe) return;
+            const startParam = tg.initDataUnsafe.start_param;
+            const currentUser = tg.initDataUnsafe.user;
+            if (!startParam || isNaN(parseInt(startParam)) || parseInt(startParam) === currentUser.id) return;
+            
+            const referrerId = parseInt(startParam);
+            const referredUserRef = firebaseDb.ref(`users/${currentUser.id}/referred_by`);
+            const snapshot = await referredUserRef.once('value');
+            if (snapshot.exists()) return;
+
+            await referredUserRef.set(referrerId);
+            const referrerRef = firebaseDb.ref(`users/${referrerId}/referrals`);
+            await referrerRef.transaction((currentCount) => (currentCount || 0) + 1);
+
+            const message = `🎉 Congratulations! User ${currentUser.first_name} (@${currentUser.username}) joined using your link. You will receive your bonus next time you open the app.`;
+            await fetch(`https://api.telegram.org/bot${config.BOT_TOKEN}/sendMessage`, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({ chat_id: referrerId, text: message }) 
+            });
+        }
+
+        async function processReferralRewards() {
+            if (!firebaseDb || !tg || !tg.initDataUnsafe) return;
+            const userId = tg.initDataUnsafe.user.id;
+            const referralsRef = firebaseDb.ref(`users/${userId}/referrals`);
+            const snapshot = await referralsRef.once('value');
+            const totalReferrals = snapshot.val() || 0;
+
+            const rewardedReferrals = state.rewardedReferrals || 0;
+            const newReferrals = totalReferrals - rewardedReferrals;
+
+            if (newReferrals > 0) {
+                const bonus = newReferrals * config.REFERRAL_REWARD;
+                state.totalEarning += bonus;
+                state.rewardedReferrals = totalReferrals;
+                safeTgAlert(`You received a bonus of $${bonus.toFixed(3)} for ${newReferrals} new referral(s)!`);
+                saveUserDataToFirebase();
+            }
+        }
+
+        function listenForReferralCount() {
+            if (!firebaseDb || !tg || !tg.initDataUnsafe) return;
+            const userId = tg.initDataUnsafe.user.id;
+            const referralsRef = firebaseDb.ref(`users/${userId}/referrals`);
+            referralsRef.on('value', (snapshot) => { 
+                allDOMElements.referralCountEl.textContent = snapshot.val() || 0; 
+            });
+        }
+
+        // ============================================================
+        // UTILITY FUNCTIONS
+        // ============================================================
         function safeTgAction(action, fallback = () => {}) { 
             if (tg && tg.initData) { 
                 action(tg); 
             } else { 
                 fallback(); 
-                console.log("Telegram WebApp is not available or not ready."); 
             } 
         }
         
@@ -398,6 +458,7 @@
         function populateWithdrawalMethods() {
             const methodSelect = document.getElementById('method');
             if (!methodSelect) return;
+            methodSelect.innerHTML = '<option value="" disabled selected>Select Payment Method</option>';
             config.withdrawalMethods.forEach(method => {
                 const option = document.createElement('option');
                 option.value = method;
@@ -406,14 +467,18 @@
             });
         }
 
+        // ============================================================
+        // UI FUNCTIONS
+        // ============================================================
         let cooldownInterval;
         
         function updateUI() {
             if (state.cooldownUntil && new Date() >= new Date(state.cooldownUntil)) { 
                 state.cooldownUntil = null; 
                 state.adsWatchedToday = 0; 
-                saveState(); 
+                saveUserDataToFirebase();
             }
+            
             allDOMElements.totalEarningEl.textContent = `$${state.totalEarning.toFixed(3)}`;
             allDOMElements.adCountEl.textContent = state.adCount;
             allDOMElements.adsTodayCountEl.textContent = `${state.adsWatchedToday} / ${config.DAILY_AD_LIMIT}`;
@@ -429,9 +494,9 @@
                         clearInterval(cooldownInterval); 
                         state.cooldownUntil = null; 
                         state.adsWatchedToday = 0; 
-                        saveState(); 
+                        saveUserDataToFirebase();
                         updateUI(); 
-                        safeTgAlert(`Your break is over! Please change your IP address before starting.`); 
+                        safeTgAlert('Your break is over! Please change your IP address before starting.'); 
                     } 
                     else { 
                         const minutes = Math.floor((remaining / 1000 / 60) % 60); 
@@ -448,27 +513,28 @@
             watchAdButton.classList.toggle('pulsing', !watchAdButton.disabled);
             updateChart();
         }
-        
+
+        // ============================================================
+        // WATCH AD FUNCTION
+        // ============================================================
         async function watchAd() {
             if (state.lastUsedIp && !state.cooldownUntil) {
-                 const newIp = await getIpAddress();
-                 if (newIp === state.lastUsedIp) { 
-                     safeTgAlert('Please change your IP address to start the next round. Turn airplane mode on and off.'); 
-                     return; 
-                 } 
-                 else { 
-                     state.lastUsedIp = null; 
-                     saveState(); 
-                 }
+                const newIp = await getIpAddress();
+                if (newIp === state.lastUsedIp) { 
+                    safeTgAlert('Please change your IP address to start the next round. Turn airplane mode on and off.'); 
+                    return; 
+                } 
+                else { 
+                    state.lastUsedIp = null; 
+                    saveUserDataToFirebase();
+                }
             }
             
             allDOMElements.adLoaderOverlay.style.display = 'flex';
             
             try {
-                // Call Monetag Rewarded Ad
                 await show_11573980();
                 
-                // Ad watched successfully - give reward
                 state.totalEarning += config.AD_REWARD; 
                 state.adCount++; 
                 state.adsWatchedToday++; 
@@ -482,19 +548,23 @@
                     state.lastUsedIp = currentIpAddress;
                     alertMessage = `You have completed your tasks! Please take a ${config.COOLDOWN_MINUTES}-minute break.`;
                 }
-                saveState(); 
+                
+                saveUserDataToFirebase();
                 updateUI();
                 safeTgAction(tg => tg.HapticFeedback.notificationOccurred('success'));
                 safeTgAlert(alertMessage);
                 
             } catch(e) { 
-                console.error("Monetag Ad Error:", e); 
+                console.error("Ad Error:", e); 
                 safeTgAlert('Ad could not be completed. Please try again.'); 
             } finally { 
                 allDOMElements.adLoaderOverlay.style.display = 'none'; 
             }
         }
-        
+
+        // ============================================================
+        // WITHDRAWAL FUNCTION
+        // ============================================================
         async function handleWithdrawal(event) {
             event.preventDefault();
             const { withdrawForm } = allDOMElements;
@@ -513,39 +583,54 @@
             submitButton.disabled = true;
             
             const user = tg ? tg.initDataUnsafe?.user : { first_name: 'Test', last_name: 'User', username: 'testuser', id: '12345' };
-            const message = `<b>💰 New Withdrawal Request 💰</b>\n\n👤 <b>User:</b> ${escapeHTML(user?.first_name)} ${escapeHTML(user?.last_name)} (@${escapeHTML(user?.username) || 'N/A'})\n🆔 <b>User ID:</b> <code>${user?.id}</code>\n---------------------------------------\n💳 <b>Method:</b> ${escapeHTML(method)}\n🔢 <b>Account:</b> <code>${escapeHTML(accountNumber)}</code>\n💵 <b>Amount:</b> $${amount.toFixed(3)}`;
             
+            // Create withdrawal record
+            const withdrawalId = Date.now().toString();
+            const withdrawalData = {
+                id: withdrawalId,
+                userId: currentUserId,
+                userName: `${user.first_name} ${user.last_name || ''}`,
+                username: user.username || 'N/A',
+                method: method,
+                accountNumber: accountNumber,
+                amount: amount,
+                date: new Date().toISOString(),
+                status: 'Pending'
+            };
+            
+            // Save to Firebase withdrawals
             try {
+                await firebaseDb.ref(`withdrawals/${withdrawalId}`).set(withdrawalData);
+                
+                // Update user balance
+                state.totalEarning -= amount;
+                state.withdrawalHistory.unshift({ 
+                    method, 
+                    number: accountNumber, 
+                    amount, 
+                    date: new Date().toISOString(), 
+                    status: 'Pending'
+                });
+                
+                saveUserDataToFirebase();
+                updateUI(); 
+                closeModal('withdrawModal'); 
+                withdrawForm.reset();
+                safeTgAlert('Your withdrawal request has been sent and is now pending. It will be processed within 2 hours.');
+                safeTgAction(tg => tg.HapticFeedback.notificationOccurred('success'));
+                
+                // Send notification to admin
+                const message = `<b>💰 New Withdrawal Request 💰</b>\n\n👤 <b>User:</b> ${escapeHTML(user.first_name)} ${escapeHTML(user.last_name || '')} (@${escapeHTML(user.username || 'N/A')})\n🆔 <b>User ID:</b> <code>${currentUserId}</code>\n---------------------------------------\n💳 <b>Method:</b> ${escapeHTML(method)}\n🔢 <b>Account:</b> <code>${escapeHTML(accountNumber)}</code>\n💵 <b>Amount:</b> $${amount.toFixed(3)}`;
+                
                 const url = `https://api.telegram.org/bot${config.BOT_TOKEN}/sendMessage`;
-                const promises = config.ADMIN_IDS.map(chat_id => 
+                config.ADMIN_IDS.forEach(chat_id => {
                     fetch(url, { 
                         method: 'POST', 
                         headers: { 'Content-Type': 'application/json' }, 
                         body: JSON.stringify({ chat_id, text: message, parse_mode: 'HTML' }) 
-                    }).then(res => res.json())
-                );
-                const results = await Promise.all(promises);
+                    }).catch(err => console.error("Admin notification error:", err));
+                });
                 
-                if (results.some(r => r.ok)) {
-                    state.totalEarning -= amount;
-                    const pendingUntil = new Date().getTime() + (2 * 60 * 60 * 1000);
-                    state.withdrawalHistory.unshift({ 
-                        method, 
-                        number: accountNumber, 
-                        amount, 
-                        date: new Date().toISOString(), 
-                        status: 'Pending', 
-                        pendingUntil 
-                    });
-                    saveState(); 
-                    updateUI(); 
-                    closeModal('withdrawModal'); 
-                    withdrawForm.reset();
-                    safeTgAlert('Your withdrawal request has been sent and is now pending. It will be processed within 2 hours.');
-                    safeTgAction(tg => tg.HapticFeedback.notificationOccurred('success'));
-                } else { 
-                    throw new Error(JSON.stringify(results)); 
-                }
             } catch (error) { 
                 console.error("Withdrawal Error:", error); 
                 safeTgAlert('Failed to send your request. Please try again later.'); 
@@ -555,25 +640,11 @@
                 submitButton.disabled = false; 
             }
         }
-        
-        function checkPendingWithdrawals() {
-            let changed = false;
-            state.withdrawalHistory.forEach(item => {
-                if (item.status === 'Pending' && new Date().getTime() > item.pendingUntil) {
-                    item.status = 'Success';
-                    changed = true;
-                }
-            });
-            if (changed) {
-                saveState();
-                if (document.getElementById('historyModal').style.display === 'flex') {
-                    renderHistory();
-                }
-            }
-        }
-        
+
+        // ============================================================
+        // RENDER FUNCTIONS
+        // ============================================================
         function renderHistory() {
-            checkPendingWithdrawals();
             const { historyListEl } = allDOMElements;
             if (!state.withdrawalHistory || state.withdrawalHistory.length === 0) { 
                 historyListEl.innerHTML = '<p class="no-history">No withdrawal history found.</p>'; 
@@ -583,21 +654,28 @@
                 <div class="history-item">
                     <div class="history-details"><span class="method-number">${escapeHTML(item.method)} - ${escapeHTML(item.number)}</span><span class="date">${new Date(item.date).toLocaleString()}</span></div>
                     <div class="history-amount"><span>$${item.amount.toFixed(3)}</span><div class="history-status ${item.status.toLowerCase()}">${item.status}</div></div>
-                </div>`).join('');
+                </div>
+            `).join('');
         }
 
         function renderBonusTasks() {
             const { bonusTasksListEl } = allDOMElements;
             bonusTasksListEl.innerHTML = '';
-            if (config.bonusTasks.length === 0) { 
-                bonusTasksListEl.innerHTML = '<p class="no-history">No bonus tasks are available right now.</p>'; 
+            if (!config.bonusTasks || config.bonusTasks.length === 0) { 
+                bonusTasksListEl.innerHTML = '<p class="no-history">No bonus tasks available.</p>'; 
                 return; 
             }
             config.bonusTasks.forEach(task => {
                 const isCompleted = state.completedBonusTasks.includes(task.id);
                 const item = document.createElement('div');
                 item.className = 'bonus-item';
-                item.innerHTML = `<div class="details"><span class="title">${escapeHTML(task.title)}</span><span class="reward"><i class="fa-solid fa-gift"></i>+ $${task.reward.toFixed(3)}</span></div><button class="claim-button" ${isCompleted ? 'disabled' : ''}>${isCompleted ? 'Completed' : 'Claim'}</button>`;
+                item.innerHTML = `
+                    <div class="details">
+                        <span class="title">${escapeHTML(task.title)}</span>
+                        <span class="reward"><i class="fa-solid fa-gift"></i>+ $${task.reward.toFixed(3)}</span>
+                    </div>
+                    <button class="claim-button" ${isCompleted ? 'disabled' : ''}>${isCompleted ? 'Completed' : 'Claim'}</button>
+                `;
                 if (!isCompleted) { 
                     item.querySelector('.claim-button').addEventListener('click', (e) => handleBonusTask(task, e.target)); 
                 }
@@ -613,7 +691,7 @@
                 if (state.completedBonusTasks.includes(task.id)) return;
                 state.totalEarning += task.reward;
                 state.completedBonusTasks.push(task.id);
-                saveState(); 
+                saveUserDataToFirebase();
                 updateUI(); 
                 button.textContent = 'Completed';
                 safeTgAlert(`Bonus of $${task.reward.toFixed(3)} added successfully!`);
@@ -621,6 +699,9 @@
             }, task.duration * 1000);
         }
 
+        // ============================================================
+        // MODAL FUNCTIONS
+        // ============================================================
         function showModal(modalId, buttonEl) {
             document.querySelectorAll('.nav-button.active').forEach(btn => btn.classList.remove('active'));
             if (buttonEl) buttonEl.classList.add('active');
@@ -637,9 +718,12 @@
                 document.querySelectorAll('.nav-button.active').forEach(btn => btn.classList.remove('active')); 
             } 
         }
-        
+
+        // ============================================================
+        // REFERRAL LINK FUNCTIONS
+        // ============================================================
         function getReferralLink() { 
-            const userId = tg ? tg.initDataUnsafe?.user?.id : 'testuser'; 
+            const userId = currentUserId || 'testuser'; 
             return `https://t.me/${config.BOT_USERNAME}?startapp=${userId}`; 
         }
         
@@ -654,7 +738,10 @@
             const text = `Earn money by watching ads! Join using my link:\n${link}`; 
             safeTgAction(tg => tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`)); 
         }
-        
+
+        // ============================================================
+        // CHART FUNCTION
+        // ============================================================
         let myChart; 
         
         function updateChart() { 
@@ -696,66 +783,23 @@
             }); 
         }
 
-        function initFirebase() { 
+        // ============================================================
+        // IP ADDRESS
+        // ============================================================
+        async function getIpAddress() { 
             try { 
-                firebase.initializeApp(config.firebase); 
-                firebaseDb = firebase.database(); 
-            } catch (e) { 
-                console.error("Firebase initialization failed:", e); 
+                const response = await fetch('https://api.ipify.org?format=json'); 
+                const data = await response.json(); 
+                return data.ip; 
+            } catch (error) { 
+                console.error("Could not fetch IP address.", error); 
+                return null; 
             } 
         }
 
-        async function handleReferral() {
-            if (!firebaseDb || !tg || !tg.initDataUnsafe) return;
-            const startParam = tg.initDataUnsafe.start_param;
-            const currentUser = tg.initDataUnsafe.user;
-            if (!startParam || isNaN(parseInt(startParam)) || parseInt(startParam) === currentUser.id) return;
-            
-            const referrerId = parseInt(startParam);
-            const referredUserRef = firebaseDb.ref(`users/${currentUser.id}/referred_by`);
-            const snapshot = await referredUserRef.once('value');
-            if (snapshot.exists()) return;
-
-            await referredUserRef.set(referrerId);
-            const referrerRef = firebaseDb.ref(`users/${referrerId}/referrals`);
-            await referrerRef.transaction((currentCount) => (currentCount || 0) + 1);
-
-            const message = `🎉 Congratulations! User ${currentUser.first_name} (@${currentUser.username}) joined using your link. You will receive your bonus next time you open the app.`;
-            await fetch(`https://api.telegram.org/bot${config.BOT_TOKEN}/sendMessage`, { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify({ chat_id: referrerId, text: message }) 
-            });
-        }
-
-        async function processReferralRewards() {
-            if (!firebaseDb || !tg || !tg.initDataUnsafe) return;
-            const userId = tg.initDataUnsafe.user.id;
-            const referralsRef = firebaseDb.ref(`users/${userId}/referrals`);
-            const snapshot = await referralsRef.once('value');
-            const totalReferrals = snapshot.val() || 0;
-
-            const rewardedReferrals = state.rewardedReferrals || 0;
-            const newReferrals = totalReferrals - rewardedReferrals;
-
-            if (newReferrals > 0) {
-                const bonus = newReferrals * config.REFERRAL_REWARD;
-                state.totalEarning += bonus;
-                state.rewardedReferrals = totalReferrals;
-                saveState();
-                safeTgAlert(`You received a bonus of $${bonus.toFixed(3)} for ${newReferrals} new referral(s)!`);
-            }
-        }
-
-        async function listenForReferralCount() {
-            if (!firebaseDb || !tg || !tg.initDataUnsafe) return;
-            const userId = tg.initDataUnsafe.user.id;
-            const referralsRef = firebaseDb.ref(`users/${userId}/referrals`);
-            referralsRef.on('value', (snapshot) => { 
-                allDOMElements.referralCountEl.textContent = snapshot.val() || 0; 
-            });
-        }
-
+        // ============================================================
+        // INITIALIZATION
+        // ============================================================
         async function initApp() {
             let appReady = false;
             let preloaderAnimationDone = false;
@@ -785,68 +829,54 @@
             }, 60);
 
             try {
-                initFirebase();
-                populateWithdrawalMethods();
-
-                allDOMElements.welcomeTitle.textContent = config.welcomeNotice.title;
-                allDOMElements.welcomeMessage.textContent = config.welcomeNotice.message;
-
-                await initDB(); 
-                await loadState();
-
-                const currentUserId = tg ? tg.initDataUnsafe?.user?.id : null;
-                if (currentUserId) {
-                    if (!state.originalUserId) {
-                        state.originalUserId = currentUserId;
-                        await saveState();
-                    } else if (state.originalUserId !== currentUserId) {
-                        document.getElementById('multiAccountModal').style.display = 'flex';
-                        return;
-                    }
-                }
-
-                currentIpAddress = await getIpAddress();
-                const isMultiAccountIP = await checkIpInDB(currentIpAddress);
-                const isNewUser = !(localStorage.getItem('userIdentified'));
-
-                if (isMultiAccountIP && isNewUser) { 
-                    document.getElementById('multiAccountModal').style.display = 'flex'; 
-                    return; 
-                }
-                if (!isMultiAccountIP) { 
-                    saveIpToDB(currentIpAddress); 
-                    localStorage.setItem('userIdentified', 'true'); 
+                // Initialize Firebase
+                if (!initFirebase()) {
+                    throw new Error("Firebase initialization failed");
                 }
                 
+                // Load config from Firebase
+                await loadConfigFromFirebase();
+                await loadBonusTasksFromFirebase();
+                
+                // Get user info
+                const user = tg ? tg.initDataUnsafe?.user : { first_name: 'User', id: 'testuser' };
+                currentUserId = user.id || 'testuser';
+                
+                // Load user data
+                await loadUserDataFromFirebase();
+                
+                // Populate withdrawal methods
+                populateWithdrawalMethods();
+                
+                // Setup welcome message
+                allDOMElements.welcomeTitle.textContent = config.welcomeNotice.title || "Welcome!";
+                allDOMElements.welcomeMessage.textContent = config.welcomeNotice.message || "Welcome to the app!";
+                
+                // Handle referral
                 await handleReferral();
                 await processReferralRewards();
-                await listenForReferralCount();
+                listenForReferralCount();
                 
-                setInterval(checkPendingWithdrawals, 60 * 1000);
-
-                const user = tg ? tg.initDataUnsafe?.user : { first_name: 'User', photo_url: null };
+                // Update UI
                 if (user?.first_name) {
                     allDOMElements.greetingEl.textContent = `Welcome, ${escapeHTML(user.first_name)}!`;
-                    if (user.photo_url) { 
-                        allDOMElements.profilePicEl.innerHTML = `<img src="${user.photo_url}" alt="P">`; 
-                    }
-                    else { 
-                        allDOMElements.profilePicEl.innerHTML = `<span>${escapeHTML(user.first_name.charAt(0))}</span>`; 
-                    }
+                    allDOMElements.profilePicEl.innerHTML = `<span>${escapeHTML(user.first_name.charAt(0))}</span>`;
                 }
                 
-                updateUI();
+                // Check for multi-account
+                currentIpAddress = await getIpAddress();
                 
+                // Setup event listeners
                 allDOMElements.watchAdButton.addEventListener('click', watchAd);
                 allDOMElements.withdrawForm.addEventListener('submit', handleWithdrawal);
                 allDOMElements.joinChannelButton.addEventListener('click', () => safeTgAction(tg => tg.openTelegramLink(config.TELEGRAM_CHANNEL_LINK)));
-                allDOMElements.adminContactButton.addEventListener('click', () => safeTgAction(tg => tg.openLink(config.ADMIN_SUPPORT_LINK, {try_instant_view: true})));
+                allDOMElements.adminContactButton.addEventListener('click', () => safeTgAction(tg => tg.openLink(config.ADMIN_SUPPORT_LINK)));
                 allDOMElements.copyLinkButton.addEventListener('click', copyReferralLink);
                 allDOMElements.shareLinkButton.addEventListener('click', shareReferralLink);
                 window.onclick = (event) => { 
                     if (event.target.classList.contains('modal')) closeModal(event.target.id); 
-                }
-
+                };
+                
                 safeTgAction(tg => {
                     tg.ready(); 
                     tg.expand();
@@ -855,13 +885,19 @@
                         updateChart(); 
                     });
                 });
-
+                
+                // Update UI
+                updateUI();
+                
+                // Show welcome modal
                 if (!sessionStorage.getItem('alreadyVisited')) { 
                     showModal('welcomeModal'); 
                     sessionStorage.setItem('alreadyVisited', 'true'); 
                 }
+                
             } catch (error) { 
                 console.error("Initialization failed:", error); 
+                safeTgAlert('Failed to load app. Please try again later.');
             } finally {
                 appReady = true;
                 if (percentage < 100) {
