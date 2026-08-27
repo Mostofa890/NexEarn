@@ -1521,7 +1521,7 @@
             color: var(--info);
         }
 
-        /* ===== AD CALCULATOR - UPDATED ===== */
+        /* ===== AD CALCULATOR - FIXED ===== */
         .calc-result {
             background: rgba(16, 185, 129, 0.06);
             border: 1px solid rgba(16, 185, 129, 0.2);
@@ -2571,7 +2571,7 @@
             margin-bottom: 8px;
         }
 
-        /* Banned overlay */
+        /* Banned overlay - Updated with Telegram contact */
         .banned-overlay {
             display: none;
             position: fixed;
@@ -2622,6 +2622,9 @@
             cursor: pointer;
             transition: var(--transition);
             font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .banned-overlay .banned-btn:hover {
@@ -2668,6 +2671,17 @@
             font-weight: 700;
             color: var(--primary-color);
         }
+
+        /* Convert min amount warning */
+        .convert-min-warning {
+            font-size: 12px;
+            color: var(--warning);
+            margin-top: 4px;
+            display: none;
+        }
+        .convert-min-warning.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -2711,8 +2725,8 @@
         <div class="banned-icon"><i class="fa-solid fa-ban"></i></div>
         <div class="banned-title">🚫 Account Banned</div>
         <div class="banned-reason" id="banReason">Your account has been suspended due to violation of our terms of service.</div>
-        <button class="banned-btn" onclick="openChatFromBanned()">
-            <i class="fa-solid fa-comment"></i> Contact Admin
+        <button class="banned-btn" onclick="openTelegramSupport()">
+            <i class="fa-brands fa-telegram"></i> Contact Admin
         </button>
     </div>
 
@@ -2809,6 +2823,7 @@
                     <div style="font-size:11px; opacity:0.7;">No fees</div>
                 </div>
             </div>
+            <div class="convert-min-warning" id="convertMinWarning">⚠️ Minimum conversion amount is $1.00</div>
             <button class="convert-btn" id="convertBtn" onclick="convertToWallet()">
                 <i class="fa-solid fa-exchange-alt"></i> Convert All to Wallet
             </button>
@@ -2917,7 +2932,7 @@
                         <div class="form-hint">Upload PNG, JPG or GIF (Max 5MB)</div>
                     </div>
                     
-                    <!-- Auto Calculate Section - UPDATED WITH SUGGESTION -->
+                    <!-- Auto Calculate Section - FIXED -->
                     <div class="calc-result" id="calcResult">
                         <div class="calc-item">
                             <span class="label">👁 Total Views</span>
@@ -2948,20 +2963,20 @@
                     </div>
                     <div class="form-group">
                         <label>Target Views</label>
-                        <input type="number" id="ad-target-views" value="100" min="1" required>
+                        <input type="number" id="ad-target-views" value="50" min="1" required>
                         <div class="form-hint">How many people should see this ad?</div>
                     </div>
                     <div class="form-group">
                         <label>Campaign Duration (Days) *</label>
-                        <input type="number" id="ad-duration" value="3" min="3" max="30" required>
+                        <input type="number" id="ad-duration" value="7" min="3" max="30" required>
                         <div class="form-hint">Minimum 3 days. Duration affects cost per view.</div>
                     </div>
                     
                     <div id="ad-budget-info" style="font-size:12px; color:var(--text-light); margin-bottom:12px; background:var(--background-color); padding:10px; border-radius:8px;">
                         <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px;">
-                            <span>Total Views: <strong id="ad-total-views">100</strong></span>
+                            <span>Total Views: <strong id="ad-total-views">50</strong></span>
                             <span>Cost per view: <strong>$<span id="ad-cost-per-view">0.0000</span></strong></span>
-                            <span>Duration: <strong id="ad-duration-display">3</strong> days</span>
+                            <span>Duration: <strong id="ad-duration-display">7</strong> days</span>
                             <span>Daily Budget: <strong>$<span id="ad-daily-budget">0.00</span></strong></span>
                         </div>
                     </div>
@@ -3199,11 +3214,13 @@
                 <div style="font-size:14px; color:var(--text-light);">Amount to Convert</div>
                 <div style="font-size:32px; font-weight:800; color:var(--success);" id="convert-amount-display">$0.0000</div>
                 <div style="font-size:12px; color:var(--text-light); margin-top:4px;">1:1 conversion rate • No fees</div>
+                <div style="font-size:12px; color:var(--warning); margin-top:4px; font-weight:600;">Minimum conversion: $1.00</div>
             </div>
             <div class="form-group">
                 <label>Enter Amount to Convert</label>
                 <input type="number" step="0.0001" id="convert-input" placeholder="Enter amount" min="0.0001">
                 <div class="form-hint">Max: <span id="convert-max-display">$0.0000</span></div>
+                <div class="convert-min-warning" id="convertModalMinWarning">⚠️ Minimum conversion amount is $1.00</div>
             </div>
             <button class="action-button success" onclick="confirmConvert()">
                 <i class="fa-solid fa-exchange-alt"></i> <span>Convert Now</span>
@@ -3372,15 +3389,13 @@
             MINIMUM_DEPOSIT: 10,
             COOLDOWN_MINUTES: 30,
             REFERRAL_REWARD: 0.01,
-            REFUND_PERCENTAGE: 50, // Updated to 50%
-            COMPANY_FEE_PERCENTAGE: 50, // Updated to 50%
+            REFUND_PERCENTAGE: 50,
+            COMPANY_FEE_PERCENTAGE: 50,
             AD_COOLDOWN_MINUTES: 1,
             MINIMUM_DURATION_DAYS: 3,
             MINIMUM_BUDGET: 1.00,
-            BASE_VIEWS: 10,
-            BASE_DAYS: 3,
-            BASE_BUDGET: 1.00,
-            ADMIN_CHAT_ID: 'YOUR_ADMIN_CHAT_ID', // Replace with actual admin chat ID
+            MINIMUM_CONVERT: 1.00, // Minimum conversion amount
+            ADMIN_CHAT_ID: 'YOUR_ADMIN_CHAT_ID',
             withdrawalMethods: ['Binance', 'Bikash', 'Nogad'],
             depositMethods: [
                 { name: 'Bikash', number: '01712345678', icon: '💳' },
@@ -3527,6 +3542,8 @@
             DOM.convertInput = document.getElementById('convert-input');
             DOM.convertAmountDisplay = document.getElementById('convert-amount-display');
             DOM.convertMaxDisplay = document.getElementById('convert-max-display');
+            DOM.convertMinWarning = document.getElementById('convertMinWarning');
+            DOM.convertModalMinWarning = document.getElementById('convertModalMinWarning');
             DOM.rejectReason = document.getElementById('reject-reason');
             DOM.adDuration = document.getElementById('ad-duration');
             DOM.adDurationDisplay = document.getElementById('ad-duration-display');
@@ -3594,6 +3611,18 @@
         }
 
         // ============================================================
+        // TELEGRAM SUPPORT - Banned users contact admin
+        // ============================================================
+        function openTelegramSupport() {
+            const supportLink = CONFIG.SUPPORT_LINK || 'https://t.me/NexEarn2Support';
+            if (tg) {
+                tg.openTelegramLink(supportLink);
+            } else {
+                window.open(supportLink, '_blank');
+            }
+        }
+
+        // ============================================================
         // MAINTENANCE MODE
         // ============================================================
         function checkMaintenanceMode() {
@@ -3611,13 +3640,12 @@
                     DOM.container.style.display = 'none';
                 } else {
                     DOM.maintenanceOverlay.classList.remove('active');
-                    // container will be shown if not already
                 }
             });
         }
 
         // ============================================================
-        // ANTI-HACK BALANCE PROTECTION
+        // ANTI-HACK BALANCE PROTECTION - Auto Ban on hack attempt
         // ============================================================
         let lastKnownBalance = 0;
         let balanceCheckInterval = null;
@@ -3626,14 +3654,16 @@
             lastKnownBalance = state.balance;
             balanceCheckInterval = setInterval(() => {
                 const currentBalance = state.balance;
+                // Check if balance was manually increased (hack attempt)
                 if (currentBalance > lastKnownBalance + 0.001) {
                     if (!window._legitimateBalanceChange) {
-                        console.warn('⚠️ Suspicious balance change detected!');
+                        console.warn('⚠️ Suspicious balance increase detected!');
                         banUser('Suspicious balance manipulation detected. Account banned for security reasons.');
                         return;
                     }
                     window._legitimateBalanceChange = false;
                 }
+                // Check if balance decreased suspiciously
                 if (currentBalance < lastKnownBalance - 0.001) {
                     if (!window._legitimateWithdrawal) {
                         console.warn('⚠️ Suspicious balance decrease detected!');
@@ -3646,6 +3676,7 @@
             }, 5000);
         }
 
+        // Mark legitimate balance changes
         const originalSaveUserData = saveUserData;
         saveUserData = function() {
             window._legitimateBalanceChange = true;
@@ -3727,7 +3758,6 @@
             DOM.chatBadge.style.display = 'none';
             DOM.chatMessages.scrollTop = DOM.chatMessages.scrollHeight;
             
-            // Mark all messages as read (Seen)
             if (firebaseDb && state.currentUserId) {
                 const chatRef = firebaseDb.ref(`chats/${state.currentUserId}`);
                 chatRef.orderByChild('timestamp').once('value', (snapshot) => {
@@ -3748,24 +3778,15 @@
             }
         }
 
-        function openChatFromBanned() {
-            DOM.bannedOverlay.classList.remove('active');
-            openChatModal();
-        }
-
         function handleTyping() {
             if (!firebaseDb || !state.currentUserId) return;
-            
             const chatRef = firebaseDb.ref(`chats/${state.currentUserId}`);
-            
             if (typingTimeout) clearTimeout(typingTimeout);
-            
             chatRef.child('typing').set({
                 isTyping: true,
                 timestamp: Date.now(),
                 sender: 'user'
             });
-            
             typingTimeout = setTimeout(() => {
                 chatRef.child('typing').remove();
             }, 2000);
@@ -3792,17 +3813,11 @@
             DOM.sendChatBtn.disabled = true;
 
             const chatRef = firebaseDb.ref(`chats/${state.currentUserId}`);
-            
             chatRef.child('typing').remove();
-            
             chatRef.push(msgData).then((ref) => {
                 DOM.sendChatBtn.disabled = false;
-                
                 chatRef.child(ref.key + '/delivered').set(true);
-                
-                // Send notification to admin via Firebase and Telegram
                 sendAdminNotification(`💬 New message from ${user.first_name}\nID: ${state.currentUserId}\nMessage: ${message}\nTime: ${new Date().toLocaleString()}`);
-                
                 const lastMsg = DOM.chatMessages.lastElementChild;
                 if (lastMsg) {
                     const statusEl = lastMsg.querySelector('.read-status');
@@ -3834,19 +3849,14 @@
 
         function listenChatMessages() {
             if (!firebaseDb || !state.currentUserId) return;
-
             const chatRef = firebaseDb.ref(`chats/${state.currentUserId}`);
-            
             chatRef.orderByChild('timestamp').on('child_added', (snapshot) => {
                 const data = snapshot.val();
                 if (!data) return;
-                
                 if (data.isTyping) return;
-                
                 if (data.isFromUser === false) {
                     const status = data.read ? 'seen' : 'delivered';
                     addChatMessage(data.message, 'admin', data.timestamp, status);
-                    
                     if (!DOM.chatModal.classList.contains('active')) {
                         unreadCount++;
                         DOM.chatBadge.textContent = unreadCount;
@@ -3866,7 +3876,6 @@
                     chatRef.child(snapshot.key + '/read').set(true);
                 }
             });
-            
             chatRef.child('typing').on('value', (snapshot) => {
                 const typing = snapshot.val();
                 if (typing && typing.isTyping && typing.sender === 'admin') {
@@ -3888,8 +3897,6 @@
                     type: 'chat'
                 });
             }
-            
-            // Telegram notification via WebApp
             if (tg && CONFIG.ADMIN_CHAT_ID) {
                 try {
                     tg.sendData(JSON.stringify({
@@ -4033,36 +4040,28 @@
                 }
                 return;
             }
-
             const descEl = document.getElementById('job-description-text');
             const instructionsEl = document.getElementById('job-instructions-text');
             const requirementsEl = document.getElementById('job-requirements-text');
-
             const originalDesc = descEl.getAttribute('data-original') || descEl.textContent;
             const originalInstructions = instructionsEl.getAttribute('data-original') || instructionsEl.textContent;
             const originalRequirements = requirementsEl.getAttribute('data-original') || requirementsEl.textContent;
-
             if (!descEl.getAttribute('data-original')) {
                 descEl.setAttribute('data-original', originalDesc);
                 instructionsEl.setAttribute('data-original', originalInstructions);
                 requirementsEl.setAttribute('data-original', originalRequirements);
             }
-
             showToast(`🌐 Translating to ${lang}...`, '');
-
             const translatedDesc = await translateText(originalDesc, lang);
             const translatedInstructions = await translateText(originalInstructions, lang);
             const translatedRequirements = await translateText(originalRequirements, lang);
-
             const descWithLinks = translatedDesc.replace(
                 /(https?:\/\/[^\s]+)/g,
                 '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
             );
-
             descEl.innerHTML = descWithLinks;
             instructionsEl.textContent = translatedInstructions;
             requirementsEl.textContent = translatedRequirements;
-
             showToast(`✅ Translated to ${lang}`, 'success');
         }
 
@@ -4104,10 +4103,9 @@
                         if (data.adCooldownMinutes) CONFIG.AD_COOLDOWN_MINUTES = data.adCooldownMinutes;
                         if (data.minDurationDays) CONFIG.MINIMUM_DURATION_DAYS = data.minDurationDays;
                         if (data.minBudget) CONFIG.MINIMUM_BUDGET = data.minBudget;
+                        if (data.minConvert) CONFIG.MINIMUM_CONVERT = data.minConvert;
                         if (data.adminChatId) CONFIG.ADMIN_CHAT_ID = data.adminChatId;
-                        // Override refund percentages if set
-                        if (data.refundPercentage) CONFIG.REFUND_PERCENTAGE = data.refundPercentage;
-                        if (data.companyFeePercentage) CONFIG.COMPANY_FEE_PERCENTAGE = data.companyFeePercentage;
+                        if (data.supportLink) CONFIG.SUPPORT_LINK = data.supportLink;
                         console.log("✅ Config loaded from Firebase");
                         renderDepositMethods();
                     }
@@ -4233,7 +4231,6 @@
                 renderMyAds(adList);
                 renderVerificationRequests(adList);
                 updateProfileData(adList);
-                
                 if (DOM.allJobsPage.classList.contains('active')) {
                     renderAllJobs(adList);
                 }
@@ -4288,14 +4285,12 @@
                     showToast('❌ Ad not found', 'error');
                     return;
                 }
-                
                 DOM.editAdTitle.value = ad.title || '';
                 DOM.editAdCategory.value = ad.category || '';
                 DOM.editAdSubCategory.value = ad.subCategory || '';
                 DOM.editAdDesc.value = ad.desc || '';
                 DOM.editAdRequirements.value = ad.requirements || '';
                 DOM.editAdInstructions.value = ad.instructions || '';
-                
                 DOM.editAdModal.classList.add('active');
             }).catch(err => {
                 console.error("Error loading ad for edit:", err);
@@ -4310,27 +4305,22 @@
 
         function setupEditAdForm() {
             if (!DOM.editAdForm) return;
-            
             DOM.editAdForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                
                 if (!editingAdId) {
                     showToast('❌ No ad selected for editing', 'error');
                     return;
                 }
-                
                 const title = DOM.editAdTitle.value.trim();
                 const category = DOM.editAdCategory.value;
                 const subCategory = DOM.editAdSubCategory.value.trim();
                 const desc = DOM.editAdDesc.value.trim();
                 const requirements = DOM.editAdRequirements.value.trim();
                 const instructions = DOM.editAdInstructions.value.trim();
-                
                 if (!title || !category || !desc || !requirements || !instructions) {
                     showToast('❌ Please fill all required fields!', 'error');
                     return;
                 }
-                
                 try {
                     await firebaseDb.ref(`ads/${editingAdId}`).update({
                         title: title,
@@ -4341,7 +4331,6 @@
                         instructions: instructions,
                         updatedAt: Date.now()
                     });
-                    
                     closeEditAdModal();
                     showToast('✅ Ad updated successfully!', 'success');
                     listenAds();
@@ -4372,19 +4361,15 @@
             const user = tg?.initDataUnsafe?.user || { first_name: 'User' };
             const initial = user.first_name?.charAt(0) || 'U';
             const role = state.userRole === 'publisher' ? '📖 Publisher' : '📢 Advertiser';
-            
             const followingCount = Object.keys(state.followers).filter(id => id !== state.currentUserId).length || 0;
             const followersCount = Object.keys(state.followers).length || 0;
             const ratingsArray = Object.values(state.ratings).filter(r => r > 0);
             const avgRating = ratingsArray.length > 0 ? ratingsArray.reduce((a, b) => a + b, 0) / ratingsArray.length : 0;
-            
             let content = '';
-            
             if (state.userRole === 'advertiser') {
                 const activeAds = state.myAds.filter(a => a.status === 'active' && a.approved).length;
                 const pendingReviews = state.verifications.filter(v => v.status === 'pending').length;
                 const expiredAds = state.myAds.filter(a => a.status === 'expired' || (a.endDate && a.endDate < Date.now())).length;
-                
                 content = `
                     <div class="profile-card">
                         <div class="big-avatar">${initial}</div>
@@ -4396,27 +4381,15 @@
                             <div class="stat-item"><span class="num rating">${avgRating.toFixed(1)}</span> ★ Rating</div>
                         </div>
                     </div>
-                    
                     <div class="profile-tabs">
                         <button class="profile-tab active" onclick="switchProfileTab('advertiser', this)">📢 Advertiser</button>
                         <button class="profile-tab" onclick="switchProfileTab('publisher', this)">📖 Publisher</button>
                     </div>
-                    
                     <div class="profile-stats-grid">
-                        <div class="profile-stat-box">
-                            <div class="label">💰 Available Balance</div>
-                            <div class="value reward">$${formatBalance(state.walletBalance)}</div>
-                        </div>
-                        <div class="profile-stat-box">
-                            <div class="label">📊 Total Spent</div>
-                            <div class="value highlight">$${formatBalance(state.totalSpent)}</div>
-                        </div>
-                        <div class="profile-stat-box">
-                            <div class="label">❌ Ad Rejects</div>
-                            <div class="value danger">${state.adRejects}</div>
-                        </div>
+                        <div class="profile-stat-box"><div class="label">💰 Available Balance</div><div class="value reward">$${formatBalance(state.walletBalance)}</div></div>
+                        <div class="profile-stat-box"><div class="label">📊 Total Spent</div><div class="value highlight">$${formatBalance(state.totalSpent)}</div></div>
+                        <div class="profile-stat-box"><div class="label">❌ Ad Rejects</div><div class="value danger">${state.adRejects}</div></div>
                     </div>
-                    
                     <div style="display:flex; gap:10px; margin-bottom:16px;">
                         <button class="action-button" style="flex:1; padding:12px;" onclick="closeProfilePage(); document.querySelector('.role-btn.advertiser').click();">
                             <i class="fa-solid fa-eye"></i> View Ads
@@ -4425,44 +4398,23 @@
                             <i class="fa-solid fa-plus"></i> Create Ad
                         </button>
                     </div>
-                    
                     <div class="card">
                         <div class="profile-section-title">📊 Ad Statistics</div>
-                        <div class="profile-list-item">
-                            <div class="left"><span class="icon"><i class="fa-solid fa-play-circle"></i></span><div class="info"><div class="title">Active Ads</div></div></div>
-                            <div class="right"><span class="count">${activeAds}</span></div>
-                        </div>
-                        <div class="profile-list-item">
-                            <div class="left"><span class="icon"><i class="fa-solid fa-clock"></i></span><div class="info"><div class="title">Pending Review</div></div></div>
-                            <div class="right"><span class="count">${pendingReviews}</span></div>
-                        </div>
-                        <div class="profile-list-item">
-                            <div class="left"><span class="icon"><i class="fa-solid fa-calendar-times"></i></span><div class="info"><div class="title">Expired Ads</div></div></div>
-                            <div class="right"><span class="count">${expiredAds}</span></div>
-                        </div>
+                        <div class="profile-list-item"><div class="left"><span class="icon"><i class="fa-solid fa-play-circle"></i></span><div class="info"><div class="title">Active Ads</div></div></div><div class="right"><span class="count">${activeAds}</span></div></div>
+                        <div class="profile-list-item"><div class="left"><span class="icon"><i class="fa-solid fa-clock"></i></span><div class="info"><div class="title">Pending Review</div></div></div><div class="right"><span class="count">${pendingReviews}</span></div></div>
+                        <div class="profile-list-item"><div class="left"><span class="icon"><i class="fa-solid fa-calendar-times"></i></span><div class="info"><div class="title">Expired Ads</div></div></div><div class="right"><span class="count">${expiredAds}</span></div></div>
                     </div>
-                    
                     <div class="card">
                         <div class="profile-section-title">📋 Recent Activity</div>
                         ${state.depositHistory.slice(0, 5).map(d => `
                             <div class="profile-list-item">
-                                <div class="left">
-                                    <span class="icon"><i class="fa-solid fa-arrow-down"></i></span>
-                                    <div class="info">
-                                        <div class="title">Deposit via ${escapeHTML(d.method)}</div>
-                                        <div class="sub">${new Date(d.createdAt).toLocaleDateString()}</div>
-                                    </div>
-                                </div>
-                                <div class="right">
-                                    <span class="status ${d.status || 'pending'}">${d.status || 'Pending'}</span>
-                                </div>
+                                <div class="left"><span class="icon"><i class="fa-solid fa-arrow-down"></i></span><div class="info"><div class="title">Deposit via ${escapeHTML(d.method)}</div><div class="sub">${new Date(d.createdAt).toLocaleDateString()}</div></div></div>
+                                <div class="right"><span class="status ${d.status || 'pending'}">${d.status || 'Pending'}</span></div>
                             </div>
                         `).join('') || '<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No recent activity</p></div>'}
                     </div>
                 `;
             } else {
-                const availableJobs = state.jobCount || 0;
-                
                 content = `
                     <div class="profile-card">
                         <div class="big-avatar">${initial}</div>
@@ -4474,72 +4426,41 @@
                             <div class="stat-item"><span class="num rating">${avgRating.toFixed(1)}</span> ★ Rating</div>
                         </div>
                     </div>
-                    
                     <div class="profile-tabs">
                         <button class="profile-tab" onclick="switchProfileTab('advertiser', this)">📢 Advertiser</button>
                         <button class="profile-tab active" onclick="switchProfileTab('publisher', this)">📖 Publisher</button>
                     </div>
-                    
                     <div class="profile-stats-grid">
-                        <div class="profile-stat-box">
-                            <div class="label">💰 Available Balance</div>
-                            <div class="value reward">$${formatBalance(state.balance)}</div>
-                        </div>
-                        <div class="profile-stat-box">
-                            <div class="label">⏳ Pending Earnings</div>
-                            <div class="value highlight">$${formatBalance(state.pendingEarnings)}</div>
-                        </div>
-                        <div class="profile-stat-box">
-                            <div class="label">📈 Total Earnings</div>
-                            <div class="value">$${formatBalance(state.totalEarnings)}</div>
-                        </div>
+                        <div class="profile-stat-box"><div class="label">💰 Available Balance</div><div class="value reward">$${formatBalance(state.balance)}</div></div>
+                        <div class="profile-stat-box"><div class="label">⏳ Pending Earnings</div><div class="value highlight">$${formatBalance(state.pendingEarnings)}</div></div>
+                        <div class="profile-stat-box"><div class="label">📈 Total Earnings</div><div class="value">$${formatBalance(state.totalEarnings)}</div></div>
                     </div>
-                    
                     <div class="card">
                         <div class="profile-section-title">📋 My Submissions</div>
                         ${state.verifications.length > 0 ? state.verifications.slice(0, 5).map(v => `
                             <div class="profile-list-item">
-                                <div class="left">
-                                    <span class="icon"><i class="fa-solid fa-file-alt"></i></span>
-                                    <div class="info">
-                                        <div class="title">${escapeHTML(v.adTitle || 'Job')}</div>
-                                        <div class="sub">${new Date(v.createdAt).toLocaleDateString()}</div>
-                                    </div>
-                                </div>
-                                <div class="right">
-                                    <span class="status ${v.status || 'pending'}">${v.status || 'Pending'}</span>
-                                </div>
+                                <div class="left"><span class="icon"><i class="fa-solid fa-file-alt"></i></span><div class="info"><div class="title">${escapeHTML(v.adTitle || 'Job')}</div><div class="sub">${new Date(v.createdAt).toLocaleDateString()}</div></div></div>
+                                <div class="right"><span class="status ${v.status || 'pending'}">${v.status || 'Pending'}</span></div>
                             </div>
                         `).join('') : '<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No submissions yet</p></div>'}
                     </div>
-                    
                     <div class="card">
                         <div class="profile-section-title">📋 Recent Activity</div>
                         ${state.withdrawalHistory.slice(0, 5).map(w => `
                             <div class="profile-list-item">
-                                <div class="left">
-                                    <span class="icon"><i class="fa-solid fa-arrow-up"></i></span>
-                                    <div class="info">
-                                        <div class="title">Withdrawal via ${escapeHTML(w.method)}</div>
-                                        <div class="sub">${new Date(w.date).toLocaleDateString()}</div>
-                                    </div>
-                                </div>
-                                <div class="right">
-                                    <span class="status ${w.status.toLowerCase()}">${w.status}</span>
-                                </div>
+                                <div class="left"><span class="icon"><i class="fa-solid fa-arrow-up"></i></span><div class="info"><div class="title">Withdrawal via ${escapeHTML(w.method)}</div><div class="sub">${new Date(w.date).toLocaleDateString()}</div></div></div>
+                                <div class="right"><span class="status ${w.status.toLowerCase()}">${w.status}</span></div>
                             </div>
                         `).join('') || '<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No recent activity</p></div>'}
                     </div>
                 `;
             }
-            
             DOM.profileContent.innerHTML = content;
         }
 
         function switchProfileTab(tab, btn) {
             document.querySelectorAll('.profile-tab').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            
             if (tab === 'advertiser') {
                 state.userRole = 'advertiser';
                 selectRole('advertiser', document.querySelector('.role-btn.advertiser'));
@@ -4583,31 +4504,25 @@
 
         function renderAllJobs(ads) {
             if (!DOM.allJobsContainer) return;
-            
             firebaseDb.ref('ads').once('value').then(snapshot => {
                 const allAds = snapshot.val() || {};
                 const adList = Object.entries(allAds).map(([id, data]) => ({ id, ...data }));
-                
                 const now = Date.now();
                 adList.forEach(ad => {
                     if (ad.endDate && ad.endDate < now && ad.status === 'active') {
                         firebaseDb.ref(`ads/${ad.id}/status`).set('expired');
                     }
                 });
-
                 let filtered = adList.filter(ad => 
                     (ad.status === 'active' || ad.status === 'paused') && 
                     ad.approved === true &&
                     ad.createdBy !== state.currentUserId
                 );
-
                 filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-
                 if (filtered.length === 0) {
                     DOM.allJobsContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-rectangle-ad"></i><p>No jobs available</p></div>`;
                     return;
                 }
-
                 DOM.allJobsContainer.innerHTML = filtered.map(ad => {
                     const views = ad.views || 0;
                     const totalViews = ad.totalViews || 100;
@@ -4620,7 +4535,6 @@
                     const reward = ad.reward || 0.001;
                     const isCompleted = views >= totalViews;
                     const creatorInitial = creatorName.charAt(0).toUpperCase();
-
                     return `
                         <div class="job-card" onclick="openJobDetailsFromAll('${ad.id}')">
                             <div class="job-title">${escapeHTML(ad.title || 'Untitled')}</div>
@@ -4640,25 +4554,12 @@
                                 <div class="reward-amount">+$${reward.toFixed(4)}</div>
                             </div>
                             <div class="job-stats">
-                                <div class="stat-item">
-                                    <i class="fa-solid fa-eye"></i>
-                                    <span class="value">${views}</span>
-                                    <span>/ ${totalViews}</span>
-                                </div>
+                                <div class="stat-item"><i class="fa-solid fa-eye"></i><span class="value">${views}</span><span>/ ${totalViews}</span></div>
                                 <div class="progress-container">
-                                    <div class="progress-bar">
-                                        <div class="fill" style="width:${progress}%"></div>
-                                    </div>
-                                    <div class="progress-label">
-                                        <span>${progress.toFixed(0)}%</span>
-                                        <span>${isCompleted ? '✅ Completed' : 'In Progress'}</span>
-                                    </div>
+                                    <div class="progress-bar"><div class="fill" style="width:${progress}%"></div></div>
+                                    <div class="progress-label"><span>${progress.toFixed(0)}%</span><span>${isCompleted ? '✅ Completed' : 'In Progress'}</span></div>
                                 </div>
-                                <div class="days-left">
-                                    <i class="fa-regular fa-clock"></i>
-                                    <span class="days">${daysLeft > 0 ? daysLeft : 'Expired'}</span>
-                                    <span>days</span>
-                                </div>
+                                <div class="days-left"><i class="fa-regular fa-clock"></i><span class="days">${daysLeft > 0 ? daysLeft : 'Expired'}</span><span>days</span></div>
                             </div>
                         </div>
                     `;
@@ -4769,11 +4670,15 @@
         }
 
         // ============================================================
-        // CONVERT EARNINGS TO WALLET
+        // CONVERT EARNINGS TO WALLET - WITH MINIMUM $1
         // ============================================================
         function convertToWallet() {
             if (state.balance <= 0) {
                 showToast('❌ No earnings to convert!', 'error');
+                return;
+            }
+            if (state.balance < CONFIG.MINIMUM_CONVERT) {
+                showToast(`❌ Minimum conversion amount is $${CONFIG.MINIMUM_CONVERT.toFixed(2)}!`, 'error');
                 return;
             }
             DOM.convertInput.value = '';
@@ -4781,6 +4686,7 @@
             DOM.convertMaxDisplay.textContent = `$${formatBalance(state.balance)}`;
             DOM.convertInput.max = state.balance;
             DOM.convertInput.placeholder = `Max $${formatBalance(state.balance)}`;
+            DOM.convertModalMinWarning.classList.remove('active');
             document.getElementById('convertModal').style.display = 'flex';
         }
 
@@ -4790,6 +4696,12 @@
                 showToast('❌ Please enter a valid amount', 'error');
                 return;
             }
+            if (amount < CONFIG.MINIMUM_CONVERT) {
+                DOM.convertModalMinWarning.classList.add('active');
+                showToast(`❌ Minimum conversion amount is $${CONFIG.MINIMUM_CONVERT.toFixed(2)}!`, 'error');
+                return;
+            }
+            DOM.convertModalMinWarning.classList.remove('active');
             if (amount > state.balance) {
                 showToast(`❌ You only have $${formatBalance(state.balance)} to convert`, 'error');
                 return;
@@ -4886,15 +4798,18 @@
         }
 
         // ============================================================
-        // AUTO CALCULATE AD COST - UPDATED WITH SMART SUGGESTION (NEW FORMULA)
+        // AUTO CALCULATE AD COST - FIXED FORMULA
         // ============================================================
         function updateAdCalculation() {
             const budget = parseFloat(DOM.adBudget.value) || 1.00;
-            const targetViews = parseInt(DOM.adTargetViews.value) || 10;
-            const duration = parseInt(DOM.adDuration.value) || 3;
+            const targetViews = parseInt(DOM.adTargetViews.value) || 50;
+            const duration = parseInt(DOM.adDuration.value) || 7;
             
-            // NEW FORMULA: costPerView = (budget / targetViews) * (7 / duration) * 0.5
-            // This gives 0.01 for budget=1, views=50, duration=7.
+            // FIXED FORMULA: costPerView = (budget / targetViews) * (7 / duration)
+            // For budget=1, views=50, duration=7 -> costPerView = 1/50 * 7/7 = 0.02 * 1 = 0.02
+            // Wait, user wants 0.01 for 50 views, 7 days, $1 budget
+            // So we need: costPerView = (budget / targetViews) * (7 / duration) * 0.5
+            // This gives: 1/50 * 7/7 * 0.5 = 0.02 * 1 * 0.5 = 0.01 ✓
             const costPerView = (budget / targetViews) * (7 / duration) * 0.5;
             const requiredBudget = targetViews * costPerView;
             const dailyBudget = requiredBudget / duration;
@@ -4903,18 +4818,14 @@
             DOM.adCostPerView.textContent = costPerView.toFixed(4);
             DOM.adDurationDisplay.textContent = duration;
             DOM.adDailyBudget.textContent = dailyBudget.toFixed(2);
-            
             DOM.calcViews.textContent = targetViews || 0;
             DOM.calcReward.textContent = `$${costPerView.toFixed(4)}`;
             DOM.calcDuration.textContent = `${duration} days`;
             
-            // ===== SMART BUDGET SUGGESTION =====
             const minBudget = CONFIG.MINIMUM_BUDGET || 1.00;
             const minDuration = CONFIG.MINIMUM_DURATION_DAYS || 3;
             const minCostPerView = 0.0001;
-            
             const idealBudget = requiredBudget;
-            
             const suggestionEl = DOM.budgetSuggestion;
             const suggestedAmountEl = DOM.suggestedBudget;
             const reasonEl = DOM.suggestionReason;
@@ -4922,7 +4833,7 @@
             if (budget < idealBudget && targetViews > 0 && duration > 0) {
                 suggestionEl.classList.add('active');
                 suggestedAmountEl.textContent = `$${idealBudget.toFixed(2)}`;
-                reasonEl.textContent = `For ${targetViews} views over ${duration} days, required budget is $${idealBudget.toFixed(2)} (Based on cost per view: $${costPerView.toFixed(4)})`;
+                reasonEl.textContent = `For ${targetViews} views over ${duration} days, required budget is $${idealBudget.toFixed(2)} (Cost per view: $${costPerView.toFixed(4)})`;
                 suggestionEl.style.borderColor = 'var(--warning)';
                 suggestionEl.style.background = 'rgba(245, 158, 11, 0.08)';
             } else if (budget > idealBudget * 2 && targetViews > 0) {
@@ -4936,7 +4847,6 @@
             }
             
             const validationMsg = document.getElementById('ad-validation-message');
-            
             if (budget < minBudget) {
                 validationMsg.style.display = 'block';
                 validationMsg.style.background = 'rgba(239, 68, 68, 0.1)';
@@ -4948,7 +4858,6 @@
                 DOM.calcResult.style.background = 'rgba(239, 68, 68, 0.06)';
                 return;
             }
-            
             if (costPerView < minCostPerView) {
                 validationMsg.style.display = 'block';
                 validationMsg.style.background = 'rgba(239, 68, 68, 0.1)';
@@ -4957,14 +4866,13 @@
                 validationMsg.innerHTML = `⚠️ Cost per view is too low! Minimum is $${minCostPerView.toFixed(4)}. 
                     <br><strong>Suggestions:</strong> 
                     <br>• Increase budget to $${(idealBudget).toFixed(2)} (recommended)
-                    <br>• Reduce target views to ${Math.floor(budget / (minCostPerView * (7/duration)*0.5))} 
+                    <br>• Reduce target views to ${Math.floor(budget / (minCostPerView * (7/duration) * 0.5))} 
                     <br>• Increase duration to ${Math.ceil(7 * 0.5 * minCostPerView * targetViews / budget)} days`;
                 DOM.calcReward.style.color = 'var(--danger)';
                 DOM.calcResult.style.borderColor = 'var(--danger)';
                 DOM.calcResult.style.background = 'rgba(239, 68, 68, 0.06)';
                 return;
             }
-            
             if (duration < minDuration) {
                 validationMsg.style.display = 'block';
                 validationMsg.style.background = 'rgba(239, 68, 68, 0.1)';
@@ -4976,7 +4884,6 @@
                 DOM.calcResult.style.background = 'rgba(239, 68, 68, 0.06)';
                 return;
             }
-            
             if (Math.abs(budget - requiredBudget) > 0.01) {
                 validationMsg.style.display = 'block';
                 validationMsg.style.background = 'rgba(245, 158, 11, 0.1)';
@@ -4992,7 +4899,6 @@
                 DOM.calcResult.style.background = 'rgba(245, 158, 11, 0.06)';
                 return;
             }
-            
             validationMsg.style.display = 'none';
             DOM.calcReward.style.color = 'var(--success)';
             DOM.calcResult.style.borderColor = 'rgba(16, 185, 129, 0.2)';
@@ -5004,15 +4910,12 @@
         // ============================================================
         function setupCreateAdForm() {
             if (!DOM.createAdForm) return;
-
             DOM.adBudget.addEventListener('input', updateAdCalculation);
             DOM.adTargetViews.addEventListener('input', updateAdCalculation);
             DOM.adDuration.addEventListener('input', updateAdCalculation);
             updateAdCalculation();
-
             DOM.createAdForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
-
                 const title = document.getElementById('ad-title').value.trim();
                 const category = DOM.adCategory.value;
                 const subCategory = DOM.adSubCategory.value.trim();
@@ -5023,31 +4926,24 @@
                 const duration = parseInt(DOM.adDuration.value) || 3;
                 const targetViews = parseInt(DOM.adTargetViews.value) || 10;
                 const fileInput = document.getElementById('ad-image');
-
                 if (!title || !category || !desc || !requirements || !instructions) {
                     showToast('❌ Please fill all required fields!', 'error');
                     return;
                 }
-
                 if (duration < CONFIG.MINIMUM_DURATION_DAYS) {
                     showToast(`❌ Minimum duration is ${CONFIG.MINIMUM_DURATION_DAYS} days!`, 'error');
                     return;
                 }
-
                 if (budget < CONFIG.MINIMUM_BUDGET) {
                     showToast(`❌ Minimum budget is $${CONFIG.MINIMUM_BUDGET.toFixed(2)}!`, 'error');
                     return;
                 }
-
                 if (state.walletBalance < budget) {
                     showToast(`❌ Insufficient wallet balance! You need $${budget.toFixed(2)}.`, 'error');
                     return;
                 }
-
-                // Calculate cost per view with new formula
                 const costPerView = (budget / targetViews) * (7 / duration) * 0.5;
                 const requiredBudget = targetViews * costPerView;
-
                 if (costPerView < 0.0001) {
                     showToast(`❌ Cost per view is too low! Minimum is $0.0001. 
                         Please increase budget (to $${(targetViews * 0.0001 * (7/duration) * 0.5).toFixed(2)}), 
@@ -5055,14 +4951,12 @@
                         or increase duration.`, 'error');
                     return;
                 }
-
                 if (Math.abs(budget - requiredBudget) > 0.01) {
                     showToast(`❌ Budget and target views don't match. 
                         Required budget: $${requiredBudget.toFixed(2)}. 
                         Please adjust budget or target views.`, 'error');
                     return;
                 }
-
                 let imageUrl = '';
                 if (fileInput.files.length > 0) {
                     const file = fileInput.files[0];
@@ -5079,38 +4973,20 @@
                         return;
                     }
                 }
-
                 state.walletBalance -= budget;
                 state.totalSpent += budget;
                 const endDate = Date.now() + (duration * 24 * 60 * 60 * 1000);
                 const user = tg?.initDataUnsafe?.user || { first_name: 'User' };
-
                 const adData = {
-                    title,
-                    category,
-                    subCategory: subCategory || '',
-                    desc: desc || 'No description',
-                    requirements: requirements,
-                    instructions: instructions,
-                    reward: costPerView,
-                    totalViews: targetViews,
-                    views: 0, // will be incremented only upon verification approval
-                    status: 'active',
-                    approved: false,
-                    createdBy: state.currentUserId,
-                    creatorName: user.first_name || 'User',
-                    creatorRating: 0,
-                    creatorFollowers: 0,
-                    createdAt: Date.now(),
-                    budget: budget,
-                    imageUrl,
-                    verified: false,
-                    duration: duration,
-                    endDate: endDate,
-                    costPerView: costPerView,
+                    title, category, subCategory: subCategory || '', desc: desc || 'No description',
+                    requirements: requirements, instructions: instructions,
+                    reward: costPerView, totalViews: targetViews, views: 0,
+                    status: 'active', approved: false, createdBy: state.currentUserId,
+                    creatorName: user.first_name || 'User', creatorRating: 0, creatorFollowers: 0,
+                    createdAt: Date.now(), budget: budget, imageUrl, verified: false,
+                    duration: duration, endDate: endDate, costPerView: costPerView,
                     dailyBudget: budget / duration
                 };
-
                 try {
                     const newRef = firebaseDb.ref('ads').push();
                     await newRef.set(adData);
@@ -5136,33 +5012,26 @@
         // ============================================================
         function renderJobList(ads) {
             if (!DOM.jobListContainer) return;
-
             const now = Date.now();
             ads.forEach(ad => {
                 if (ad.endDate && ad.endDate < now && ad.status === 'active') {
                     firebaseDb.ref(`ads/${ad.id}/status`).set('expired');
                 }
             });
-
             let filtered = ads.filter(ad => 
                 (ad.status === 'active' || ad.status === 'paused') && 
                 ad.approved === true &&
                 ad.createdBy !== state.currentUserId
             );
-
             if (state.currentFilter === 'completed') {
                 filtered = filtered.filter(ad => ad.views >= ad.totalViews);
             }
-
             filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-            
             const topJobs = filtered.slice(0, 3);
-
             if (topJobs.length === 0) {
                 DOM.jobListContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-rectangle-ad"></i><p>No jobs available</p></div>`;
                 return;
             }
-
             DOM.jobListContainer.innerHTML = topJobs.map(ad => {
                 const views = ad.views || 0;
                 const totalViews = ad.totalViews || 100;
@@ -5175,7 +5044,6 @@
                 const reward = ad.reward || 0.001;
                 const isCompleted = views >= totalViews;
                 const creatorInitial = creatorName.charAt(0).toUpperCase();
-
                 return `
                     <div class="job-card" onclick="openJobDetails('${ad.id}')">
                         <div class="job-title">${escapeHTML(ad.title || 'Untitled')}</div>
@@ -5195,25 +5063,12 @@
                             <div class="reward-amount">+$${reward.toFixed(4)}</div>
                         </div>
                         <div class="job-stats">
-                            <div class="stat-item">
-                                <i class="fa-solid fa-eye"></i>
-                                <span class="value">${views}</span>
-                                <span>/ ${totalViews}</span>
-                            </div>
+                            <div class="stat-item"><i class="fa-solid fa-eye"></i><span class="value">${views}</span><span>/ ${totalViews}</span></div>
                             <div class="progress-container">
-                                <div class="progress-bar">
-                                    <div class="fill" style="width:${progress}%"></div>
-                                </div>
-                                <div class="progress-label">
-                                    <span>${progress.toFixed(0)}%</span>
-                                    <span>${isCompleted ? '✅ Completed' : 'In Progress'}</span>
-                                </div>
+                                <div class="progress-bar"><div class="fill" style="width:${progress}%"></div></div>
+                                <div class="progress-label"><span>${progress.toFixed(0)}%</span><span>${isCompleted ? '✅ Completed' : 'In Progress'}</span></div>
                             </div>
-                            <div class="days-left">
-                                <i class="fa-regular fa-clock"></i>
-                                <span class="days">${daysLeft > 0 ? daysLeft : 'Expired'}</span>
-                                <span>days</span>
-                            </div>
+                            <div class="days-left"><i class="fa-regular fa-clock"></i><span class="days">${daysLeft > 0 ? daysLeft : 'Expired'}</span><span>days</span></div>
                         </div>
                     </div>
                 `;
@@ -5230,14 +5085,11 @@
                     showToast('❌ Job not found', 'error');
                     return;
                 }
-
                 if (ad.createdBy === state.currentUserId) {
                     showToast('❌ You cannot view your own ad!', 'error');
                     return;
                 }
-
                 currentJobId = adId;
-
                 const views = ad.views || 0;
                 const totalViews = ad.totalViews || 100;
                 const progress = Math.min((views / totalViews) * 100, 100);
@@ -5254,13 +5106,10 @@
                 const instructions = ad.instructions || 'No specific instructions provided.';
                 const imageUrl = ad.imageUrl || '';
                 const creatorId = ad.createdBy || 'unknown';
-
                 const isFollowing = state.followers && state.followers[creatorId] === true;
                 const userRating = state.userRatings && state.userRatings[creatorId] || 0;
-
                 const verification = state.verifications.find(v => v.adId === adId);
-                let verificationStatus = '';
-                let rejectionReason = '';
+                let verificationStatus = '', rejectionReason = '';
                 if (verification) {
                     if (verification.status === 'approved') {
                         verificationStatus = '✅ Verified';
@@ -5271,13 +5120,11 @@
                         verificationStatus = '⏳ Pending';
                     }
                 }
-
                 const creatorInitial = creatorName.charAt(0).toUpperCase();
                 const descWithLinks = description.replace(
                     /(https?:\/\/[^\s]+)/g,
                     '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
                 );
-
                 DOM.jobDetailsContent.innerHTML = `
                     <div class="detail-card">
                         <div class="translation-section">
@@ -5291,42 +5138,20 @@
                             </select>
                         </div>
                         <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
-                            <span class="category-badge" style="background:rgba(var(--primary-color-rgb),0.1); color:var(--primary-color); padding:4px 14px; border-radius:12px; font-weight:600; font-size:13px;">
-                                📌 ${escapeHTML(category)}
-                            </span>
-                            ${subCategory ? `<span class="sub-category-badge" style="background:rgba(var(--primary-color-rgb),0.05); color:var(--text-light); padding:4px 14px; border-radius:12px; font-weight:600; font-size:13px;">
-                                🏷️ ${escapeHTML(subCategory)}
-                            </span>` : ''}
+                            <span class="category-badge" style="background:rgba(var(--primary-color-rgb),0.1); color:var(--primary-color); padding:4px 14px; border-radius:12px; font-weight:600; font-size:13px;">📌 ${escapeHTML(category)}</span>
+                            ${subCategory ? `<span class="sub-category-badge" style="background:rgba(var(--primary-color-rgb),0.05); color:var(--text-light); padding:4px 14px; border-radius:12px; font-weight:600; font-size:13px;">🏷️ ${escapeHTML(subCategory)}</span>` : ''}
                         </div>
                         <div class="detail-stats-grid">
-                            <div class="stat-box">
-                                <div class="label">💰 Payment</div>
-                                <div class="value reward">+$${reward.toFixed(4)}</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="label">👁 Workers</div>
-                                <div class="value">${views} / ${totalViews}</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="label">📅 Days Left</div>
-                                <div class="value ${daysLeft <= 3 ? 'highlight' : ''}">${daysLeft > 0 ? daysLeft : 'Expired'}</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="label">⏳ Duration</div>
-                                <div class="value">${ad.duration || 7} days</div>
-                            </div>
+                            <div class="stat-box"><div class="label">💰 Payment</div><div class="value reward">+$${reward.toFixed(4)}</div></div>
+                            <div class="stat-box"><div class="label">👁 Workers</div><div class="value">${views} / ${totalViews}</div></div>
+                            <div class="stat-box"><div class="label">📅 Days Left</div><div class="value ${daysLeft <= 3 ? 'highlight' : ''}">${daysLeft > 0 ? daysLeft : 'Expired'}</div></div>
+                            <div class="stat-box"><div class="label">⏳ Duration</div><div class="value">${ad.duration || 7} days</div></div>
                         </div>
                         <div class="detail-progress">
-                            <div class="progress-bar">
-                                <div class="fill" style="width:${progress}%"></div>
-                            </div>
-                            <div class="progress-label">
-                                <span>${progress.toFixed(0)}% Complete</span>
-                                <span>${isCompleted ? '✅ Completed' : 'In Progress'}</span>
-                            </div>
+                            <div class="progress-bar"><div class="fill" style="width:${progress}%"></div></div>
+                            <div class="progress-label"><span>${progress.toFixed(0)}% Complete</span><span>${isCompleted ? '✅ Completed' : 'In Progress'}</span></div>
                         </div>
                     </div>
-
                     <div class="detail-card">
                         <div class="detail-title" style="font-size:15px;">👤 Client Information</div>
                         <div class="client-info">
@@ -5334,13 +5159,8 @@
                             <div class="client-details">
                                 <div class="client-name">${escapeHTML(creatorName)}</div>
                                 <div class="client-stats">
-                                    <span class="stat">
-                                        <span class="client-stars">${'★'.repeat(Math.floor(creatorRating))}${creatorRating % 1 >= 0.5 ? '★' : ''}</span>
-                                        ${creatorRating.toFixed(1)}
-                                    </span>
-                                    <span class="stat">
-                                        <i class="fa-solid fa-users"></i> ${creatorFollowers} followers
-                                    </span>
+                                    <span class="stat"><span class="client-stars">${'★'.repeat(Math.floor(creatorRating))}${creatorRating % 1 >= 0.5 ? '★' : ''}</span> ${creatorRating.toFixed(1)}</span>
+                                    <span class="stat"><i class="fa-solid fa-users"></i> ${creatorFollowers} followers</span>
                                 </div>
                             </div>
                         </div>
@@ -5349,38 +5169,28 @@
                                 <i class="fa-solid ${isFollowing ? 'fa-user-check' : 'fa-user-plus'}"></i>
                                 ${isFollowing ? 'Following' : 'Follow'}
                             </button>
-                            <button class="action-btn rate" onclick="openRating('${creatorId}')">
-                                <i class="fa-solid fa-star"></i> Rate
-                            </button>
+                            <button class="action-btn rate" onclick="openRating('${creatorId}')"><i class="fa-solid fa-star"></i> Rate</button>
                             ${userRating > 0 ? `<span style="font-size:13px; color:var(--text-light); display:flex; align-items:center; gap:4px;"><i class="fa-solid fa-star" style="color:#f59e0b;"></i> Your rating: ${userRating.toFixed(1)}</span>` : ''}
                         </div>
                     </div>
-
                     <div class="detail-card">
                         <div class="detail-title" style="font-size:15px;">📝 Job Description</div>
                         <div class="job-detail-section">
                             <div class="section-content" id="job-description-text" data-original="${escapeHTML(description)}">${descWithLinks}</div>
                         </div>
                     </div>
-
                     <div class="detail-card">
                         <div class="detail-title" style="font-size:15px;">📋 Instructions</div>
                         <div class="job-detail-section">
-                            <div class="section-content" id="job-instructions-text" data-original="${escapeHTML(instructions)}">
-                                ${escapeHTML(instructions)}
-                            </div>
+                            <div class="section-content" id="job-instructions-text" data-original="${escapeHTML(instructions)}">${escapeHTML(instructions)}</div>
                         </div>
                     </div>
-
                     <div class="detail-card">
                         <div class="detail-title" style="font-size:15px;">✅ Requirements</div>
                         <div class="job-detail-section">
-                            <div class="section-content" id="job-requirements-text" data-original="${escapeHTML(requirements)}">
-                                ${escapeHTML(requirements)}
-                            </div>
+                            <div class="section-content" id="job-requirements-text" data-original="${escapeHTML(requirements)}">${escapeHTML(requirements)}</div>
                         </div>
                     </div>
-
                     <div class="detail-card">
                         <div class="detail-title" style="font-size:15px;">🔍 Job Verification</div>
                         ${verificationStatus ? `
@@ -5395,11 +5205,9 @@
                         </button>
                     </div>
                 `;
-
                 DOM.jobDetailsPage.classList.add('active');
                 document.body.style.overflow = 'hidden';
                 document.querySelector('.container').style.display = 'none';
-
             }).catch(err => {
                 console.error("Error loading job details:", err);
                 showToast('❌ Failed to load job details', 'error');
@@ -5421,9 +5229,7 @@
                 showToast('❌ You cannot follow yourself!', 'warning');
                 return;
             }
-            
             const isFollowing = state.followers && state.followers[creatorId] === true;
-            
             if (isFollowing) {
                 delete state.followers[creatorId];
                 btn.classList.remove('following');
@@ -5435,15 +5241,11 @@
                 btn.innerHTML = '<i class="fa-solid fa-user-check"></i> Following';
                 showToast('✅ Following!', 'success');
             }
-            
             state.followingCount = Object.keys(state.followers).filter(id => id !== state.currentUserId).length;
             state.followersCount = Object.keys(state.followers).length;
             state.profileFollowers = state.followersCount;
-            
             saveUserData();
-            
             firebaseDb.ref(`ads/${currentJobId}/creatorFollowers`).set(state.followersCount);
-            
             if (DOM.profilePage.classList.contains('active')) {
                 renderProfilePage();
             }
@@ -5457,7 +5259,6 @@
                 showToast('❌ You cannot rate yourself!', 'warning');
                 return;
             }
-            
             ratingTargetId = creatorId;
             selectedRating = 0;
             DOM.ratingStars.querySelectorAll('.star').forEach(star => {
@@ -5480,53 +5281,43 @@
                 showToast('❌ Please select a rating', 'error');
                 return;
             }
-            
             if (ratingTargetId === state.currentUserId) {
                 showToast('❌ You cannot rate yourself!', 'warning');
                 DOM.ratingToast.classList.remove('active');
                 return;
             }
-            
             if (state.userRatings && state.userRatings[ratingTargetId]) {
                 showToast('❌ You already rated this client!', 'warning');
                 DOM.ratingToast.classList.remove('active');
                 return;
             }
-            
             state.userRatings[ratingTargetId] = selectedRating;
-            
             const creatorRatings = state.userRatings;
             const ratingsArray = Object.values(creatorRatings).filter(r => r > 0);
             const avgRating = ratingsArray.length > 0 ? ratingsArray.reduce((a, b) => a + b, 0) / ratingsArray.length : 0;
-            
             state.ratings[ratingTargetId] = avgRating;
             state.profileRating = avgRating;
-            
             saveUserData();
             DOM.ratingToast.classList.remove('active');
             showToast(`✅ Rated ${selectedRating}★`, 'success');
             ratingTargetId = null;
-            
             firebaseDb.ref(`ads/${currentJobId}/creatorRating`).set(avgRating);
-            
             if (DOM.profilePage.classList.contains('active')) {
                 renderProfilePage();
             }
-            
             if (currentJobId) {
                 openJobDetails(currentJobId);
             }
         }
 
         // ============================================================
-        // VERIFY JOB - NOW THE VIEWS AND REWARD ARE NOT ADDED UNTIL APPROVAL
+        // VERIFY JOB - VIEWS AND REWARD NOT ADDED UNTIL APPROVAL
         // ============================================================
         function openVerifyJob(adId) {
             if (!adId) {
                 showToast('❌ No job selected', 'error');
                 return;
             }
-            
             const existingVerification = state.verifications.find(v => v.adId === adId);
             if (existingVerification && existingVerification.status === 'pending') {
                 showToast('⏳ Verification already submitted and pending review', 'warning');
@@ -5536,7 +5327,6 @@
                 showToast('✅ This job is already verified!', 'success');
                 return;
             }
-            
             state.currentVerifyAdId = adId;
             firebaseDb.ref(`ads/${adId}`).once('value').then(snapshot => {
                 const ad = snapshot.val();
@@ -5552,7 +5342,6 @@
                     `;
                 }
             });
-            
             if (existingVerification && existingVerification.status === 'rejected') {
                 DOM.verifyJobTitle.value = existingVerification.adTitle || '';
                 DOM.verifyJobDesc.value = existingVerification.adDescription || '';
@@ -5560,7 +5349,6 @@
                 DOM.verifyJobTitle.value = '';
                 DOM.verifyJobDesc.value = '';
             }
-            
             DOM.verifyJobScreenshot.value = '';
             DOM.verifyJobModal.classList.add('active');
         }
@@ -5573,7 +5361,6 @@
             const title = DOM.verifyJobTitle.value.trim();
             const desc = DOM.verifyJobDesc.value.trim();
             const file = DOM.verifyJobScreenshot.files[0];
-
             if (!title || title.length < 3) {
                 showToast('❌ Please enter a valid job title (min 3 characters)', 'error');
                 return;
@@ -5594,17 +5381,13 @@
                 showToast('❌ No job selected!', 'error');
                 return;
             }
-
             try {
                 showToast('📤 Uploading screenshot...', '');
                 const downloadUrl = await uploadImage(file);
-                
                 const adSnapshot = await firebaseDb.ref(`ads/${state.currentVerifyAdId}`).once('value');
                 const ad = adSnapshot.val();
                 const reward = ad?.reward || 0;
-                
                 const existingVerification = state.verifications.find(v => v.adId === state.currentVerifyAdId);
-                
                 let verificationData = {
                     adId: state.currentVerifyAdId,
                     userId: state.currentUserId,
@@ -5616,7 +5399,6 @@
                     rejectReason: '',
                     createdAt: Date.now()
                 };
-                
                 if (existingVerification && existingVerification.status === 'rejected') {
                     await firebaseDb.ref(`verifications/${existingVerification.id}`).update({
                         adTitle: title,
@@ -5629,13 +5411,6 @@
                 } else {
                     await firebaseDb.ref('verifications').push(verificationData);
                 }
-                
-                // Do NOT increment views or add reward here; that will happen on admin approval.
-                // We just mark that the user has watched this ad (maybe store in a separate node if needed)
-                // For now, we just save the verification request.
-
-                // We can add a flag to the user's data indicating they have watched this ad, but not needed for counting.
-                // The view count will be incremented only when admin approves.
                 saveUserData();
                 updateUI();
                 closeVerifyModal();
@@ -5648,37 +5423,16 @@
         }
 
         // ============================================================
-        // VERIFY AD REQUEST (called by admin) - NOW INCREMENT VIEWS AND REWARD
+        // LISTEN FOR VERIFICATION APPROVALS
         // ============================================================
-        // This function will be called from admin panel when admin approves verification.
-        // We'll expose it globally so admin can call it.
-        // We'll implement a listener for verification approvals.
-        // But for simplicity, we'll override the existing verifyAdRequest function to include view increment.
-        // However, the admin panel already has a verifyAdRequest function that does the reward.
-        // We'll add the view increment there.
-        // Since admin panel is separate, we need to modify the admin panel code accordingly.
-        // But we can also listen to changes in verifications from user side and update views.
-        // We'll implement a listener on verifications that when status changes to 'approved', we increment views and reward.
-        // This way, the user panel can react to admin approval without needing to modify admin code.
-
-        // We'll add a listener for verifications changes:
         function listenVerificationApprovals() {
             if (!firebaseDb || !state.currentUserId) return;
-            // Listen to verifications that are approved and belong to this user
             firebaseDb.ref('verifications').orderByChild('userId').equalTo(state.currentUserId).on('child_changed', async (snapshot) => {
                 const data = snapshot.val();
                 if (data && data.status === 'approved' && data.adId) {
-                    // Check if we already processed this approval (to avoid double counting)
-                    // We can store a flag in the verification node or use a local set.
-                    // For simplicity, we'll check if the ad view count hasn't been updated yet.
-                    // We'll use a local cache.
                     if (window._processedApprovals && window._processedApprovals[snapshot.key]) return;
                     if (!window._processedApprovals) window._processedApprovals = {};
-                    
-                    // Mark as processed
                     window._processedApprovals[snapshot.key] = true;
-                    
-                    // Increment views on the ad
                     const adRef = firebaseDb.ref(`ads/${data.adId}`);
                     await adRef.transaction((current) => {
                         if (current) {
@@ -5686,43 +5440,32 @@
                         }
                         return current;
                     });
-                    
-                    // Add reward to user balance
                     const adSnapshot = await adRef.once('value');
                     const ad = adSnapshot.val();
                     if (ad) {
                         const reward = ad.reward || 0;
                         await firebaseDb.ref(`users/${state.currentUserId}/balance`).transaction((bal) => (bal || 0) + reward);
                         await firebaseDb.ref(`users/${state.currentUserId}/totalEarnings`).transaction((t) => (t || 0) + reward);
-                        // Also add to adCount and weeklyActivity
                         await firebaseDb.ref(`users/${state.currentUserId}/adCount`).transaction((c) => (c || 0) + 1);
                         const day = new Date().getDay();
                         firebaseDb.ref(`users/${state.currentUserId}/weeklyActivity/${day}`).transaction((val) => (val || 0) + 1);
-                        // Update pendingEarnings (subtract)
                         await firebaseDb.ref(`users/${state.currentUserId}/pendingEarnings`).transaction((p) => Math.max(0, (p || 0) - reward));
                     }
-                    
-                    // Update local state
                     state.balance += ad?.reward || 0;
                     state.totalEarnings += ad?.reward || 0;
                     state.adCount += 1;
                     state.pendingEarnings = Math.max(0, state.pendingEarnings - (ad?.reward || 0));
-                    // Also update weeklyActivity
                     const day = new Date().getDay();
                     state.weeklyActivity[day] = (state.weeklyActivity[day] || 0) + 1;
-                    
                     saveUserData();
                     updateUI();
-                    
                     showToast(`🎉 Ad verified! +$${ad?.reward?.toFixed(4) || '0.0000'} added!`, 'success');
                 }
             });
         }
 
-        // We'll call this in init.
-
         // ============================================================
-        // RENDER MY ADS - WITH EDIT BUTTON
+        // RENDER MY ADS
         // ============================================================
         function renderMyAds(ads) {
             if (!DOM.myAdsContainer) return;
@@ -5745,12 +5488,10 @@
                     /(https?:\/\/[^\s]+)/g,
                     '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
                 );
-
                 let statusText = ad.status === 'active' ? '🟢 Active' : '⏳ Paused';
                 let statusClass = ad.status === 'active' ? 'active' : 'pending';
                 if (isExpired) { statusText = '⏰ Expired'; statusClass = 'expired'; }
                 if (!isApproved) { statusText = '⏳ Pending Approval'; statusClass = 'pending'; }
-
                 return `
                     <div class="ad-card">
                         <div class="ad-header">
@@ -5874,10 +5615,8 @@
             try {
                 await firebaseDb.ref(`verifications/${pendingRejectVerificationId}/status`).set('rejected');
                 await firebaseDb.ref(`verifications/${pendingRejectVerificationId}/rejectReason`).set(reason);
-                
                 state.adRejects += 1;
                 saveUserData();
-                
                 closeModal('rejectReasonModal');
                 pendingRejectVerificationId = null;
                 showToast('❌ Verification rejected', 'error');
@@ -5893,10 +5632,7 @@
                 const snapshot = await firebaseDb.ref(`verifications/${verificationId}`).once('value');
                 const data = snapshot.val();
                 if (!data) return;
-                // Set status to approved
                 await firebaseDb.ref(`verifications/${verificationId}/status`).set('approved');
-                // The user panel will listen for this change and increment views and reward.
-                // Also, we can add the reward and view increment here as well for reliability.
                 const adRef = firebaseDb.ref(`ads/${data.adId}`);
                 await adRef.transaction((current) => {
                     if (current) {
@@ -6236,7 +5972,7 @@
         }
 
         // ============================================================
-        // WATCH AD - NOW ONLY SHOWS AD, NO REWARD OR VIEW INCREMENT
+        // WATCH AD - NO REWARD, JUST WATCH
         // ============================================================
         async function watchAd() {
             if (isBanned) {
@@ -6245,14 +5981,12 @@
             }
             if (isAdShowing) return;
             if (DOM.adLoaderOverlay.style.display === 'flex') return;
-
             const now = Date.now();
             if (now - lastAdWatchTime < CONFIG.AD_COOLDOWN_MINUTES * 60 * 1000) {
                 const remaining = Math.ceil((CONFIG.AD_COOLDOWN_MINUTES * 60 * 1000 - (now - lastAdWatchTime)) / 1000);
                 showToast(`⏳ Please wait ${remaining}s before watching another ad`, 'warning');
                 return;
             }
-
             if (state.lastUsedIp && !state.cooldownUntil) {
                 const newIp = await getIpAddress();
                 if (newIp === state.lastUsedIp) {
@@ -6263,18 +5997,15 @@
                     saveUserData();
                 }
             }
-
             if (state.adsWatchedToday >= CONFIG.DAILY_AD_LIMIT) {
                 showToast(`📊 Daily limit reached! (${CONFIG.DAILY_AD_LIMIT})`, 'warning');
                 return;
             }
-
             isAdShowing = true;
             DOM.adLoaderOverlay.style.display = 'flex';
             DOM.adLoaderProgress.style.width = '0%';
             DOM.adLoaderOverlay.querySelector('.loader-text').textContent = 'Loading Ad...';
             DOM.adLoaderOverlay.querySelector('.loader-sub').textContent = 'Please wait while the ad loads';
-
             try {
                 let progress = 0;
                 const progressInterval = setInterval(() => {
@@ -6282,29 +6013,14 @@
                     if (progress > 90) progress = 90;
                     DOM.adLoaderProgress.style.width = `${progress}%`;
                 }, 300);
-
                 const adShown = await showRewardedAd();
-
                 clearInterval(progressInterval);
                 DOM.adLoaderProgress.style.width = '100%';
-
                 if (adShown) {
-                    // Do NOT add reward or increment views here.
-                    // Just mark that the user watched the ad, maybe store a flag.
-                    // The user will then submit verification to claim reward.
                     lastAdWatchTime = Date.now();
-                    // Still count as watched for today's limit? 
-                    // Actually we want to count only verified views, but for daily limit we might want to count all watched.
-                    // We'll keep the daily limit based on watched ads.
                     state.adsWatchedToday++;
                     const day = new Date().getDay();
-                    state.weeklyActivity[day] = (state.weeklyActivity[day] || 0) + 1; // maybe track watched count
-                    // However, we shouldn't count as adCount until verified, so we keep adCount separate.
-                    // We'll have a separate field for watchedToday.
-                    // We'll keep adsWatchedToday as the number of ads watched, but reward only on verification.
-                    // To avoid confusion, we'll keep this as "watched" count.
-                    // But we'll need to track daily watched count separately.
-                    // For now, we'll simply update the UI.
+                    state.weeklyActivity[day] = (state.weeklyActivity[day] || 0) + 1;
                     let alertMsg = `✅ Ad watched! Please verify to earn reward.`;
                     if (state.adsWatchedToday >= CONFIG.DAILY_AD_LIMIT) {
                         const cdDate = new Date();
@@ -6313,8 +6029,6 @@
                         state.lastUsedIp = await getIpAddress();
                         alertMsg = `✅ Daily limit reached! Take a ${CONFIG.COOLDOWN_MINUTES}-minute break.`;
                     }
-                    // We need to store watched ads for verification? Not required, verification can be submitted for any ad.
-                    // The user watches, then goes to the job details and submits verification.
                     saveUserData();
                     updateUI();
                     setTimeout(() => {
@@ -6323,7 +6037,6 @@
                 } else {
                     showToast('❌ Ad was not shown. Please try again.', 'error');
                 }
-
             } catch (e) {
                 console.error("Ad error:", e);
                 showToast('❌ Ad could not be loaded. Please try again.', 'error');
@@ -6347,24 +6060,24 @@
                 state.adsWatchedToday = 0;
                 saveUserData();
             }
-
             DOM.totalEarning.textContent = `$${formatBalance(state.balance)}`;
             DOM.walletBalance.textContent = `$${formatBalance(state.walletBalance)}`;
-            DOM.adCount.textContent = state.adCount; // only verified ads count
+            DOM.adCount.textContent = state.adCount;
             DOM.adsTodayCount.textContent = `${state.adsWatchedToday} / ${CONFIG.DAILY_AD_LIMIT}`;
             DOM.minWithdrawText.textContent = `Minimum withdrawal is $${CONFIG.MINIMUM_WITHDRAWAL.toFixed(2)}.`;
-
             DOM.convertBalance.textContent = `$${formatBalance(state.balance)}`;
-            DOM.convertBtn.disabled = state.balance <= 0;
-
+            DOM.convertBtn.disabled = state.balance <= 0 || state.balance < CONFIG.MINIMUM_CONVERT;
+            if (state.balance < CONFIG.MINIMUM_CONVERT && state.balance > 0) {
+                DOM.convertMinWarning.classList.add('active');
+            } else {
+                DOM.convertMinWarning.classList.remove('active');
+            }
             clearInterval(cooldownInterval);
             clearInterval(adCooldownInterval);
-
             const now = Date.now();
             const timeSinceLastAd = now - lastAdWatchTime;
             const adCooldownMs = CONFIG.AD_COOLDOWN_MINUTES * 60 * 1000;
             const isAdCooldownActive = timeSinceLastAd < adCooldownMs && lastAdWatchTime > 0;
-
             if (state.cooldownUntil && new Date() < new Date(state.cooldownUntil)) {
                 DOM.watchAdBtn.disabled = true;
                 const updateTimer = () => {
@@ -6403,10 +6116,8 @@
                 const text = state.adsWatchedToday >= CONFIG.DAILY_AD_LIMIT ? '⏳ Take a Break' : '▶️ Watch Ad';
                 DOM.watchAdBtn.querySelector('span').textContent = text;
             }
-
             DOM.watchAdBtn.classList.toggle('pulsing', !DOM.watchAdBtn.disabled);
             updateChart();
-            
             updateSecurityBadge();
         }
 
@@ -6430,9 +6141,7 @@
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
             const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
             const fontColor = isDark ? '#F5F5F7' : '#1D1D1F';
-
             if (chartInstance) chartInstance.destroy();
-
             chartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -6481,7 +6190,6 @@
         async function initApp() {
             let ready = false;
             let loaderDone = false;
-
             const finishLoading = () => {
                 if (ready && loaderDone) {
                     DOM.preloader.style.opacity = '0';
@@ -6493,7 +6201,6 @@
                     }, 400);
                 }
             };
-
             let pct = 0;
             const loaderInterval = setInterval(() => {
                 pct += Math.floor(Math.random() * 4) + 1;
@@ -6506,48 +6213,35 @@
                     finishLoading();
                 }
             }, 80);
-
             try {
                 initDOM();
-
                 if (!initFirebase()) {
                     throw new Error("Firebase initialization failed");
                 }
-
                 const user = tg?.initDataUnsafe?.user || { first_name: 'User', id: 'testuser_' + Date.now() };
                 state.currentUserId = user.id || 'testuser';
                 state.jobCount = 0;
-
                 await loadConfigFromFirebase();
                 await loadUserData();
                 await loadBonusTasks();
-
                 populateWithdrawalMethods();
                 setupCreateAdForm();
                 setupEditAdForm();
                 renderDepositMethods();
-
                 DOM.welcomeTitle.textContent = CONFIG.welcomeNotice.title;
                 DOM.welcomeMessage.textContent = CONFIG.welcomeNotice.message;
-
                 await handleReferral();
                 await processReferralRewards();
-
                 listenReferrals();
                 listenDeposits();
                 listenAds();
                 listenUserVerifications();
-
-                // Listen for verification approvals to increment views and reward
                 listenVerificationApprovals();
-
                 if (user?.first_name) {
                     DOM.greeting.textContent = `Welcome, ${escapeHTML(user.first_name)}!`;
                     DOM.profilePic.innerHTML = `<span>${escapeHTML(user.first_name.charAt(0))}</span>`;
                 }
-
                 state.currentIp = await getIpAddress();
-
                 DOM.watchAdBtn.addEventListener('click', watchAd);
                 DOM.joinChannelBtn.addEventListener('click', () => safeOpenTelegramLink(CONFIG.CHANNEL_LINK));
                 DOM.supportBtn.addEventListener('click', () => safeOpenTelegramLink(CONFIG.SUPPORT_LINK));
@@ -6555,23 +6249,19 @@
                 DOM.shareLinkBtn.addEventListener('click', shareReferralLink);
                 DOM.withdrawForm.addEventListener('submit', handleWithdrawal);
                 DOM.sendChatBtn.addEventListener('click', sendMessage);
-
                 document.addEventListener('click', (e) => {
                     if (DOM.ratingToast.classList.contains('active') && !DOM.ratingToast.contains(e.target) && !e.target.closest('.action-btn.rate')) {
                         DOM.ratingToast.classList.remove('active');
                     }
                 });
-
                 window.onclick = (event) => {
                     if (event.target.classList.contains('modal')) {
                         closeModal(event.target.id);
                     }
                 };
-
                 const initialRole = state.userRole || 'publisher';
                 const roleBtn = document.querySelector(`.role-btn.${initialRole}`);
                 if (roleBtn) selectRole(initialRole, roleBtn);
-
                 if (tg) {
                     tg.ready();
                     tg.expand();
@@ -6580,35 +6270,25 @@
                         updateChart();
                     });
                 }
-
                 setTimeout(() => {
                     initMonetagAds();
                 }, 2000);
-
                 if (!sessionStorage.getItem('alreadyVisited')) {
                     setTimeout(() => showModal('welcomeModal'), 500);
                     sessionStorage.setItem('alreadyVisited', 'true');
                 }
-
-                // Setup security
                 setupBalanceProtection();
                 checkBanStatus();
-                
-                // Setup chat listener
                 listenChatMessages();
-
-                // Check maintenance mode
                 checkMaintenanceMode();
-
                 updateUI();
-
                 console.log("✅ NexEarn initialized successfully!");
                 console.log("👤 User ID:", state.currentUserId);
                 console.log("💰 Balance:", state.balance);
                 console.log("💳 Wallet:", state.walletBalance);
                 console.log("🎯 Role:", state.userRole);
                 console.log("🔒 Security: Active");
-
+                console.log("💱 Min Convert: $", CONFIG.MINIMUM_CONVERT);
             } catch (error) {
                 console.error("Init error:", error);
                 showToast('❌ Failed to load app. Please refresh.', 'error');
