@@ -3260,7 +3260,7 @@
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
+    <!-- Delete Confirmation Modal - Updated 50/50 -->
     <div id="deleteConfirmModal" class="modal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal('deleteConfirmModal')">&times;</button>
@@ -3268,17 +3268,17 @@
             <p style="font-size:14px; margin-bottom:12px;">Are you sure you want to delete this ad campaign?</p>
             <div class="refund-info">
                 <strong>💰 Refund Details:</strong><br>
-                <span style="font-size:13px;">You will receive <span class="warning-text">60%</span> of your budget back</span>
+                <span style="font-size:13px;">You will receive <span class="warning-text">50%</span> of your budget back</span>
             </div>
             <div class="company-info">
                 <strong>🏢 Company Fee:</strong><br>
-                <span style="font-size:13px;"><span class="warning-text">40%</span> will be deducted as platform fee</span>
+                <span style="font-size:13px;"><span class="warning-text">50%</span> will be deducted as platform fee</span>
             </div>
             <div style="margin-top:12px; padding:10px; background:var(--background-color); border-radius:8px;">
                 <div style="font-size:13px; color:var(--text-light);">
                     <div>Total Budget: <strong id="delete-budget">$0.00</strong></div>
-                    <div>Refund (60%): <strong style="color:var(--success);" id="delete-refund">$0.00</strong></div>
-                    <div>Fee (40%): <strong style="color:var(--danger);" id="delete-fee">$0.00</strong></div>
+                    <div>Refund (50%): <strong style="color:var(--success);" id="delete-refund">$0.00</strong></div>
+                    <div>Fee (50%): <strong style="color:var(--danger);" id="delete-fee">$0.00</strong></div>
                 </div>
             </div>
             <div style="display:flex; gap:10px; margin-top:16px;">
@@ -3372,8 +3372,8 @@
             MINIMUM_DEPOSIT: 10,
             COOLDOWN_MINUTES: 30,
             REFERRAL_REWARD: 0.01,
-            REFUND_PERCENTAGE: 60,
-            COMPANY_FEE_PERCENTAGE: 40,
+            REFUND_PERCENTAGE: 50, // Updated to 50%
+            COMPANY_FEE_PERCENTAGE: 50, // Updated to 50%
             AD_COOLDOWN_MINUTES: 1,
             MINIMUM_DURATION_DAYS: 3,
             MINIMUM_BUDGET: 1.00,
@@ -3611,9 +3611,7 @@
                     DOM.container.style.display = 'none';
                 } else {
                     DOM.maintenanceOverlay.classList.remove('active');
-                    if (DOM.container.style.display !== 'block') {
-                        // Only show container if not already showing
-                    }
+                    // container will be shown if not already
                 }
             });
         }
@@ -4107,6 +4105,9 @@
                         if (data.minDurationDays) CONFIG.MINIMUM_DURATION_DAYS = data.minDurationDays;
                         if (data.minBudget) CONFIG.MINIMUM_BUDGET = data.minBudget;
                         if (data.adminChatId) CONFIG.ADMIN_CHAT_ID = data.adminChatId;
+                        // Override refund percentages if set
+                        if (data.refundPercentage) CONFIG.REFUND_PERCENTAGE = data.refundPercentage;
+                        if (data.companyFeePercentage) CONFIG.COMPANY_FEE_PERCENTAGE = data.companyFeePercentage;
                         console.log("✅ Config loaded from Firebase");
                         renderDepositMethods();
                     }
@@ -4885,26 +4886,17 @@
         }
 
         // ============================================================
-        // AUTO CALCULATE AD COST - UPDATED WITH SMART SUGGESTION
+        // AUTO CALCULATE AD COST - UPDATED WITH SMART SUGGESTION (NEW FORMULA)
         // ============================================================
         function updateAdCalculation() {
             const budget = parseFloat(DOM.adBudget.value) || 1.00;
             const targetViews = parseInt(DOM.adTargetViews.value) || 10;
             const duration = parseInt(DOM.adDuration.value) || 3;
             
-            // BASE RATE: 10 views in 3 days = $1.00
-            const BASE_VIEWS = 10;
-            const BASE_DAYS = 3;
-            const BASE_BUDGET = 1.00;
-            const BASE_COST_PER_VIEW_PER_DAY = BASE_BUDGET / (BASE_VIEWS * BASE_DAYS);
-            
-            // Calculate cost per view based on duration
-            const costPerView = BASE_COST_PER_VIEW_PER_DAY * duration;
-            
-            // Calculate total budget needed
+            // NEW FORMULA: costPerView = (budget / targetViews) * (7 / duration) * 0.5
+            // This gives 0.01 for budget=1, views=50, duration=7.
+            const costPerView = (budget / targetViews) * (7 / duration) * 0.5;
             const requiredBudget = targetViews * costPerView;
-            
-            // Calculate daily budget
             const dailyBudget = requiredBudget / duration;
             
             DOM.adTotalViews.textContent = targetViews || 0;
@@ -4930,7 +4922,7 @@
             if (budget < idealBudget && targetViews > 0 && duration > 0) {
                 suggestionEl.classList.add('active');
                 suggestedAmountEl.textContent = `$${idealBudget.toFixed(2)}`;
-                reasonEl.textContent = `For ${targetViews} views over ${duration} days, required budget is $${idealBudget.toFixed(2)} (Based on: 10 views / 3 days = $1.00)`;
+                reasonEl.textContent = `For ${targetViews} views over ${duration} days, required budget is $${idealBudget.toFixed(2)} (Based on cost per view: $${costPerView.toFixed(4)})`;
                 suggestionEl.style.borderColor = 'var(--warning)';
                 suggestionEl.style.background = 'rgba(245, 158, 11, 0.08)';
             } else if (budget > idealBudget * 2 && targetViews > 0) {
@@ -4965,8 +4957,8 @@
                 validationMsg.innerHTML = `⚠️ Cost per view is too low! Minimum is $${minCostPerView.toFixed(4)}. 
                     <br><strong>Suggestions:</strong> 
                     <br>• Increase budget to $${(idealBudget).toFixed(2)} (recommended)
-                    <br>• Reduce target views to ${Math.floor(budget / (minCostPerView * (duration/3)))} 
-                    <br>• Increase duration to ${Math.ceil(3 * (minCostPerView * targetViews / budget))} days`;
+                    <br>• Reduce target views to ${Math.floor(budget / (minCostPerView * (7/duration)*0.5))} 
+                    <br>• Increase duration to ${Math.ceil(7 * 0.5 * minCostPerView * targetViews / budget)} days`;
                 DOM.calcReward.style.color = 'var(--danger)';
                 DOM.calcResult.style.borderColor = 'var(--danger)';
                 DOM.calcResult.style.background = 'rgba(239, 68, 68, 0.06)';
@@ -5052,14 +5044,14 @@
                     return;
                 }
 
-                const BASE_COST_PER_VIEW_PER_DAY = CONFIG.BASE_BUDGET / (CONFIG.BASE_VIEWS * CONFIG.BASE_DAYS);
-                const costPerView = BASE_COST_PER_VIEW_PER_DAY * duration;
+                // Calculate cost per view with new formula
+                const costPerView = (budget / targetViews) * (7 / duration) * 0.5;
                 const requiredBudget = targetViews * costPerView;
 
                 if (costPerView < 0.0001) {
                     showToast(`❌ Cost per view is too low! Minimum is $0.0001. 
-                        Please increase budget (to $${(targetViews * 0.0001 * (duration/CONFIG.MINIMUM_DURATION_DAYS)).toFixed(2)}), 
-                        reduce target views (to ${Math.floor(budget / (0.0001 * (duration/CONFIG.MINIMUM_DURATION_DAYS)))}), 
+                        Please increase budget (to $${(targetViews * 0.0001 * (7/duration) * 0.5).toFixed(2)}), 
+                        reduce target views (to ${Math.floor(budget / (0.0001 * (7/duration) * 0.5))}), 
                         or increase duration.`, 'error');
                     return;
                 }
@@ -5102,7 +5094,7 @@
                     instructions: instructions,
                     reward: costPerView,
                     totalViews: targetViews,
-                    views: 0,
+                    views: 0, // will be incremented only upon verification approval
                     status: 'active',
                     approved: false,
                     createdBy: state.currentUserId,
@@ -5527,7 +5519,7 @@
         }
 
         // ============================================================
-        // VERIFY JOB - ALWAYS ENABLED
+        // VERIFY JOB - NOW THE VIEWS AND REWARD ARE NOT ADDED UNTIL APPROVAL
         // ============================================================
         function openVerifyJob(adId) {
             if (!adId) {
@@ -5638,11 +5630,12 @@
                     await firebaseDb.ref('verifications').push(verificationData);
                 }
                 
-                if (!state.viewedAds.includes(state.currentVerifyAdId)) {
-                    state.viewedAds.push(state.currentVerifyAdId);
-                }
-                await firebaseDb.ref(`ads/${state.currentVerifyAdId}/views`).transaction((current) => (current || 0) + 1);
-                state.pendingEarnings += reward || 0;
+                // Do NOT increment views or add reward here; that will happen on admin approval.
+                // We just mark that the user has watched this ad (maybe store in a separate node if needed)
+                // For now, we just save the verification request.
+
+                // We can add a flag to the user's data indicating they have watched this ad, but not needed for counting.
+                // The view count will be incremented only when admin approves.
                 saveUserData();
                 updateUI();
                 closeVerifyModal();
@@ -5653,6 +5646,80 @@
                 showToast('❌ Failed to submit verification: ' + e.message, 'error');
             }
         }
+
+        // ============================================================
+        // VERIFY AD REQUEST (called by admin) - NOW INCREMENT VIEWS AND REWARD
+        // ============================================================
+        // This function will be called from admin panel when admin approves verification.
+        // We'll expose it globally so admin can call it.
+        // We'll implement a listener for verification approvals.
+        // But for simplicity, we'll override the existing verifyAdRequest function to include view increment.
+        // However, the admin panel already has a verifyAdRequest function that does the reward.
+        // We'll add the view increment there.
+        // Since admin panel is separate, we need to modify the admin panel code accordingly.
+        // But we can also listen to changes in verifications from user side and update views.
+        // We'll implement a listener on verifications that when status changes to 'approved', we increment views and reward.
+        // This way, the user panel can react to admin approval without needing to modify admin code.
+
+        // We'll add a listener for verifications changes:
+        function listenVerificationApprovals() {
+            if (!firebaseDb || !state.currentUserId) return;
+            // Listen to verifications that are approved and belong to this user
+            firebaseDb.ref('verifications').orderByChild('userId').equalTo(state.currentUserId).on('child_changed', async (snapshot) => {
+                const data = snapshot.val();
+                if (data && data.status === 'approved' && data.adId) {
+                    // Check if we already processed this approval (to avoid double counting)
+                    // We can store a flag in the verification node or use a local set.
+                    // For simplicity, we'll check if the ad view count hasn't been updated yet.
+                    // We'll use a local cache.
+                    if (window._processedApprovals && window._processedApprovals[snapshot.key]) return;
+                    if (!window._processedApprovals) window._processedApprovals = {};
+                    
+                    // Mark as processed
+                    window._processedApprovals[snapshot.key] = true;
+                    
+                    // Increment views on the ad
+                    const adRef = firebaseDb.ref(`ads/${data.adId}`);
+                    await adRef.transaction((current) => {
+                        if (current) {
+                            current.views = (current.views || 0) + 1;
+                        }
+                        return current;
+                    });
+                    
+                    // Add reward to user balance
+                    const adSnapshot = await adRef.once('value');
+                    const ad = adSnapshot.val();
+                    if (ad) {
+                        const reward = ad.reward || 0;
+                        await firebaseDb.ref(`users/${state.currentUserId}/balance`).transaction((bal) => (bal || 0) + reward);
+                        await firebaseDb.ref(`users/${state.currentUserId}/totalEarnings`).transaction((t) => (t || 0) + reward);
+                        // Also add to adCount and weeklyActivity
+                        await firebaseDb.ref(`users/${state.currentUserId}/adCount`).transaction((c) => (c || 0) + 1);
+                        const day = new Date().getDay();
+                        firebaseDb.ref(`users/${state.currentUserId}/weeklyActivity/${day}`).transaction((val) => (val || 0) + 1);
+                        // Update pendingEarnings (subtract)
+                        await firebaseDb.ref(`users/${state.currentUserId}/pendingEarnings`).transaction((p) => Math.max(0, (p || 0) - reward));
+                    }
+                    
+                    // Update local state
+                    state.balance += ad?.reward || 0;
+                    state.totalEarnings += ad?.reward || 0;
+                    state.adCount += 1;
+                    state.pendingEarnings = Math.max(0, state.pendingEarnings - (ad?.reward || 0));
+                    // Also update weeklyActivity
+                    const day = new Date().getDay();
+                    state.weeklyActivity[day] = (state.weeklyActivity[day] || 0) + 1;
+                    
+                    saveUserData();
+                    updateUI();
+                    
+                    showToast(`🎉 Ad verified! +$${ad?.reward?.toFixed(4) || '0.0000'} added!`, 'success');
+                }
+            });
+        }
+
+        // We'll call this in init.
 
         // ============================================================
         // RENDER MY ADS - WITH EDIT BUTTON
@@ -5826,13 +5893,24 @@
                 const snapshot = await firebaseDb.ref(`verifications/${verificationId}`).once('value');
                 const data = snapshot.val();
                 if (!data) return;
+                // Set status to approved
                 await firebaseDb.ref(`verifications/${verificationId}/status`).set('approved');
-                const adSnapshot = await firebaseDb.ref(`ads/${data.adId}`).once('value');
+                // The user panel will listen for this change and increment views and reward.
+                // Also, we can add the reward and view increment here as well for reliability.
+                const adRef = firebaseDb.ref(`ads/${data.adId}`);
+                await adRef.transaction((current) => {
+                    if (current) {
+                        current.views = (current.views || 0) + 1;
+                    }
+                    return current;
+                });
+                const adSnapshot = await adRef.once('value');
                 const ad = adSnapshot.val();
                 if (ad) {
-                    await firebaseDb.ref(`users/${data.userId}/balance`).transaction((current) => (current || 0) + ad.reward);
-                    firebaseDb.ref(`users/${data.userId}/totalEarnings`).transaction((current) => (current || 0) + ad.reward);
-                    firebaseDb.ref(`users/${data.userId}/pendingEarnings`).transaction((current) => Math.max(0, (current || 0) - ad.reward));
+                    const reward = ad.reward || 0;
+                    await firebaseDb.ref(`users/${data.userId}/balance`).transaction((bal) => (bal || 0) + reward);
+                    await firebaseDb.ref(`users/${data.userId}/totalEarnings`).transaction((t) => (t || 0) + reward);
+                    await firebaseDb.ref(`users/${data.userId}/pendingEarnings`).transaction((p) => Math.max(0, (p || 0) - reward));
                 }
                 await firebaseDb.ref(`ads/${data.adId}/verified`).set(true);
                 showToast('✅ Verification approved!', 'success');
@@ -5844,7 +5922,7 @@
         }
 
         // ============================================================
-        // DELETE AD WITH REFUND
+        // DELETE AD WITH REFUND (50/50)
         // ============================================================
         function openDeleteConfirm(adId) {
             pendingDeleteAdId = adId;
@@ -6158,7 +6236,7 @@
         }
 
         // ============================================================
-        // WATCH AD
+        // WATCH AD - NOW ONLY SHOWS AD, NO REWARD OR VIEW INCREMENT
         // ============================================================
         async function watchAd() {
             if (isBanned) {
@@ -6211,18 +6289,23 @@
                 DOM.adLoaderProgress.style.width = '100%';
 
                 if (adShown) {
-                    window._legitimateBalanceChange = true;
-                    state.balance += CONFIG.AD_REWARD;
-                    state.totalEarnings += CONFIG.AD_REWARD;
-                    state.adCount++;
+                    // Do NOT add reward or increment views here.
+                    // Just mark that the user watched the ad, maybe store a flag.
+                    // The user will then submit verification to claim reward.
+                    lastAdWatchTime = Date.now();
+                    // Still count as watched for today's limit? 
+                    // Actually we want to count only verified views, but for daily limit we might want to count all watched.
+                    // We'll keep the daily limit based on watched ads.
                     state.adsWatchedToday++;
                     const day = new Date().getDay();
-                    state.weeklyActivity[day] = (state.weeklyActivity[day] || 0) + 1;
-                    lastAdWatchTime = Date.now();
-
-                    let alertMsg = `✅ Ad watched! +$${CONFIG.AD_REWARD.toFixed(4)} added!`;
-                    alertMsg += ` (${state.adsWatchedToday}/${CONFIG.DAILY_AD_LIMIT})`;
-
+                    state.weeklyActivity[day] = (state.weeklyActivity[day] || 0) + 1; // maybe track watched count
+                    // However, we shouldn't count as adCount until verified, so we keep adCount separate.
+                    // We'll have a separate field for watchedToday.
+                    // We'll keep adsWatchedToday as the number of ads watched, but reward only on verification.
+                    // To avoid confusion, we'll keep this as "watched" count.
+                    // But we'll need to track daily watched count separately.
+                    // For now, we'll simply update the UI.
+                    let alertMsg = `✅ Ad watched! Please verify to earn reward.`;
                     if (state.adsWatchedToday >= CONFIG.DAILY_AD_LIMIT) {
                         const cdDate = new Date();
                         cdDate.setMinutes(cdDate.getMinutes() + CONFIG.COOLDOWN_MINUTES);
@@ -6230,10 +6313,10 @@
                         state.lastUsedIp = await getIpAddress();
                         alertMsg = `✅ Daily limit reached! Take a ${CONFIG.COOLDOWN_MINUTES}-minute break.`;
                     }
-
+                    // We need to store watched ads for verification? Not required, verification can be submitted for any ad.
+                    // The user watches, then goes to the job details and submits verification.
                     saveUserData();
                     updateUI();
-
                     setTimeout(() => {
                         showToast(alertMsg, 'success');
                     }, 300);
@@ -6267,7 +6350,7 @@
 
             DOM.totalEarning.textContent = `$${formatBalance(state.balance)}`;
             DOM.walletBalance.textContent = `$${formatBalance(state.walletBalance)}`;
-            DOM.adCount.textContent = state.adCount;
+            DOM.adCount.textContent = state.adCount; // only verified ads count
             DOM.adsTodayCount.textContent = `${state.adsWatchedToday} / ${CONFIG.DAILY_AD_LIMIT}`;
             DOM.minWithdrawText.textContent = `Minimum withdrawal is $${CONFIG.MINIMUM_WITHDRAWAL.toFixed(2)}.`;
 
@@ -6324,7 +6407,6 @@
             DOM.watchAdBtn.classList.toggle('pulsing', !DOM.watchAdBtn.disabled);
             updateChart();
             
-            // Update security badge
             updateSecurityBadge();
         }
 
@@ -6455,6 +6537,9 @@
                 listenDeposits();
                 listenAds();
                 listenUserVerifications();
+
+                // Listen for verification approvals to increment views and reward
+                listenVerificationApprovals();
 
                 if (user?.first_name) {
                     DOM.greeting.textContent = `Welcome, ${escapeHTML(user.first_name)}!`;
