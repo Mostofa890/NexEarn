@@ -1,29 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <title>NexEarn</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src='//libtl.com/sdk.js' data-zone='11573980' data-sdk='show_11573980'></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js">
+    </script>
+    <script src="https://telegram.org/js/telegram-web-app.js">
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js">
+    </script>
+    <script src='//libtl.com/sdk.js' data-zone='11573980' data-sdk='show_11573980'>
+    </script>
     <style>
         /* ===== ALL EXISTING STYLES REMAIN SAME ===== */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-        
-        :root { 
-            --primary-color: #6C63FF; 
-            --primary-color-rgb: 108, 99, 255; 
-            --secondary-color: #4A42D4; 
-            --background-color: #F8F9FE; 
-            --card-background: #FFFFFF; 
-            --text-color: #1A1A2E; 
-            --text-light: #6E6E84; 
-            --border-color: #E8E8F0; 
-            --glass-bg: rgba(248, 249, 254, 0.8); 
+
+        :root {
+            --primary-color: #6C63FF;
+            --primary-color-rgb: 108, 99, 255;
+            --secondary-color: #4A42D4;
+            --background-color: #F8F9FE;
+            --card-background: #FFFFFF;
+            --text-color: #1A1A2E;
+            --text-light: #6E6E84;
+            --border-color: #E8E8F0;
+            --glass-bg: rgba(248, 249, 254, 0.8);
             --shadow: 0 4px 20px rgba(108, 99, 255, 0.10);
             --shadow-hover: 0 8px 30px rgba(108, 99, 255, 0.18);
             --radius: 16px;
@@ -34,45 +39,53 @@
             --info: #3b82f6;
             --gradient: linear-gradient(135deg, #6C63FF, #4A42D4);
         }
-        
-        [data-theme="dark"] { 
-            --primary-color: #8B83FF; 
-            --primary-color-rgb: 139, 131, 255; 
-            --secondary-color: #6C63FF; 
-            --background-color: #0F0F1A; 
-            --card-background: #1A1A2E; 
-            --text-color: #F0F0F5; 
-            --text-light: #8E8EA3; 
-            --border-color: #2A2A42; 
-            --glass-bg: rgba(26, 26, 46, 0.8); 
-            --shadow: 0 4px 20px rgba(0,0,0,0.3);
+
+        [data-theme="dark"] {
+            --primary-color: #8B83FF;
+            --primary-color-rgb: 139, 131, 255;
+            --secondary-color: #6C63FF;
+            --background-color: #0F0F1A;
+            --card-background: #1A1A2E;
+            --text-color: #F0F0F5;
+            --text-light: #8E8EA3;
+            --border-color: #2A2A42;
+            --glass-bg: rgba(26, 26, 46, 0.8);
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             --shadow-hover: 0 8px 30px rgba(108, 99, 255, 0.15);
         }
-        
-        * { 
-            box-sizing: border-box; 
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-        
-        html, body { 
-            overscroll-behavior-y: contain; 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--background-color); 
-            color: var(--text-color); 
-            -webkit-font-smoothing: antialiased; 
+
+        html,
+        body {
+            overscroll-behavior-y: contain;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            -webkit-font-smoothing: antialiased;
             transition: var(--transition);
         }
-        
-        body { 
-            padding: 16px 12px 90px 12px; 
+
+        body {
+            padding: 16px 12px 90px 12px;
             min-height: 100vh;
         }
-        
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: var(--background-color); }
-        ::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 4px; }
-        
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--background-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
         /* ===== PRELOADER ===== */
         #preloader {
             position: fixed;
@@ -89,7 +102,6 @@
             gap: 30px;
             transition: opacity 0.6s ease;
         }
-        
         #preloader .brand {
             font-size: 42px;
             font-weight: 900;
@@ -99,16 +111,20 @@
             letter-spacing: -1px;
             animation: pulseText 1.5s ease-in-out infinite;
         }
-        
-        #preloader .brand span { 
+        #preloader .brand span {
             -webkit-text-fill-color: var(--text-color);
         }
-        
         @keyframes pulseText {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
         }
-        
         #preloader .loader-bar-container {
             width: 200px;
             height: 4px;
@@ -116,7 +132,6 @@
             border-radius: 4px;
             overflow: hidden;
         }
-        
         #preloader .loader-bar {
             height: 100%;
             width: 0%;
@@ -124,20 +139,17 @@
             border-radius: 4px;
             transition: width 0.3s ease;
         }
-        
         #preloader-percentage {
             font-size: 16px;
             font-weight: 700;
             color: var(--text-light);
             letter-spacing: 2px;
         }
-        
         #preloader .dots {
             display: flex;
             gap: 8px;
             margin-top: -10px;
         }
-        
         #preloader .dots span {
             width: 8px;
             height: 8px;
@@ -145,15 +157,24 @@
             background: var(--primary-color);
             animation: dotBounce 1.4s ease-in-out infinite;
         }
-        
-        #preloader .dots span:nth-child(2) { animation-delay: 0.2s; }
-        #preloader .dots span:nth-child(3) { animation-delay: 0.4s; }
-        
-        @keyframes dotBounce {
-            0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; }
-            40% { transform: scale(1); opacity: 1; }
+        #preloader .dots span:nth-child(2) {
+            animation-delay: 0.2s;
         }
-        
+        #preloader .dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes dotBounce {
+            0%,
+            80%,
+            100% {
+                transform: scale(0.6);
+                opacity: 0.3;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
         #preloader-footer {
             position: fixed;
             bottom: 30px;
@@ -164,7 +185,6 @@
             z-index: 10000;
             transition: opacity 0.5s ease;
         }
-        
         #preloader-footer a {
             font-size: 13px;
             font-weight: 500;
@@ -172,14 +192,14 @@
             text-decoration: none;
             opacity: 0.5;
         }
-        
+
         /* ===== MAINTENANCE OVERLAY ===== */
         #maintenance-overlay {
             display: none;
             position: fixed;
             inset: 0;
             z-index: 99999;
-            background: rgba(0,0,0,0.92);
+            background: rgba(0, 0, 0, 0.92);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             align-items: center;
@@ -189,53 +209,59 @@
             text-align: center;
             padding: 30px;
         }
-        
         #maintenance-overlay.active {
             display: flex;
         }
-        
         #maintenance-overlay .maintenance-icon {
             font-size: 80px;
             color: var(--warning);
             margin-bottom: 20px;
             animation: spin 3s linear infinite;
         }
-        
         #maintenance-overlay .maintenance-title {
             font-size: 32px;
             font-weight: 800;
             margin-bottom: 8px;
         }
-        
         #maintenance-overlay .maintenance-message {
             font-size: 16px;
-            color: rgba(255,255,255,0.7);
+            color: rgba(255, 255, 255, 0.7);
             max-width: 400px;
             margin-bottom: 20px;
         }
-        
         #maintenance-overlay .maintenance-time {
             font-size: 14px;
             color: var(--warning);
             font-weight: 600;
         }
-        
-        .container { 
-            max-width: 480px; 
-            margin: 0 auto; 
-            display: none; 
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            display: none;
         }
-        
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(12px); } 
-            to { opacity: 1; transform: translateY(0); } 
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
+
         /* ===== PROFILE HEADER ===== */
         .profile-header {
             display: flex;
@@ -244,7 +270,6 @@
             margin-bottom: 20px;
             animation: fadeIn 0.4s ease-out;
         }
-        
         #profile-pic {
             width: 48px;
             height: 48px;
@@ -261,23 +286,19 @@
             cursor: pointer;
             transition: var(--transition);
         }
-        
         #profile-pic:hover {
             transform: scale(1.05);
             box-shadow: 0 6px 25px rgba(var(--primary-color-rgb), 0.4);
         }
-        
         .profile-info {
             flex: 1;
             min-width: 0;
         }
-        
         #greeting {
             font-size: 20px;
             font-weight: 800;
             line-height: 1.2;
         }
-        
         .role-badge {
             display: inline-block;
             font-size: 11px;
@@ -288,17 +309,14 @@
             color: var(--primary-color);
             margin-top: 2px;
         }
-        
         .role-badge.advertiser {
             background: rgba(16, 185, 129, 0.15);
             color: #10b981;
         }
-        
         .role-badge.banned {
             background: rgba(239, 68, 68, 0.15);
             color: var(--danger);
         }
-        
         .switch-role-btn {
             background: rgba(var(--primary-color-rgb), 0.08);
             border: 1px solid var(--border-color);
@@ -311,11 +329,10 @@
             transition: var(--transition);
             white-space: nowrap;
         }
-        
         .switch-role-btn:hover {
             background: rgba(var(--primary-color-rgb), 0.15);
         }
-        
+
         /* ===== ROLE SELECTOR ===== */
         .role-selector {
             display: grid;
@@ -324,7 +341,6 @@
             margin-bottom: 18px;
             animation: fadeIn 0.5s ease-out;
         }
-        
         .role-btn {
             padding: 14px 12px;
             border-radius: var(--radius);
@@ -337,19 +353,32 @@
             font-family: inherit;
             box-shadow: var(--shadow);
         }
-        
-        .role-btn .icon { font-size: 24px; display: block; margin-bottom: 4px; }
-        .role-btn .label { font-weight: 700; font-size: 15px; display: block; }
-        .role-btn .sub-label { font-size: 11px; color: var(--text-light); display: block; margin-top: 2px; }
-        
+        .role-btn .icon {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .role-btn .label {
+            font-weight: 700;
+            font-size: 15px;
+            display: block;
+        }
+        .role-btn .sub-label {
+            font-size: 11px;
+            color: var(--text-light);
+            display: block;
+            margin-top: 2px;
+        }
         .role-btn.active {
             border-color: var(--primary-color);
             background: rgba(var(--primary-color-rgb), 0.06);
             box-shadow: 0 0 0 4px rgba(var(--primary-color-rgb), 0.08), var(--shadow);
         }
-        
-        .role-btn:hover:not(.active) { border-color: var(--text-light); transform: translateY(-2px); }
-        
+        .role-btn:hover:not(.active) {
+            border-color: var(--text-light);
+            transform: translateY(-2px);
+        }
+
         /* ===== BALANCE CARD ===== */
         .balance-card {
             position: relative;
@@ -363,7 +392,6 @@
             box-shadow: 0 8px 30px rgba(var(--primary-color-rgb), 0.25);
             animation: fadeIn 0.6s ease-out;
         }
-        
         .balance-card::after {
             content: '\f51e';
             font-family: 'Font Awesome 6 Free';
@@ -376,7 +404,6 @@
             transform: rotate(-15deg);
             pointer-events: none;
         }
-        
         .balance-card h3 {
             font-size: 14px;
             font-weight: 500;
@@ -385,7 +412,6 @@
             position: relative;
             z-index: 1;
         }
-        
         .balance-card .amount {
             font-size: 44px;
             font-weight: 800;
@@ -393,7 +419,7 @@
             position: relative;
             z-index: 1;
         }
-        
+
         /* ===== WALLET CARD ===== */
         .wallet-card {
             display: flex;
@@ -409,19 +435,16 @@
             display: none;
             box-shadow: var(--shadow);
         }
-        
         .wallet-card .label {
             font-size: 13px;
             color: var(--text-light);
             font-weight: 500;
         }
-        
         .wallet-card .value {
             font-size: 20px;
             font-weight: 800;
             color: var(--text-color);
         }
-        
         .wallet-card .deposit-btn {
             background: var(--gradient);
             color: white;
@@ -433,12 +456,11 @@
             cursor: pointer;
             transition: var(--transition);
         }
-        
         .wallet-card .deposit-btn:hover {
             transform: scale(1.05);
             box-shadow: 0 4px 15px rgba(var(--primary-color-rgb), 0.3);
         }
-        
+
         /* ===== CONVERT CARD ===== */
         .convert-card {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.08));
@@ -448,7 +470,6 @@
             margin-bottom: 16px;
             animation: fadeIn 0.7s ease-out;
         }
-        
         .convert-card .title {
             font-weight: 700;
             font-size: 14px;
@@ -457,25 +478,21 @@
             align-items: center;
             gap: 8px;
         }
-        
         .convert-card .info {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: 8px;
         }
-        
         .convert-card .info .balance {
             font-size: 18px;
             font-weight: 800;
             color: var(--text-color);
         }
-        
         .convert-card .info .rate {
             font-size: 12px;
             color: var(--text-light);
         }
-        
         .convert-btn {
             background: var(--success);
             color: white;
@@ -490,17 +507,15 @@
             margin-top: 10px;
             font-family: inherit;
         }
-        
         .convert-btn:hover:not(:disabled) {
             transform: scale(1.02);
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         }
-        
         .convert-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
-        
+
         /* ===== STATS GRID ===== */
         .stats-grid {
             display: grid;
@@ -508,7 +523,6 @@
             gap: 12px;
             margin-bottom: 16px;
         }
-        
         .stat-item {
             position: relative;
             overflow: hidden;
@@ -521,12 +535,10 @@
             transition: var(--transition);
             box-shadow: var(--shadow);
         }
-        
         .stat-item:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-hover);
         }
-        
         .stat-item .bg-icon {
             position: absolute;
             right: 2px;
@@ -536,11 +548,21 @@
             color: var(--text-color);
             pointer-events: none;
         }
-        
-        .stat-item .icon { font-size: 22px; color: var(--primary-color); margin-bottom: 6px; }
-        .stat-item .value { font-size: 20px; font-weight: 800; }
-        .stat-item .label { font-size: 11px; color: var(--text-light); margin-top: 2px; }
-        
+        .stat-item .icon {
+            font-size: 22px;
+            color: var(--primary-color);
+            margin-bottom: 6px;
+        }
+        .stat-item .value {
+            font-size: 20px;
+            font-weight: 800;
+        }
+        .stat-item .label {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
         /* ===== CARDS ===== */
         .card {
             background: var(--card-background);
@@ -552,11 +574,9 @@
             transition: var(--transition);
             box-shadow: var(--shadow);
         }
-        
         .card:hover {
             box-shadow: var(--shadow-hover);
         }
-        
         .card-title {
             font-size: 17px;
             font-weight: 700;
@@ -565,7 +585,7 @@
             align-items: center;
             gap: 8px;
         }
-        
+
         /* ===== AD FILTERS ===== */
         .ad-filters {
             display: flex;
@@ -573,7 +593,6 @@
             margin-bottom: 14px;
             flex-wrap: wrap;
         }
-        
         .filter-btn {
             padding: 6px 14px;
             border-radius: 20px;
@@ -586,15 +605,15 @@
             transition: var(--transition);
             font-family: inherit;
         }
-        
         .filter-btn.active {
             background: var(--primary-color);
             color: white;
             border-color: var(--primary-color);
         }
-        
-        .filter-btn:hover:not(.active) { border-color: var(--text-color); }
-        
+        .filter-btn:hover:not(.active) {
+            border-color: var(--text-color);
+        }
+
         /* ===== JOB CARD STYLES ===== */
         .job-card {
             background: var(--card-background);
@@ -608,23 +627,19 @@
             position: relative;
             overflow: hidden;
         }
-
         .job-card:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-hover);
         }
-
         .job-card:active {
             transform: scale(0.98);
         }
-
         .job-card .job-title {
             font-size: 17px;
             font-weight: 700;
             margin-bottom: 6px;
             color: var(--text-color);
         }
-
         .job-card .job-meta {
             display: flex;
             flex-wrap: wrap;
@@ -633,7 +648,6 @@
             font-size: 12px;
             color: var(--text-light);
         }
-
         .job-card .job-meta .category-badge {
             background: rgba(var(--primary-color-rgb), 0.1);
             color: var(--primary-color);
@@ -641,7 +655,6 @@
             border-radius: 12px;
             font-weight: 600;
         }
-
         .job-card .job-meta .sub-category-badge {
             background: rgba(var(--primary-color-rgb), 0.05);
             color: var(--text-light);
@@ -649,7 +662,6 @@
             border-radius: 12px;
             font-weight: 600;
         }
-
         .job-card .job-creator {
             display: flex;
             align-items: center;
@@ -659,7 +671,6 @@
             border-top: 1px solid var(--border-color);
             border-bottom: 1px solid var(--border-color);
         }
-
         .job-card .creator-avatar {
             width: 36px;
             height: 36px;
@@ -673,18 +684,15 @@
             font-size: 14px;
             flex-shrink: 0;
         }
-
         .job-card .creator-info {
             flex: 1;
             min-width: 0;
         }
-
         .job-card .creator-name {
             font-weight: 600;
             font-size: 14px;
             color: var(--text-color);
         }
-
         .job-card .creator-rating {
             display: flex;
             align-items: center;
@@ -692,11 +700,9 @@
             font-size: 12px;
             color: var(--text-light);
         }
-
         .job-card .creator-rating .stars {
             color: #f59e0b;
         }
-
         .job-card .job-stats {
             display: flex;
             flex-wrap: wrap;
@@ -704,7 +710,6 @@
             gap: 12px 16px;
             margin-top: 8px;
         }
-
         .job-card .job-stats .stat-item {
             display: flex;
             align-items: center;
@@ -716,21 +721,17 @@
             border: none;
             box-shadow: none;
         }
-
         .job-card .job-stats .stat-item .value {
             font-weight: 700;
             color: var(--text-color);
         }
-
         .job-card .job-stats .stat-item .value.highlight {
             color: var(--primary-color);
         }
-
         .job-card .progress-container {
             flex: 1;
             min-width: 80px;
         }
-
         .job-card .progress-bar {
             width: 100%;
             height: 4px;
@@ -738,14 +739,12 @@
             border-radius: 4px;
             overflow: hidden;
         }
-
         .job-card .progress-bar .fill {
             height: 100%;
             background: var(--gradient);
             border-radius: 4px;
             transition: width 0.5s ease;
         }
-
         .job-card .progress-label {
             font-size: 11px;
             color: var(--text-light);
@@ -753,14 +752,12 @@
             display: flex;
             justify-content: space-between;
         }
-
         .job-card .reward-amount {
             font-size: 16px;
             font-weight: 800;
             color: var(--success);
             white-space: nowrap;
         }
-
         .job-card .days-left {
             font-size: 12px;
             color: var(--text-light);
@@ -768,13 +765,12 @@
             align-items: center;
             gap: 4px;
         }
-
         .job-card .days-left .days {
             font-weight: 700;
             color: var(--text-color);
         }
 
-        /* ===== AD CARD (for advertiser) ===== */
+        /* ===== AD CARD ===== */
         .ad-card {
             background: var(--background-color);
             border-radius: 12px;
@@ -783,24 +779,49 @@
             border: 1px solid var(--border-color);
             transition: var(--transition);
         }
-        
-        .ad-card:last-child { margin-bottom: 0; }
-        .ad-card:hover { box-shadow: var(--shadow-hover); }
-        
+        .ad-card:last-child {
+            margin-bottom: 0;
+        }
+        .ad-card:hover {
+            box-shadow: var(--shadow-hover);
+        }
         .ad-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             gap: 10px;
         }
-        
-        .ad-title { font-weight: 600; font-size: 15px; flex: 1; }
-        .ad-reward { font-weight: 700; color: var(--primary-color); font-size: 14px; white-space: nowrap; }
-        .ad-image { width: 100%; max-height: 120px; object-fit: cover; border-radius: 8px; margin: 8px 0; }
-        .ad-desc { font-size: 13px; color: var(--text-light); margin-bottom: 10px; line-height: 1.4; }
-        .ad-desc a { color: var(--primary-color); text-decoration: none; }
-        .ad-desc a:hover { text-decoration: underline; }
-        
+        .ad-title {
+            font-weight: 600;
+            font-size: 15px;
+            flex: 1;
+        }
+        .ad-reward {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        .ad-image {
+            width: 100%;
+            max-height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        .ad-desc {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        .ad-desc a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .ad-desc a:hover {
+            text-decoration: underline;
+        }
         .ad-footer {
             display: flex;
             justify-content: space-between;
@@ -808,23 +829,40 @@
             flex-wrap: wrap;
             gap: 8px;
         }
-        
-        .ad-views { font-size: 12px; color: var(--text-light); }
-        
+        .ad-views {
+            font-size: 12px;
+            color: var(--text-light);
+        }
         .ad-status {
             font-size: 11px;
             font-weight: 600;
             padding: 2px 10px;
             border-radius: 12px;
         }
-        
-        .ad-status.active { color: #10b981; background: rgba(16, 185, 129, 0.1); }
-        .ad-status.pending { color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
-        .ad-status.completed { color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
-        .ad-status.expired { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
-        .ad-status.approved { color: var(--success); background: rgba(16, 185, 129, 0.1); }
-        .ad-status.banned { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
-        
+        .ad-status.active {
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+        .ad-status.pending {
+            color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+        }
+        .ad-status.completed {
+            color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+        .ad-status.expired {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+        .ad-status.approved {
+            color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+        .ad-status.banned {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
         .ad-btn {
             padding: 6px 16px;
             border-radius: 8px;
@@ -835,23 +873,28 @@
             transition: var(--transition);
             font-family: inherit;
         }
-        
         .ad-btn.view {
             background: var(--primary-color);
             color: white;
         }
-        
-        .ad-btn.view:hover:not(:disabled) { transform: scale(1.03); }
-        .ad-btn.view:disabled { opacity: 0.5; cursor: not-allowed; }
-        .ad-btn.view.completed { background: #10b981; }
-
+        .ad-btn.view:hover:not(:disabled) {
+            transform: scale(1.03);
+        }
+        .ad-btn.view:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .ad-btn.view.completed {
+            background: #10b981;
+        }
         .ad-btn.edit {
             background: #f59e0b;
             color: white;
         }
+        .ad-btn.edit:hover:not(:disabled) {
+            transform: scale(1.03);
+        }
 
-        .ad-btn.edit:hover:not(:disabled) { transform: scale(1.03); }
-        
         /* ===== ACTION BUTTON ===== */
         .action-button {
             display: flex;
@@ -871,60 +914,57 @@
             font-family: inherit;
             box-shadow: 0 4px 15px rgba(var(--primary-color-rgb), 0.2);
         }
-        
-        .action-button.pulsing { animation: pulse 2s infinite; }
-        
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0.3); }
-            70% { box-shadow: 0 0 0 12px rgba(var(--primary-color-rgb), 0); }
-            100% { box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0); }
+        .action-button.pulsing {
+            animation: pulse 2s infinite;
         }
-        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0.3);
+            }
+            70% {
+                box-shadow: 0 0 0 12px rgba(var(--primary-color-rgb), 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0);
+            }
+        }
         .action-button:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 6px 25px rgba(var(--primary-color-rgb), 0.3);
         }
-        
         .action-button:disabled {
             background: #8E8E93;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
-        
         .action-button.secondary {
             background: transparent;
             color: var(--primary-color);
             border: 2px solid var(--primary-color);
             box-shadow: none;
         }
-        
         .action-button.secondary:hover {
             background: rgba(var(--primary-color-rgb), 0.06);
             transform: translateY(-2px);
         }
-        
         .action-button.success {
             background: var(--success);
         }
-        
         .action-button.success:hover {
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         }
-        
         .action-button.danger {
             background: var(--danger);
         }
-        
         .action-button.danger:hover {
             box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
         }
-        
+
         /* ===== FORM ===== */
         .form-group {
             margin-bottom: 14px;
         }
-        
         .form-group label {
             display: block;
             font-size: 13px;
@@ -932,7 +972,6 @@
             color: var(--text-color);
             margin-bottom: 4px;
         }
-        
         .form-group input,
         .form-group textarea,
         .form-group select {
@@ -946,12 +985,10 @@
             color: var(--text-color);
             transition: var(--transition);
         }
-        
         .form-group textarea {
             min-height: 70px;
             resize: vertical;
         }
-        
         .form-group input:focus,
         .form-group textarea:focus,
         .form-group select:focus {
@@ -959,13 +996,12 @@
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
         }
-        
         .form-hint {
             font-size: 11px;
             color: var(--text-light);
             margin-top: 4px;
         }
-        
+
         /* ===== BONUS TASKS ===== */
         .bonus-item {
             display: flex;
@@ -979,13 +1015,26 @@
             gap: 12px;
             transition: var(--transition);
         }
-        
-        .bonus-item:hover { box-shadow: var(--shadow-hover); }
-        .bonus-item:last-child { margin-bottom: 0; }
-        .bonus-item .details { flex: 1; min-width: 0; }
-        .bonus-item .title { font-weight: 600; font-size: 14px; color: var(--text-color); }
-        .bonus-item .reward { font-size: 13px; font-weight: 700; color: var(--primary-color); }
-        
+        .bonus-item:hover {
+            box-shadow: var(--shadow-hover);
+        }
+        .bonus-item:last-child {
+            margin-bottom: 0;
+        }
+        .bonus-item .details {
+            flex: 1;
+            min-width: 0;
+        }
+        .bonus-item .title {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-color);
+        }
+        .bonus-item .reward {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
         .bonus-item .claim-btn {
             padding: 8px 18px;
             font-size: 12px;
@@ -999,14 +1048,14 @@
             white-space: nowrap;
             font-family: inherit;
         }
-        
         .bonus-item .claim-btn:disabled {
             background: #10b981;
             cursor: not-allowed;
         }
-        
-        .bonus-item .claim-btn:hover:not(:disabled) { transform: scale(1.03); }
-        
+        .bonus-item .claim-btn:hover:not(:disabled) {
+            transform: scale(1.03);
+        }
+
         /* ===== HISTORY ===== */
         .history-item {
             padding: 12px 0;
@@ -1016,15 +1065,29 @@
             align-items: center;
             gap: 12px;
         }
-        
-        .history-item:last-child { border-bottom: none; }
-        .history-details { flex: 1; min-width: 0; }
-        .history-details .method-number { font-weight: 700; font-size: 14px; }
-        .history-details .date { font-size: 11px; color: var(--text-light); }
-        
-        .history-amount { text-align: right; flex-shrink: 0; }
-        .history-amount .amount-text { font-size: 16px; font-weight: 800; }
-        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .history-details {
+            flex: 1;
+            min-width: 0;
+        }
+        .history-details .method-number {
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .history-details .date {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+        .history-amount {
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .history-amount .amount-text {
+            font-size: 16px;
+            font-weight: 800;
+        }
         .history-status {
             font-size: 11px;
             font-weight: 700;
@@ -1033,18 +1096,25 @@
             display: inline-block;
             margin-top: 2px;
         }
-        
         .history-status.success,
-        .history-status.approved { color: #10b981; background: rgba(16, 185, 129, 0.1); }
-        .history-status.pending { color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
-        .history-status.rejected { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
-        
+        .history-status.approved {
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+        .history-status.pending {
+            color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+        }
+        .history-status.rejected {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
         .no-history {
             text-align: center;
             padding: 40px 20px;
             color: var(--text-light);
         }
-        
+
         /* ===== DEPOSIT METHODS ===== */
         .deposit-method {
             display: flex;
@@ -1058,30 +1128,43 @@
             cursor: pointer;
             transition: var(--transition);
         }
-        
-        .deposit-method:hover { border-color: var(--text-light); }
+        .deposit-method:hover {
+            border-color: var(--text-light);
+        }
         .deposit-method.selected {
             border-color: #10b981;
             background: rgba(16, 185, 129, 0.06);
         }
-        
-        .deposit-method .method-icon { font-size: 28px; flex-shrink: 0; }
-        .deposit-method .method-info { flex: 1; }
-        .deposit-method .method-name { font-weight: 600; font-size: 14px; }
-        .deposit-method .method-desc { font-size: 12px; color: var(--text-light); }
-        .deposit-method .method-number { font-weight: 700; font-size: 14px; color: var(--primary-color); }
-        
+        .deposit-method .method-icon {
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+        .deposit-method .method-info {
+            flex: 1;
+        }
+        .deposit-method .method-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .deposit-method .method-desc {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        .deposit-method .method-number {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--primary-color);
+        }
+
         /* ===== DEPOSIT HISTORY TABLE ===== */
         .table-container {
             overflow-x: auto;
         }
-        
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
         }
-        
         th {
             text-align: left;
             padding: 10px 8px;
@@ -1089,23 +1172,29 @@
             font-weight: 600;
             border-bottom: 1px solid var(--border-color);
         }
-        
         td {
             padding: 10px 8px;
             border-bottom: 1px solid var(--border-color);
         }
-        
         .status-badge {
             padding: 2px 10px;
             border-radius: 12px;
             font-size: 11px;
             font-weight: 600;
         }
-        
-        .status-badge.pending { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
-        .status-badge.approved { background: rgba(16, 185, 129, 0.2); color: var(--success); }
-        .status-badge.rejected { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
-        
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+        .status-badge.approved {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+        .status-badge.rejected {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
         /* ===== NAV BAR ===== */
         .nav-bar {
             position: fixed;
@@ -1125,7 +1214,6 @@
             z-index: 100;
             transition: var(--transition);
         }
-        
         .nav-button {
             display: flex;
             flex-direction: column;
@@ -1143,19 +1231,18 @@
             transition: var(--transition);
             font-family: inherit;
         }
-        
         .nav-button i {
             font-size: 20px;
             transition: var(--transition);
         }
-        
         .nav-button.active,
         .nav-button:hover {
             color: var(--primary-color);
         }
-        
-        .nav-button.active i { transform: scale(1.1); }
-        
+        .nav-button.active i {
+            transform: scale(1.1);
+        }
+
         /* ===== MODALS ===== */
         .modal {
             display: none;
@@ -1169,7 +1256,6 @@
             animation: fadeIn 0.3s ease-out;
             padding: 16px;
         }
-        
         .modal-content {
             background: var(--card-background);
             padding: 20px;
@@ -1183,12 +1269,16 @@
             position: relative;
             border: 1px solid var(--border-color);
         }
-        
         @keyframes slideUp {
-            from { transform: translateY(40px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from {
+                transform: translateY(40px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
-        
         .close-btn {
             position: absolute;
             top: 14px;
@@ -1201,20 +1291,19 @@
             font-family: inherit;
             transition: var(--transition);
         }
-        
-        .close-btn:hover { color: var(--text-color); }
-        
+        .close-btn:hover {
+            color: var(--text-color);
+        }
+
         /* ===== METHOD FIELDS ===== */
         .method-field {
             display: none;
             margin-top: 10px;
         }
-        
         .method-field.active {
             display: block;
             animation: fadeIn 0.3s ease-out;
         }
-        
         .method-field label {
             font-size: 13px;
             font-weight: 600;
@@ -1222,13 +1311,12 @@
             display: block;
             margin-bottom: 4px;
         }
-        
         .method-field .field-hint {
             font-size: 12px;
             color: var(--text-light);
             margin-bottom: 6px;
         }
-        
+
         /* ===== AD LOADER ===== */
         #ad-loader-overlay {
             position: fixed;
@@ -1246,7 +1334,6 @@
             font-size: 16px;
             font-weight: 500;
         }
-        
         #ad-loader-overlay .loader-spinner {
             width: 56px;
             height: 56px;
@@ -1255,27 +1342,23 @@
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
-        
         #ad-loader-overlay .loader-text {
             font-size: 16px;
             font-weight: 500;
             opacity: 0.9;
         }
-        
         #ad-loader-overlay .loader-sub {
             font-size: 13px;
             opacity: 0.6;
             margin-top: -8px;
         }
-        
         #ad-loader-overlay .loader-progress {
             width: 200px;
             height: 3px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 4px;
             overflow: hidden;
         }
-        
         #ad-loader-overlay .loader-progress-bar {
             height: 100%;
             width: 0%;
@@ -1283,35 +1366,56 @@
             border-radius: 4px;
             transition: width 0.3s ease;
         }
-        
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
-        
+
         /* ===== CHART ===== */
         .chart-container {
             position: relative;
             height: 180px;
             width: 100%;
         }
-        
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 400px) {
-            body { padding: 12px 8px 80px 8px; }
-            .balance-card .amount { font-size: 36px; }
-            .stats-grid { gap: 8px; }
-            .stat-item { padding: 12px 8px; }
-            .stat-item .value { font-size: 17px; }
-            .role-btn { padding: 10px 8px; }
-            .role-btn .label { font-size: 13px; }
+            body {
+                padding: 12px 8px 80px 8px;
+            }
+            .balance-card .amount {
+                font-size: 36px;
+            }
+            .stats-grid {
+                gap: 8px;
+            }
+            .stat-item {
+                padding: 12px 8px;
+            }
+            .stat-item .value {
+                font-size: 17px;
+            }
+            .role-btn {
+                padding: 10px 8px;
+            }
+            .role-btn .label {
+                font-size: 13px;
+            }
         }
-        
         @media (min-width: 481px) {
-            body { padding: 20px 16px 100px 16px; }
-            .modal { align-items: center; padding: 20px; }
-            .modal-content { border-radius: 20px; }
+            body {
+                padding: 20px 16px 100px 16px;
+            }
+            .modal {
+                align-items: center;
+                padding: 20px;
+            }
+            .modal-content {
+                border-radius: 20px;
+            }
         }
-        
+
         /* ===== TOAST ===== */
         .toast-container {
             position: fixed;
@@ -1323,9 +1427,8 @@
             width: 100%;
             pointer-events: none;
         }
-        
         .toast {
-            background: rgba(0,0,0,0.85);
+            background: rgba(0, 0, 0, 0.85);
             color: white;
             padding: 14px 20px;
             border-radius: 12px;
@@ -1335,20 +1438,24 @@
             animation: fadeIn 0.3s ease;
             pointer-events: auto;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
-        .toast.success { border-color: var(--success); }
-        .toast.error { border-color: var(--danger); }
-        .toast.warning { border-color: var(--warning); }
-        
+        .toast.success {
+            border-color: var(--success);
+        }
+        .toast.error {
+            border-color: var(--danger);
+        }
+        .toast.warning {
+            border-color: var(--warning);
+        }
+
         /* ===== EMPTY STATE ===== */
         .empty-state {
             text-align: center;
             padding: 30px 20px;
             color: var(--text-light);
         }
-        
         .empty-state i {
             font-size: 40px;
             margin-bottom: 12px;
@@ -1359,7 +1466,6 @@
         #rejectReasonModal .modal-content {
             max-width: 480px;
         }
-
         #rejectReasonModal textarea {
             width: 100%;
             padding: 12px 14px;
@@ -1373,13 +1479,11 @@
             min-height: 80px;
             transition: var(--transition);
         }
-
         #rejectReasonModal textarea:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
         }
-
         .reject-reason-text {
             padding: 10px 12px;
             background: rgba(239, 68, 68, 0.08);
@@ -1389,7 +1493,6 @@
             font-size: 13px;
             color: var(--text-light);
         }
-
         .reject-reason-text strong {
             color: var(--danger);
         }
@@ -1404,19 +1507,16 @@
             background: var(--background-color);
             border-radius: 8px;
         }
-        
         .campaign-info .info-item {
             display: flex;
             flex-direction: column;
         }
-        
         .campaign-info .info-item .label {
             font-size: 10px;
             color: var(--text-light);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        
         .campaign-info .info-item .value {
             font-size: 14px;
             font-weight: 700;
@@ -1426,12 +1526,10 @@
         #deleteConfirmModal .modal-content {
             max-width: 480px;
         }
-
         #deleteConfirmModal .warning-text {
             color: var(--danger);
             font-weight: 700;
         }
-
         #deleteConfirmModal .refund-info {
             background: rgba(16, 185, 129, 0.08);
             padding: 12px;
@@ -1439,7 +1537,6 @@
             margin: 12px 0;
             border-left: 3px solid var(--success);
         }
-
         #deleteConfirmModal .company-info {
             background: rgba(239, 68, 68, 0.08);
             padding: 12px;
@@ -1452,7 +1549,6 @@
         .deposit-form-group {
             margin-bottom: 12px;
         }
-        
         .deposit-form-group label {
             display: block;
             font-size: 13px;
@@ -1460,7 +1556,6 @@
             color: var(--text-color);
             margin-bottom: 4px;
         }
-        
         .deposit-form-group input,
         .deposit-form-group textarea {
             width: 100%;
@@ -1473,19 +1568,16 @@
             color: var(--text-color);
             transition: var(--transition);
         }
-        
         .deposit-form-group input:focus,
         .deposit-form-group textarea:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
         }
-        
         .deposit-form-group textarea {
             min-height: 60px;
             resize: vertical;
         }
-        
         .deposit-form-group .form-hint {
             font-size: 11px;
             color: var(--text-light);
@@ -1500,22 +1592,18 @@
             font-size: 10px;
             font-weight: 600;
         }
-        
         .ad-status-badge.pending {
             background: rgba(245, 158, 11, 0.2);
             color: var(--warning);
         }
-        
         .ad-status-badge.approved {
             background: rgba(16, 185, 129, 0.2);
             color: var(--success);
         }
-        
         .ad-status-badge.rejected {
             background: rgba(239, 68, 68, 0.2);
             color: var(--danger);
         }
-        
         .ad-status-badge.active {
             background: rgba(59, 130, 246, 0.2);
             color: var(--info);
@@ -1531,31 +1619,27 @@
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 6px;
+            transition: var(--transition);
         }
-        
         .calc-result .calc-item {
             display: flex;
             flex-direction: column;
             text-align: center;
         }
-        
         .calc-result .calc-item .label {
             font-size: 9px;
             color: var(--text-light);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        
         .calc-result .calc-item .value {
             font-size: 15px;
             font-weight: 700;
             color: var(--text-color);
         }
-        
         .calc-result .calc-item .value.highlight {
             color: var(--primary-color);
         }
-        
         .calc-result .calc-item .value.reward {
             color: var(--success);
             font-size: 18px;
@@ -1571,7 +1655,6 @@
             background: rgba(var(--primary-color-rgb), 0.1);
             color: var(--primary-color);
         }
-        
         .sub-category-badge {
             display: inline-block;
             padding: 2px 10px;
@@ -1596,11 +1679,9 @@
             padding: 16px 12px 100px 12px;
             animation: fadeIn 0.3s ease-out;
         }
-
         .job-details-page.active {
             display: block;
         }
-
         .job-details-page .back-btn {
             display: inline-flex;
             align-items: center;
@@ -1617,11 +1698,9 @@
             margin-bottom: 16px;
             font-family: inherit;
         }
-
         .job-details-page .back-btn:hover {
             background: var(--border-color);
         }
-
         .job-details-page .detail-card {
             background: var(--card-background);
             border-radius: var(--radius);
@@ -1630,7 +1709,6 @@
             margin-bottom: 16px;
             box-shadow: var(--shadow);
         }
-
         .job-details-page .detail-card .detail-title {
             font-size: 18px;
             font-weight: 700;
@@ -1646,13 +1724,11 @@
             margin-bottom: 14px;
             flex-wrap: wrap;
         }
-
         .translation-section .translate-label {
             font-weight: 600;
             font-size: 14px;
             color: var(--text-color);
         }
-
         .translation-section select {
             padding: 6px 12px;
             border-radius: 8px;
@@ -1665,7 +1741,6 @@
             outline: none;
             transition: var(--transition);
         }
-
         .translation-section select:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
@@ -1680,7 +1755,6 @@
             border-bottom: 1px solid var(--border-color);
             margin-bottom: 12px;
         }
-
         .client-info .client-avatar {
             width: 56px;
             height: 56px;
@@ -1694,43 +1768,36 @@
             font-weight: 700;
             flex-shrink: 0;
         }
-
         .client-info .client-details {
             flex: 1;
             min-width: 0;
         }
-
         .client-info .client-name {
             font-size: 16px;
             font-weight: 700;
             color: var(--text-color);
         }
-
         .client-info .client-stats {
             display: flex;
             gap: 12px;
             font-size: 13px;
             color: var(--text-light);
         }
-
         .client-info .client-stats .stat {
             display: flex;
             align-items: center;
             gap: 4px;
         }
-
         .client-info .client-stars {
             color: #f59e0b;
             font-size: 14px;
         }
-
         .client-actions {
             display: flex;
             gap: 10px;
             margin-top: 10px;
             flex-wrap: wrap;
         }
-
         .client-actions .action-btn {
             padding: 6px 16px;
             border-radius: 8px;
@@ -1744,27 +1811,22 @@
             align-items: center;
             gap: 6px;
         }
-
         .client-actions .action-btn.follow {
             background: var(--primary-color);
             color: white;
         }
-
         .client-actions .action-btn.follow:hover {
             transform: scale(1.03);
             box-shadow: 0 4px 15px rgba(var(--primary-color-rgb), 0.3);
         }
-
         .client-actions .action-btn.follow.following {
             background: var(--success);
         }
-
         .client-actions .action-btn.rate {
             background: var(--card-background);
             color: var(--text-color);
             border: 1px solid var(--border-color);
         }
-
         .client-actions .action-btn.rate:hover {
             border-color: var(--primary-color);
         }
@@ -1774,18 +1836,15 @@
             display: inline-flex;
             gap: 4px;
         }
-
         .rating-stars .star {
             font-size: 20px;
             color: var(--border-color);
             cursor: pointer;
             transition: var(--transition);
         }
-
         .rating-stars .star.active {
             color: #f59e0b;
         }
-
         .rating-stars .star:hover {
             transform: scale(1.2);
         }
@@ -1794,7 +1853,6 @@
         .job-detail-section {
             margin-bottom: 12px;
         }
-
         .job-detail-section .section-label {
             font-weight: 700;
             font-size: 15px;
@@ -1804,19 +1862,16 @@
             align-items: center;
             gap: 8px;
         }
-
         .job-detail-section .section-content {
             font-size: 14px;
             color: var(--text-light);
             line-height: 1.7;
             white-space: pre-wrap;
         }
-
         .job-detail-section .section-content a {
             color: var(--primary-color);
             text-decoration: none;
         }
-
         .job-detail-section .section-content a:hover {
             text-decoration: underline;
         }
@@ -1828,7 +1883,6 @@
             gap: 10px;
             margin-bottom: 14px;
         }
-
         .detail-stats-grid .stat-box {
             background: var(--background-color);
             padding: 12px;
@@ -1836,24 +1890,20 @@
             text-align: center;
             border: 1px solid var(--border-color);
         }
-
         .detail-stats-grid .stat-box .label {
             font-size: 11px;
             color: var(--text-light);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-
         .detail-stats-grid .stat-box .value {
             font-size: 18px;
             font-weight: 800;
             color: var(--text-color);
         }
-
         .detail-stats-grid .stat-box .value.highlight {
             color: var(--primary-color);
         }
-
         .detail-stats-grid .stat-box .value.reward {
             color: var(--success);
         }
@@ -1862,7 +1912,6 @@
         .detail-progress {
             margin: 12px 0;
         }
-
         .detail-progress .progress-bar {
             width: 100%;
             height: 6px;
@@ -1870,14 +1919,12 @@
             border-radius: 4px;
             overflow: hidden;
         }
-
         .detail-progress .progress-bar .fill {
             height: 100%;
             background: var(--gradient);
             border-radius: 4px;
             transition: width 0.5s ease;
         }
-
         .detail-progress .progress-label {
             display: flex;
             justify-content: space-between;
@@ -1905,12 +1952,10 @@
             gap: 10px;
             box-shadow: 0 4px 15px rgba(var(--primary-color-rgb), 0.2);
         }
-
         .verify-job-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 25px rgba(var(--primary-color-rgb), 0.3);
         }
-
         .verify-job-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -1923,17 +1968,15 @@
             position: fixed;
             inset: 0;
             z-index: 3000;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(4px);
             align-items: flex-end;
             padding: 16px;
         }
-
         .verify-job-modal.active {
             display: flex;
         }
-
         .verify-job-modal .modal-content {
             background: var(--card-background);
             padding: 20px;
@@ -1946,7 +1989,6 @@
             animation: slideUp 0.3s ease-out;
             border: 1px solid var(--border-color);
         }
-
         .verify-job-modal .modal-content .modal-title {
             font-size: 18px;
             font-weight: 700;
@@ -1971,20 +2013,17 @@
             gap: 8px;
             animation: fadeIn 0.3s ease;
         }
-
         .rating-toast.active {
             display: flex;
         }
-
         .rating-toast .rating-stars {
             font-size: 28px;
         }
-
         .rating-toast .rating-stars .star {
             font-size: 28px;
         }
 
-        /* ===== PROFILE PAGE STYLES ===== */
+        /* ===== PROFILE PAGE ===== */
         .profile-page {
             display: none;
             position: fixed;
@@ -1998,11 +2037,9 @@
             padding: 16px 12px 100px 12px;
             animation: fadeIn 0.3s ease-out;
         }
-
         .profile-page.active {
             display: block;
         }
-
         .profile-page .back-btn {
             display: inline-flex;
             align-items: center;
@@ -2019,11 +2056,9 @@
             margin-bottom: 16px;
             font-family: inherit;
         }
-
         .profile-page .back-btn:hover {
             background: var(--border-color);
         }
-
         .profile-page .profile-card {
             background: var(--card-background);
             border-radius: var(--radius);
@@ -2033,7 +2068,6 @@
             box-shadow: var(--shadow);
             text-align: center;
         }
-
         .profile-page .profile-card .big-avatar {
             width: 80px;
             height: 80px;
@@ -2048,19 +2082,16 @@
             margin: 0 auto 12px;
             box-shadow: 0 4px 20px rgba(var(--primary-color-rgb), 0.3);
         }
-
         .profile-page .profile-card .profile-name {
             font-size: 20px;
             font-weight: 800;
             color: var(--text-color);
         }
-
         .profile-page .profile-card .profile-role {
             font-size: 13px;
             color: var(--text-light);
             margin-top: 4px;
         }
-
         .profile-page .profile-card .profile-stats-row {
             display: flex;
             justify-content: center;
@@ -2068,7 +2099,6 @@
             margin-top: 8px;
             flex-wrap: wrap;
         }
-
         .profile-page .profile-card .profile-stats-row .stat-item {
             font-size: 13px;
             color: var(--text-light);
@@ -2077,31 +2107,25 @@
             border: none;
             box-shadow: none;
         }
-
         .profile-page .profile-card .profile-stats-row .stat-item .num {
             font-weight: 700;
             color: var(--text-color);
         }
-
         .profile-page .profile-card .profile-stats-row .stat-item .num.following {
             color: var(--primary-color);
         }
-
         .profile-page .profile-card .profile-stats-row .stat-item .num.followers {
             color: var(--primary-color);
         }
-
         .profile-page .profile-card .profile-stats-row .stat-item .num.rating {
             color: #f59e0b;
         }
-
         .profile-page .profile-tabs {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
             margin-bottom: 16px;
         }
-
         .profile-page .profile-tab {
             padding: 12px;
             border-radius: var(--radius);
@@ -2115,24 +2139,20 @@
             font-family: inherit;
             box-shadow: var(--shadow);
         }
-
         .profile-page .profile-tab.active {
             border-color: var(--primary-color);
             background: rgba(var(--primary-color-rgb), 0.06);
             color: var(--primary-color);
         }
-
         .profile-page .profile-tab:hover:not(.active) {
             border-color: var(--text-light);
         }
-
         .profile-page .profile-stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 10px;
             margin-bottom: 16px;
         }
-
         .profile-page .profile-stat-box {
             background: var(--card-background);
             padding: 12px;
@@ -2141,32 +2161,26 @@
             border: 1px solid var(--border-color);
             box-shadow: var(--shadow);
         }
-
         .profile-page .profile-stat-box .label {
             font-size: 10px;
             color: var(--text-light);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-
         .profile-page .profile-stat-box .value {
             font-size: 18px;
             font-weight: 800;
             color: var(--text-color);
         }
-
         .profile-page .profile-stat-box .value.reward {
             color: var(--success);
         }
-
         .profile-page .profile-stat-box .value.highlight {
             color: var(--primary-color);
         }
-
         .profile-page .profile-stat-box .value.danger {
             color: var(--danger);
         }
-
         .profile-page .profile-section-title {
             font-size: 15px;
             font-weight: 700;
@@ -2175,7 +2189,6 @@
             align-items: center;
             gap: 8px;
         }
-
         .profile-page .profile-list-item {
             display: flex;
             justify-content: space-between;
@@ -2183,65 +2196,53 @@
             padding: 10px 0;
             border-bottom: 1px solid var(--border-color);
         }
-
         .profile-page .profile-list-item:last-child {
             border-bottom: none;
         }
-
         .profile-page .profile-list-item .left {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-
         .profile-page .profile-list-item .left .icon {
             font-size: 18px;
             color: var(--primary-color);
         }
-
         .profile-page .profile-list-item .left .info .title {
             font-weight: 600;
             font-size: 14px;
             color: var(--text-color);
         }
-
         .profile-page .profile-list-item .left .info .sub {
             font-size: 12px;
             color: var(--text-light);
         }
-
         .profile-page .profile-list-item .right .status {
             font-size: 11px;
             font-weight: 600;
             padding: 2px 10px;
             border-radius: 12px;
         }
-
         .profile-page .profile-list-item .right .status.pending {
             color: var(--warning);
             background: rgba(245, 158, 11, 0.1);
         }
-
         .profile-page .profile-list-item .right .status.approved {
             color: var(--success);
             background: rgba(16, 185, 129, 0.1);
         }
-
         .profile-page .profile-list-item .right .status.rejected {
             color: var(--danger);
             background: rgba(239, 68, 68, 0.1);
         }
-
         .profile-page .profile-list-item .right .status.active {
             color: var(--info);
             background: rgba(59, 130, 246, 0.1);
         }
-
         .profile-page .profile-list-item .right .status.expired {
             color: var(--text-light);
             background: rgba(110, 110, 132, 0.1);
         }
-
         .profile-page .profile-list-item .right .count {
             font-size: 14px;
             font-weight: 700;
@@ -2262,11 +2263,9 @@
             padding: 16px 12px 100px 12px;
             animation: fadeIn 0.3s ease-out;
         }
-
         .all-jobs-page.active {
             display: block;
         }
-
         .all-jobs-page .back-btn {
             display: inline-flex;
             align-items: center;
@@ -2283,11 +2282,9 @@
             margin-bottom: 16px;
             font-family: inherit;
         }
-
         .all-jobs-page .back-btn:hover {
             background: var(--border-color);
         }
-
         .all-jobs-page .jobs-count-badge {
             display: inline-block;
             background: rgba(var(--primary-color-rgb), 0.1);
@@ -2304,12 +2301,10 @@
             background: var(--gradient);
             color: white;
         }
-
         .verify-job-btn.active:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 25px rgba(var(--primary-color-rgb), 0.3);
         }
-
         .verify-job-btn:not(.active) {
             opacity: 0.5;
             cursor: not-allowed;
@@ -2321,17 +2316,15 @@
             position: fixed;
             inset: 0;
             z-index: 3000;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(4px);
             align-items: flex-end;
             padding: 16px;
         }
-
         .edit-ad-modal.active {
             display: flex;
         }
-
         .edit-ad-modal .modal-content {
             background: var(--card-background);
             padding: 20px;
@@ -2344,7 +2337,6 @@
             animation: slideUp 0.3s ease-out;
             border: 1px solid var(--border-color);
         }
-
         .edit-ad-modal .modal-content .modal-title {
             font-size: 18px;
             font-weight: 700;
@@ -2372,16 +2364,13 @@
             transition: all 0.3s ease;
             animation: pulse 2s infinite;
         }
-
         .fab:hover {
             transform: scale(1.1);
             box-shadow: 0 6px 30px rgba(var(--primary-color-rgb), 0.5);
         }
-
         .fab:active {
             transform: scale(0.95);
         }
-
         .fab .badge {
             position: absolute;
             top: -5px;
@@ -2399,23 +2388,21 @@
             border: 2px solid var(--card-background);
         }
 
-        /* ===== ADMIN CHAT MODAL - UPDATED WITH READ RECEIPTS ===== */
+        /* ===== ADMIN CHAT MODAL ===== */
         .chat-modal {
             display: none;
             position: fixed;
             inset: 0;
             z-index: 6000;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             align-items: flex-end;
             padding: 16px;
         }
-
         .chat-modal.active {
             display: flex;
         }
-
         .chat-modal .modal-content {
             background: var(--card-background);
             padding: 20px;
@@ -2428,7 +2415,6 @@
             animation: slideUp 0.3s ease-out;
             border: 1px solid var(--border-color);
         }
-
         .chat-modal .modal-content .chat-title {
             font-size: 18px;
             font-weight: 700;
@@ -2437,13 +2423,11 @@
             align-items: center;
             gap: 10px;
         }
-
         .chat-modal .modal-content .chat-title .online-status {
             font-size: 12px;
             color: var(--success);
             font-weight: 500;
         }
-
         .chat-modal .modal-content .chat-messages {
             max-height: 400px;
             overflow-y: auto;
@@ -2454,7 +2438,6 @@
             border: 1px solid var(--border-color);
             min-height: 200px;
         }
-
         .chat-modal .modal-content .chat-message {
             padding: 10px 14px;
             margin-bottom: 6px;
@@ -2463,21 +2446,18 @@
             word-wrap: break-word;
             animation: fadeIn 0.2s ease;
         }
-
         .chat-modal .modal-content .chat-message.user {
             background: var(--gradient);
             color: white;
             margin-left: auto;
             border-bottom-right-radius: 4px;
         }
-
         .chat-modal .modal-content .chat-message.admin {
             background: var(--border-color);
             color: var(--text-color);
             margin-right: auto;
             border-bottom-left-radius: 4px;
         }
-
         .chat-modal .modal-content .chat-message .time {
             font-size: 10px;
             opacity: 0.7;
@@ -2486,7 +2466,6 @@
             align-items: center;
             gap: 6px;
         }
-
         .chat-modal .modal-content .chat-message .time .read-status {
             font-size: 10px;
         }
@@ -2496,7 +2475,6 @@
         .chat-modal .modal-content .chat-message .time .read-status.seen {
             color: var(--success);
         }
-
         .chat-modal .modal-content .chat-typing {
             font-size: 12px;
             color: var(--text-light);
@@ -2505,16 +2483,13 @@
             animation: pulse 1.5s infinite;
             display: none;
         }
-
         .chat-modal .modal-content .chat-typing.active {
             display: block;
         }
-
         .chat-modal .modal-content .chat-input-group {
             display: flex;
             gap: 10px;
         }
-
         .chat-modal .modal-content .chat-input-group input {
             flex: 1;
             padding: 12px 14px;
@@ -2526,13 +2501,11 @@
             color: var(--text-color);
             transition: var(--transition);
         }
-
         .chat-modal .modal-content .chat-input-group input:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
         }
-
         .chat-modal .modal-content .chat-input-group button {
             padding: 12px 20px;
             border: none;
@@ -2544,24 +2517,20 @@
             transition: var(--transition);
             font-family: inherit;
         }
-
         .chat-modal .modal-content .chat-input-group button:hover {
             transform: scale(1.02);
             box-shadow: 0 4px 15px rgba(var(--primary-color-rgb), 0.3);
         }
-
         .chat-modal .modal-content .chat-input-group button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
-
         .chat-modal .modal-content .chat-status {
             font-size: 12px;
             color: var(--text-light);
             text-align: center;
             margin-bottom: 8px;
         }
-
         .chat-modal .modal-content .chat-info {
             font-size: 11px;
             color: var(--text-light);
@@ -2571,13 +2540,13 @@
             margin-bottom: 8px;
         }
 
-        /* Banned overlay - Updated with Telegram contact */
+        /* Banned overlay */
         .banned-overlay {
             display: none;
             position: fixed;
             inset: 0;
             z-index: 8000;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             align-items: center;
@@ -2587,30 +2556,25 @@
             text-align: center;
             padding: 30px;
         }
-
         .banned-overlay.active {
             display: flex;
         }
-
         .banned-overlay .banned-icon {
             font-size: 80px;
             color: var(--danger);
             margin-bottom: 20px;
         }
-
         .banned-overlay .banned-title {
             font-size: 28px;
             font-weight: 800;
             margin-bottom: 8px;
         }
-
         .banned-overlay .banned-reason {
             font-size: 14px;
-            color: rgba(255,255,255,0.7);
+            color: rgba(255, 255, 255, 0.7);
             max-width: 400px;
             margin-bottom: 20px;
         }
-
         .banned-overlay .banned-btn {
             padding: 12px 30px;
             border: none;
@@ -2626,13 +2590,11 @@
             align-items: center;
             gap: 10px;
         }
-
         .banned-overlay .banned-btn:hover {
             transform: scale(1.05);
             box-shadow: 0 4px 20px rgba(var(--primary-color-rgb), 0.4);
         }
 
-        /* Anti-hack warning */
         .security-badge {
             position: fixed;
             bottom: 75px;
@@ -2657,16 +2619,13 @@
             color: var(--text-light);
             display: none;
         }
-
         .budget-suggestion.active {
             display: block;
         }
-
         .budget-suggestion .suggestion-text {
             font-weight: 600;
             color: var(--info);
         }
-
         .budget-suggestion .suggestion-amount {
             font-weight: 700;
             color: var(--primary-color);
@@ -2681,6 +2640,35 @@
         }
         .convert-min-warning.active {
             display: block;
+        }
+
+        /* ===== NEW: COST PER VIEW EXPLANATION ===== */
+        .cost-breakdown {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-light);
+            padding: 6px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .cost-breakdown:last-child {
+            border-bottom: none;
+        }
+        .cost-breakdown .label {
+            font-weight: 500;
+        }
+        .cost-breakdown .value {
+            font-weight: 700;
+            color: var(--text-color);
+        }
+        .cost-breakdown .value.warning {
+            color: var(--warning);
+        }
+        .cost-breakdown .value.success {
+            color: var(--success);
+        }
+        .cost-breakdown .value.danger {
+            color: var(--danger);
         }
     </style>
 </head>
@@ -2709,7 +2697,7 @@
     <div id="preloader-footer">
         <a href="https://t.me/nexearn2" target="_blank">@nexearn2</a>
     </div>
-    
+
     <!-- ===== AD LOADER ===== -->
     <div id="ad-loader-overlay">
         <div class="loader-spinner"></div>
@@ -2911,43 +2899,59 @@
                         <textarea id="ad-desc" placeholder="Describe your ad. You can include links here." required></textarea>
                         <div class="form-hint">You can add links in the description. Users can click them.</div>
                     </div>
-                    
+
                     <!-- NEW: Requirements Field -->
                     <div class="form-group">
                         <label>Requirements *</label>
                         <textarea id="ad-requirements" placeholder="What requirements must users meet to complete this job?" rows="3" required></textarea>
                         <div class="form-hint">Example: Must have a YouTube account, must like the video, etc.</div>
                     </div>
-                    
+
                     <!-- NEW: Instructions Field -->
                     <div class="form-group">
                         <label>Instructions *</label>
                         <textarea id="ad-instructions" placeholder="Step by step instructions for users to follow" rows="4" required></textarea>
                         <div class="form-hint">Example: 1. Click the link below 2. Watch the video 3. Take a screenshot</div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Ad Image (Optional)</label>
                         <input type="file" id="ad-image" accept="image/*">
                         <div class="form-hint">Upload PNG, JPG or GIF (Max 5MB)</div>
                     </div>
-                    
-                    <!-- Auto Calculate Section - FIXED -->
+
+                    <!-- ===== AUTO CALCULATION - FIXED ===== -->
                     <div class="calc-result" id="calcResult">
                         <div class="calc-item">
-                            <span class="label">👁 Total Views</span>
-                            <span class="value highlight" id="calcViews">0</span>
+                            <span class="label">👁 Target Views</span>
+                            <span class="value highlight" id="calcViews">50</span>
+                        </div>
+                        <div class="calc-item">
+                            <span class="label">💰 Cost per View</span>
+                            <span class="value reward" id="calcReward">$0.0100</span>
                         </div>
                         <div class="calc-item">
                             <span class="label">📅 Duration</span>
                             <span class="value" id="calcDuration">7 days</span>
                         </div>
-                        <div class="calc-item">
-                            <span class="label">💰 Cost per View</span>
-                            <span class="value reward" id="calcReward">$0.0000</span>
+                    </div>
+
+                    <!-- Detailed breakdown -->
+                    <div style="background:var(--background-color); border-radius:8px; padding:10px 12px; margin-bottom:14px; border:1px solid var(--border-color);">
+                        <div class="cost-breakdown">
+                            <span class="label">Daily Budget</span>
+                            <span class="value" id="ad-daily-budget">$0.1428</span>
+                        </div>
+                        <div class="cost-breakdown">
+                            <span class="label">Total Budget</span>
+                            <span class="value" id="ad-total-budget-display">$1.00</span>
+                        </div>
+                        <div class="cost-breakdown">
+                            <span class="label">Cost per View (with promo)</span>
+                            <span class="value success" id="ad-cost-per-view">$0.0100</span>
                         </div>
                     </div>
-                    
+
                     <!-- Budget Suggestion -->
                     <div class="budget-suggestion" id="budgetSuggestion">
                         <i class="fa-solid fa-lightbulb" style="color:var(--info);"></i>
@@ -2955,14 +2959,14 @@
                         <span class="suggestion-amount" id="suggestedBudget">$0.00</span>
                         <span style="font-size:12px; display:block; margin-top:4px;" id="suggestionReason">Based on your selected duration and views</span>
                     </div>
-                    
+
                     <div class="form-group">
-                        <label>Total Budget ($)</label>
+                        <label>Total Budget ($) *</label>
                         <input type="number" id="ad-budget" step="0.01" value="1.00" min="0.10" required>
                         <div class="form-hint">Total amount you want to spend (Minimum $1.00)</div>
                     </div>
                     <div class="form-group">
-                        <label>Target Views</label>
+                        <label>Target Views *</label>
                         <input type="number" id="ad-target-views" value="50" min="1" required>
                         <div class="form-hint">How many people should see this ad?</div>
                     </div>
@@ -2971,18 +2975,9 @@
                         <input type="number" id="ad-duration" value="7" min="3" max="30" required>
                         <div class="form-hint">Minimum 3 days. Duration affects cost per view.</div>
                     </div>
-                    
-                    <div id="ad-budget-info" style="font-size:12px; color:var(--text-light); margin-bottom:12px; background:var(--background-color); padding:10px; border-radius:8px;">
-                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px;">
-                            <span>Total Views: <strong id="ad-total-views">50</strong></span>
-                            <span>Cost per view: <strong>$<span id="ad-cost-per-view">0.0000</span></strong></span>
-                            <span>Duration: <strong id="ad-duration-display">7</strong> days</span>
-                            <span>Daily Budget: <strong>$<span id="ad-daily-budget">0.00</span></strong></span>
-                        </div>
-                    </div>
-                    
+
                     <div id="ad-validation-message" style="font-size:13px; font-weight:600; margin-bottom:10px; padding:8px 12px; border-radius:8px; display:none;"></div>
-                    
+
                     <button type="submit" class="action-button" id="create-ad-btn">
                         <i class="fa-solid fa-plus"></i> <span>Create Ad Campaign</span>
                     </button>
@@ -3137,7 +3132,7 @@
             <span>Bonus</span>
         </button>
     </div>
-    
+
     <!-- ===== MODALS ===== -->
     <!-- Welcome Modal -->
     <div id="welcomeModal" class="modal">
@@ -3148,7 +3143,7 @@
             <button class="action-button" onclick="closeModal('welcomeModal')">I Understand</button>
         </div>
     </div>
-    
+
     <!-- Withdraw Modal -->
     <div id="withdrawModal" class="modal">
         <div class="modal-content">
@@ -3277,7 +3272,7 @@
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal - Updated 50/50 -->
+    <!-- Delete Confirmation Modal -->
     <div id="deleteConfirmModal" class="modal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal('deleteConfirmModal')">&times;</button>
@@ -3308,7 +3303,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Support Modal -->
     <div id="supportModal" class="modal">
         <div class="modal-content">
@@ -3321,7 +3316,7 @@
             </button>
         </div>
     </div>
-    
+
     <!-- History Modal -->
     <div id="historyModal" class="modal">
         <div class="modal-content">
@@ -3330,7 +3325,7 @@
             <div id="history-list"></div>
         </div>
     </div>
-    
+
     <!-- Invite Modal -->
     <div id="inviteModal" class="modal">
         <div class="modal-content">
@@ -3347,7 +3342,7 @@
             </button>
         </div>
     </div>
-    
+
     <!-- Bonus Tasks Modal -->
     <div id="bonusTasksModal" class="modal">
         <div class="modal-content">
@@ -3394,7 +3389,7 @@
             AD_COOLDOWN_MINUTES: 1,
             MINIMUM_DURATION_DAYS: 3,
             MINIMUM_BUDGET: 1.00,
-            MINIMUM_CONVERT: 1.00, // Minimum conversion amount
+            MINIMUM_CONVERT: 1.00,
             ADMIN_CHAT_ID: 'YOUR_ADMIN_CHAT_ID',
             withdrawalMethods: ['Binance', 'Bikash', 'Nogad'],
             depositMethods: [
@@ -3552,6 +3547,7 @@
             DOM.adTotalViews = document.getElementById('ad-total-views');
             DOM.adCostPerView = document.getElementById('ad-cost-per-view');
             DOM.adDailyBudget = document.getElementById('ad-daily-budget');
+            DOM.adTotalBudgetDisplay = document.getElementById('ad-total-budget-display');
             DOM.deleteBudget = document.getElementById('delete-budget');
             DOM.deleteRefund = document.getElementById('delete-refund');
             DOM.deleteFee = document.getElementById('delete-fee');
@@ -3611,7 +3607,7 @@
         }
 
         // ============================================================
-        // TELEGRAM SUPPORT - Banned users contact admin
+        // TELEGRAM SUPPORT
         // ============================================================
         function openTelegramSupport() {
             const supportLink = CONFIG.SUPPORT_LINK || 'https://t.me/NexEarn2Support';
@@ -3645,7 +3641,7 @@
         }
 
         // ============================================================
-        // ANTI-HACK BALANCE PROTECTION - Auto Ban on hack attempt
+        // ANTI-HACK BALANCE PROTECTION
         // ============================================================
         let lastKnownBalance = 0;
         let balanceCheckInterval = null;
@@ -3654,7 +3650,6 @@
             lastKnownBalance = state.balance;
             balanceCheckInterval = setInterval(() => {
                 const currentBalance = state.balance;
-                // Check if balance was manually increased (hack attempt)
                 if (currentBalance > lastKnownBalance + 0.001) {
                     if (!window._legitimateBalanceChange) {
                         console.warn('⚠️ Suspicious balance increase detected!');
@@ -3663,7 +3658,6 @@
                     }
                     window._legitimateBalanceChange = false;
                 }
-                // Check if balance decreased suspiciously
                 if (currentBalance < lastKnownBalance - 0.001) {
                     if (!window._legitimateWithdrawal) {
                         console.warn('⚠️ Suspicious balance decrease detected!');
@@ -3676,7 +3670,6 @@
             }, 5000);
         }
 
-        // Mark legitimate balance changes
         const originalSaveUserData = saveUserData;
         saveUserData = function() {
             window._legitimateBalanceChange = true;
@@ -3709,26 +3702,26 @@
             isBanned = true;
             state.isBanned = true;
             state.banReason = reason;
-            
+
             if (firebaseDb && state.currentUserId) {
                 firebaseDb.ref(`users/${state.currentUserId}/isBanned`).set(true);
                 firebaseDb.ref(`users/${state.currentUserId}/banReason`).set(reason);
                 firebaseDb.ref(`users/${state.currentUserId}/bannedAt`).set(Date.now());
             }
-            
+
             DOM.banReason.textContent = reason;
             DOM.bannedOverlay.classList.add('active');
-            
+
             document.querySelectorAll('button, input, textarea, select').forEach(el => {
                 el.disabled = true;
             });
-            
+
             DOM.container.style.display = 'none';
             document.querySelectorAll('.modal, .job-details-page, .profile-page, .all-jobs-page').forEach(el => {
                 el.classList.remove('active');
                 el.style.display = 'none';
             });
-            
+
             showToast('🚫 Account Banned! Contact admin for more info.', 'error');
             sendAdminNotification(`🚫 User Banned\nUser: ${tg?.initDataUnsafe?.user?.first_name || 'Unknown'}\nID: ${state.currentUserId}\nReason: ${reason}`);
         }
@@ -3747,7 +3740,7 @@
         }
 
         // ============================================================
-        // ADMIN CHAT SYSTEM - FULLY WORKING WITH READ RECEIPTS
+        // ADMIN CHAT SYSTEM
         // ============================================================
         function openChatModal() {
             if (isBanned) {
@@ -3757,7 +3750,7 @@
             unreadCount = 0;
             DOM.chatBadge.style.display = 'none';
             DOM.chatMessages.scrollTop = DOM.chatMessages.scrollHeight;
-            
+
             if (firebaseDb && state.currentUserId) {
                 const chatRef = firebaseDb.ref(`chats/${state.currentUserId}`);
                 chatRef.orderByChild('timestamp').once('value', (snapshot) => {
@@ -4008,7 +4001,8 @@
         async function translateText(text, targetLang) {
             if (!text || targetLang === 'original') return text;
             try {
-                const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
+                const url =
+                    `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
                 const response = await fetch(url);
                 const data = await response.json();
                 if (data && data[0]) {
@@ -4034,8 +4028,10 @@
                             '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
                         );
                         document.getElementById('job-description-text').innerHTML = descWithLinks;
-                        document.getElementById('job-instructions-text').textContent = ad.instructions || 'No specific instructions provided.';
-                        document.getElementById('job-requirements-text').textContent = ad.requirements || 'No specific requirements.';
+                        document.getElementById('job-instructions-text').textContent = ad.instructions ||
+                            'No specific instructions provided.';
+                        document.getElementById('job-requirements-text').textContent = ad.requirements ||
+                            'No specific requirements.';
                     }
                 }
                 return;
@@ -4185,7 +4181,7 @@
                         state.adsWatchedToday = data.adsWatchedToday || 0;
                         state.lastAdWatchedDate = data.lastAdWatchedDate || null;
                         state.cooldownUntil = data.cooldownUntil || null;
-                        state.weeklyActivity = data.weeklyActivity || [0,0,0,0,0,0,0];
+                        state.weeklyActivity = data.weeklyActivity || [0, 0, 0, 0, 0, 0, 0];
                         state.withdrawalHistory = data.withdrawalHistory || [];
                         state.depositHistory = data.depositHistory || [];
                         state.completedBonusTasks = data.completedBonusTasks || [];
@@ -4246,7 +4242,8 @@
                 renderDepositHistory(list);
                 saveUserData();
             });
-            firebaseDb.ref('deposits').orderByChild('userId').equalTo(state.currentUserId).on('child_changed', (snapshot) => {
+            firebaseDb.ref('deposits').orderByChild('userId').equalTo(state.currentUserId).on('child_changed', (
+            snapshot) => {
                 const data = snapshot.val();
                 if (data?.status === 'approved') {
                     state.walletBalance += data.amount / 100;
@@ -4369,7 +4366,8 @@
             if (state.userRole === 'advertiser') {
                 const activeAds = state.myAds.filter(a => a.status === 'active' && a.approved).length;
                 const pendingReviews = state.verifications.filter(v => v.status === 'pending').length;
-                const expiredAds = state.myAds.filter(a => a.status === 'expired' || (a.endDate && a.endDate < Date.now())).length;
+                const expiredAds = state.myAds.filter(a => a.status === 'expired' || (a.endDate && a.endDate < Date.now()))
+                    .length;
                 content = `
                     <div class="profile-card">
                         <div class="big-avatar">${initial}</div>
@@ -4473,7 +4471,8 @@
 
         function updateProfileData(ads) {
             if (ads) {
-                state.jobCount = ads.filter(a => a.status === 'active' && a.approved && a.createdBy !== state.currentUserId).length;
+                state.jobCount = ads.filter(a => a.status === 'active' && a.approved && a.createdBy !== state.currentUserId)
+                    .length;
                 if (DOM.profilePage.classList.contains('active')) {
                     renderProfilePage();
                 }
@@ -4513,21 +4512,23 @@
                         firebaseDb.ref(`ads/${ad.id}/status`).set('expired');
                     }
                 });
-                let filtered = adList.filter(ad => 
-                    (ad.status === 'active' || ad.status === 'paused') && 
+                let filtered = adList.filter(ad =>
+                    (ad.status === 'active' || ad.status === 'paused') &&
                     ad.approved === true &&
                     ad.createdBy !== state.currentUserId
                 );
                 filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
                 if (filtered.length === 0) {
-                    DOM.allJobsContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-rectangle-ad"></i><p>No jobs available</p></div>`;
+                    DOM.allJobsContainer.innerHTML =
+                        `<div class="empty-state"><i class="fa-solid fa-rectangle-ad"></i><p>No jobs available</p></div>`;
                     return;
                 }
                 DOM.allJobsContainer.innerHTML = filtered.map(ad => {
                     const views = ad.views || 0;
                     const totalViews = ad.totalViews || 100;
                     const progress = Math.min((views / totalViews) * 100, 100);
-                    const daysLeft = ad.endDate ? Math.ceil((ad.endDate - Date.now()) / (1000 * 60 * 60 * 24)) : 0;
+                    const daysLeft = ad.endDate ? Math.ceil((ad.endDate - Date.now()) / (1000 * 60 * 60 * 24)) :
+                    0;
                     const category = ad.category || 'General';
                     const subCategory = ad.subCategory || '';
                     const creatorName = ad.creatorName || 'Anonymous';
@@ -4566,7 +4567,8 @@
                 }).join('');
             }).catch(err => {
                 console.error("Error loading all jobs:", err);
-                DOM.allJobsContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-exclamation-circle"></i><p>Failed to load jobs</p></div>`;
+                DOM.allJobsContainer.innerHTML =
+                    `<div class="empty-state"><i class="fa-solid fa-exclamation-circle"></i><p>Failed to load jobs</p></div>`;
             });
         }
 
@@ -4670,7 +4672,7 @@
         }
 
         // ============================================================
-        // CONVERT EARNINGS TO WALLET - WITH MINIMUM $1
+        // CONVERT EARNINGS TO WALLET
         // ============================================================
         function convertToWallet() {
             if (state.balance <= 0) {
@@ -4721,7 +4723,8 @@
         function renderDepositHistory(deposits) {
             if (!DOM.depositHistoryContainer) return;
             if (!deposits || deposits.length === 0) {
-                DOM.depositHistoryContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-credit-card"></i><p>No deposit history</p></div>`;
+                DOM.depositHistoryContainer.innerHTML =
+                    `<div class="empty-state"><i class="fa-solid fa-credit-card"></i><p>No deposit history</p></div>`;
                 return;
             }
             DOM.depositHistoryContainer.innerHTML = `
@@ -4798,111 +4801,130 @@
         }
 
         // ============================================================
-        // AUTO CALCULATE AD COST - FIXED FORMULA
+        // AUTO CALCULATE AD COST - FIXED
         // ============================================================
         function updateAdCalculation() {
             const budget = parseFloat(DOM.adBudget.value) || 1.00;
             const targetViews = parseInt(DOM.adTargetViews.value) || 50;
             const duration = parseInt(DOM.adDuration.value) || 7;
-            
-            // FIXED FORMULA: costPerView = (budget / targetViews) * (7 / duration)
-            // For budget=1, views=50, duration=7 -> costPerView = 1/50 * 7/7 = 0.02 * 1 = 0.02
-            // Wait, user wants 0.01 for 50 views, 7 days, $1 budget
-            // So we need: costPerView = (budget / targetViews) * (7 / duration) * 0.5
-            // This gives: 1/50 * 7/7 * 0.5 = 0.02 * 1 * 0.5 = 0.01 ✓
+
+            // --- CORE FORMULA ---
+            // costPerView = (budget / targetViews) * (7 / duration) * 0.5
+            // For budget=1, views=50, duration=7 -> 1/50 * 1 * 0.5 = 0.01
             const costPerView = (budget / targetViews) * (7 / duration) * 0.5;
-            const requiredBudget = targetViews * costPerView;
-            const dailyBudget = requiredBudget / duration;
-            
-            DOM.adTotalViews.textContent = targetViews || 0;
-            DOM.adCostPerView.textContent = costPerView.toFixed(4);
+            const dailyBudget = budget / duration;
+
+            // --- UPDATE DISPLAY ---
+            DOM.adTotalViews.textContent = targetViews;
+            DOM.adCostPerView.textContent = `$${costPerView.toFixed(4)}`;
             DOM.adDurationDisplay.textContent = duration;
-            DOM.adDailyBudget.textContent = dailyBudget.toFixed(2);
-            DOM.calcViews.textContent = targetViews || 0;
+            DOM.adDailyBudget.textContent = `$${dailyBudget.toFixed(4)}`;
+            DOM.adTotalBudgetDisplay.textContent = `$${budget.toFixed(2)}`;
+            DOM.calcViews.textContent = targetViews;
             DOM.calcReward.textContent = `$${costPerView.toFixed(4)}`;
             DOM.calcDuration.textContent = `${duration} days`;
-            
+
+            // --- VALIDATION ---
             const minBudget = CONFIG.MINIMUM_BUDGET || 1.00;
             const minDuration = CONFIG.MINIMUM_DURATION_DAYS || 3;
             const minCostPerView = 0.0001;
-            const idealBudget = requiredBudget;
+
+            const validationMsg = DOM.adValidationMessage;
+            let isValid = true;
+            let errors = [];
+
+            if (budget < minBudget) {
+                isValid = false;
+                errors.push(`⚠️ Minimum budget is $${minBudget.toFixed(2)}.`);
+            }
+            if (costPerView < minCostPerView) {
+                isValid = false;
+                errors.push(
+                    `⚠️ Cost per view is too low ($${costPerView.toFixed(4)}). Minimum is $${minCostPerView.toFixed(4)}. Try increasing budget, reducing target views, or increasing duration.`
+                    );
+            }
+            if (duration < minDuration) {
+                isValid = false;
+                errors.push(`⚠️ Minimum duration is ${minDuration} days.`);
+            }
+            // Check if budget is enough for target views at the calculated cost
+            const requiredBudget = targetViews * costPerView;
+            if (Math.abs(budget - requiredBudget) > 0.001 && targetViews > 0) {
+                // Not a hard error, just a warning
+                // But we'll show a suggestion
+            }
+
+            if (!isValid) {
+                validationMsg.style.display = 'block';
+                validationMsg.style.background = 'rgba(239, 68, 68, 0.1)';
+                validationMsg.style.color = 'var(--danger)';
+                validationMsg.style.border = '1px solid var(--danger)';
+                validationMsg.innerHTML = errors.join('<br>');
+                DOM.calcReward.style.color = 'var(--danger)';
+                DOM.calcResult.style.borderColor = 'var(--danger)';
+                DOM.calcResult.style.background = 'rgba(239, 68, 68, 0.06)';
+                // Still update suggestion
+                updateBudgetSuggestion(budget, targetViews, duration, costPerView);
+                return;
+            }
+
+            // If budget is much higher than required, show warning
+            if (budget > requiredBudget * 1.2 && targetViews > 0) {
+                validationMsg.style.display = 'block';
+                validationMsg.style.background = 'rgba(245, 158, 11, 0.1)';
+                validationMsg.style.color = 'var(--warning)';
+                validationMsg.style.border = '1px solid var(--warning)';
+                validationMsg.innerHTML =
+                    `⚠️ Your budget ($${budget.toFixed(2)}) is higher than the required budget ($${requiredBudget.toFixed(2)}) for ${targetViews} views. You may want to reduce your budget or increase target views.`;
+                DOM.calcReward.style.color = 'var(--warning)';
+                DOM.calcResult.style.borderColor = 'var(--warning)';
+                DOM.calcResult.style.background = 'rgba(245, 158, 11, 0.06)';
+                updateBudgetSuggestion(budget, targetViews, duration, costPerView);
+                return;
+            }
+
+            // All good
+            validationMsg.style.display = 'none';
+            DOM.calcReward.style.color = 'var(--success)';
+            DOM.calcResult.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+            DOM.calcResult.style.background = 'rgba(16, 185, 129, 0.06)';
+
+            // Update budget suggestion
+            updateBudgetSuggestion(budget, targetViews, duration, costPerView);
+        }
+
+        // ============================================================
+        // BUDGET SUGGESTION - FIXED
+        // ============================================================
+        function updateBudgetSuggestion(budget, targetViews, duration, costPerView) {
             const suggestionEl = DOM.budgetSuggestion;
             const suggestedAmountEl = DOM.suggestedBudget;
             const reasonEl = DOM.suggestionReason;
-            
-            if (budget < idealBudget && targetViews > 0 && duration > 0) {
+
+            // Suggest a budget that gives at least $0.001 per view
+            const minRecommendedCPV = 0.001;
+            const suggestedBudget = Math.max(
+                CONFIG.MINIMUM_BUDGET,
+                targetViews * minRecommendedCPV * (duration / 7) / 0.5
+            );
+
+            if (costPerView < minRecommendedCPV && targetViews > 0) {
                 suggestionEl.classList.add('active');
-                suggestedAmountEl.textContent = `$${idealBudget.toFixed(2)}`;
-                reasonEl.textContent = `For ${targetViews} views over ${duration} days, required budget is $${idealBudget.toFixed(2)} (Cost per view: $${costPerView.toFixed(4)})`;
+                suggestedAmountEl.textContent = `$${suggestedBudget.toFixed(2)}`;
+                reasonEl.textContent =
+                    `To achieve at least $${minRecommendedCPV.toFixed(4)} per view for ${targetViews} views over ${duration} days, we recommend a budget of $${suggestedBudget.toFixed(2)}.`;
                 suggestionEl.style.borderColor = 'var(--warning)';
                 suggestionEl.style.background = 'rgba(245, 158, 11, 0.08)';
-            } else if (budget > idealBudget * 2 && targetViews > 0) {
+            } else if (budget < suggestedBudget * 0.8 && targetViews > 0) {
                 suggestionEl.classList.add('active');
-                suggestedAmountEl.textContent = `$${idealBudget.toFixed(2)}`;
-                reasonEl.textContent = `For ${targetViews} views over ${duration} days, recommended budget is $${idealBudget.toFixed(2)}`;
+                suggestedAmountEl.textContent = `$${suggestedBudget.toFixed(2)}`;
+                reasonEl.textContent =
+                    `For better results with ${targetViews} views over ${duration} days, consider increasing your budget to $${suggestedBudget.toFixed(2)}.`;
                 suggestionEl.style.borderColor = 'var(--info)';
                 suggestionEl.style.background = 'rgba(59, 130, 246, 0.08)';
             } else {
                 suggestionEl.classList.remove('active');
             }
-            
-            const validationMsg = document.getElementById('ad-validation-message');
-            if (budget < minBudget) {
-                validationMsg.style.display = 'block';
-                validationMsg.style.background = 'rgba(239, 68, 68, 0.1)';
-                validationMsg.style.color = 'var(--danger)';
-                validationMsg.style.border = '1px solid var(--danger)';
-                validationMsg.innerHTML = `⚠️ Minimum budget is $${minBudget.toFixed(2)}. Please increase your budget.`;
-                DOM.calcReward.style.color = 'var(--danger)';
-                DOM.calcResult.style.borderColor = 'var(--danger)';
-                DOM.calcResult.style.background = 'rgba(239, 68, 68, 0.06)';
-                return;
-            }
-            if (costPerView < minCostPerView) {
-                validationMsg.style.display = 'block';
-                validationMsg.style.background = 'rgba(239, 68, 68, 0.1)';
-                validationMsg.style.color = 'var(--danger)';
-                validationMsg.style.border = '1px solid var(--danger)';
-                validationMsg.innerHTML = `⚠️ Cost per view is too low! Minimum is $${minCostPerView.toFixed(4)}. 
-                    <br><strong>Suggestions:</strong> 
-                    <br>• Increase budget to $${(idealBudget).toFixed(2)} (recommended)
-                    <br>• Reduce target views to ${Math.floor(budget / (minCostPerView * (7/duration) * 0.5))} 
-                    <br>• Increase duration to ${Math.ceil(7 * 0.5 * minCostPerView * targetViews / budget)} days`;
-                DOM.calcReward.style.color = 'var(--danger)';
-                DOM.calcResult.style.borderColor = 'var(--danger)';
-                DOM.calcResult.style.background = 'rgba(239, 68, 68, 0.06)';
-                return;
-            }
-            if (duration < minDuration) {
-                validationMsg.style.display = 'block';
-                validationMsg.style.background = 'rgba(239, 68, 68, 0.1)';
-                validationMsg.style.color = 'var(--danger)';
-                validationMsg.style.border = '1px solid var(--danger)';
-                validationMsg.innerHTML = `⚠️ Minimum duration is ${minDuration} days. Please increase duration.`;
-                DOM.calcReward.style.color = 'var(--danger)';
-                DOM.calcResult.style.borderColor = 'var(--danger)';
-                DOM.calcResult.style.background = 'rgba(239, 68, 68, 0.06)';
-                return;
-            }
-            if (Math.abs(budget - requiredBudget) > 0.01) {
-                validationMsg.style.display = 'block';
-                validationMsg.style.background = 'rgba(245, 158, 11, 0.1)';
-                validationMsg.style.color = 'var(--warning)';
-                validationMsg.style.border = '1px solid var(--warning)';
-                validationMsg.innerHTML = `⚠️ Budget and target views don't match exactly. 
-                    <br>• Current cost per view: $${costPerView.toFixed(4)} 
-                    <br>• Required budget for ${targetViews} views: $${requiredBudget.toFixed(2)} 
-                    <br>• Your budget: $${budget.toFixed(2)} 
-                    <br><strong>Suggestion:</strong> Set budget to $${requiredBudget.toFixed(2)} or adjust views to ${Math.floor(budget / costPerView)}`;
-                DOM.calcReward.style.color = 'var(--warning)';
-                DOM.calcResult.style.borderColor = 'var(--warning)';
-                DOM.calcResult.style.background = 'rgba(245, 158, 11, 0.06)';
-                return;
-            }
-            validationMsg.style.display = 'none';
-            DOM.calcReward.style.color = 'var(--success)';
-            DOM.calcResult.style.borderColor = 'rgba(16, 185, 129, 0.2)';
-            DOM.calcResult.style.background = 'rgba(16, 185, 129, 0.06)';
         }
 
         // ============================================================
@@ -4910,12 +4932,18 @@
         // ============================================================
         function setupCreateAdForm() {
             if (!DOM.createAdForm) return;
+
+            // Input listeners
             DOM.adBudget.addEventListener('input', updateAdCalculation);
             DOM.adTargetViews.addEventListener('input', updateAdCalculation);
             DOM.adDuration.addEventListener('input', updateAdCalculation);
+
+            // Initial calculation
             updateAdCalculation();
+
             DOM.createAdForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
+
                 const title = document.getElementById('ad-title').value.trim();
                 const category = DOM.adCategory.value;
                 const subCategory = DOM.adSubCategory.value.trim();
@@ -4926,6 +4954,8 @@
                 const duration = parseInt(DOM.adDuration.value) || 3;
                 const targetViews = parseInt(DOM.adTargetViews.value) || 10;
                 const fileInput = document.getElementById('ad-image');
+
+                // --- VALIDATION ---
                 if (!title || !category || !desc || !requirements || !instructions) {
                     showToast('❌ Please fill all required fields!', 'error');
                     return;
@@ -4942,21 +4972,28 @@
                     showToast(`❌ Insufficient wallet balance! You need $${budget.toFixed(2)}.`, 'error');
                     return;
                 }
+
+                // Calculate cost per view
                 const costPerView = (budget / targetViews) * (7 / duration) * 0.5;
                 const requiredBudget = targetViews * costPerView;
+
                 if (costPerView < 0.0001) {
-                    showToast(`❌ Cost per view is too low! Minimum is $0.0001. 
-                        Please increase budget (to $${(targetViews * 0.0001 * (7/duration) * 0.5).toFixed(2)}), 
-                        reduce target views (to ${Math.floor(budget / (0.0001 * (7/duration) * 0.5))}), 
-                        or increase duration.`, 'error');
+                    showToast(
+                        `❌ Cost per view is too low ($${costPerView.toFixed(4)})! Minimum is $0.0001. Please increase budget or reduce target views.`,
+                        'error');
                     return;
                 }
-                if (Math.abs(budget - requiredBudget) > 0.01) {
-                    showToast(`❌ Budget and target views don't match. 
-                        Required budget: $${requiredBudget.toFixed(2)}. 
-                        Please adjust budget or target views.`, 'error');
-                    return;
+
+                // Warn if budget is much higher than required
+                if (budget > requiredBudget * 1.2) {
+                    if (!confirm(
+                            `⚠️ Your budget ($${budget.toFixed(2)}) is higher than the required budget ($${requiredBudget.toFixed(2)}) for ${targetViews} views. Do you want to continue?`
+                            )) {
+                        return;
+                    }
                 }
+
+                // Upload image
                 let imageUrl = '';
                 if (fileInput.files.length > 0) {
                     const file = fileInput.files[0];
@@ -4973,20 +5010,40 @@
                         return;
                     }
                 }
+
+                // Deduct from wallet
                 state.walletBalance -= budget;
                 state.totalSpent += budget;
+
                 const endDate = Date.now() + (duration * 24 * 60 * 60 * 1000);
                 const user = tg?.initDataUnsafe?.user || { first_name: 'User' };
+
                 const adData = {
-                    title, category, subCategory: subCategory || '', desc: desc || 'No description',
-                    requirements: requirements, instructions: instructions,
-                    reward: costPerView, totalViews: targetViews, views: 0,
-                    status: 'active', approved: false, createdBy: state.currentUserId,
-                    creatorName: user.first_name || 'User', creatorRating: 0, creatorFollowers: 0,
-                    createdAt: Date.now(), budget: budget, imageUrl, verified: false,
-                    duration: duration, endDate: endDate, costPerView: costPerView,
+                    title,
+                    category,
+                    subCategory: subCategory || '',
+                    desc: desc || 'No description',
+                    requirements: requirements,
+                    instructions: instructions,
+                    reward: costPerView,
+                    totalViews: targetViews,
+                    views: 0,
+                    status: 'active',
+                    approved: false,
+                    createdBy: state.currentUserId,
+                    creatorName: user.first_name || 'User',
+                    creatorRating: 0,
+                    creatorFollowers: 0,
+                    createdAt: Date.now(),
+                    budget: budget,
+                    imageUrl,
+                    verified: false,
+                    duration: duration,
+                    endDate: endDate,
+                    costPerView: costPerView,
                     dailyBudget: budget / duration
                 };
+
                 try {
                     const newRef = firebaseDb.ref('ads').push();
                     await newRef.set(adData);
@@ -5018,8 +5075,8 @@
                     firebaseDb.ref(`ads/${ad.id}/status`).set('expired');
                 }
             });
-            let filtered = ads.filter(ad => 
-                (ad.status === 'active' || ad.status === 'paused') && 
+            let filtered = ads.filter(ad =>
+                (ad.status === 'active' || ad.status === 'paused') &&
                 ad.approved === true &&
                 ad.createdBy !== state.currentUserId
             );
@@ -5029,7 +5086,8 @@
             filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
             const topJobs = filtered.slice(0, 3);
             if (topJobs.length === 0) {
-                DOM.jobListContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-rectangle-ad"></i><p>No jobs available</p></div>`;
+                DOM.jobListContainer.innerHTML =
+                    `<div class="empty-state"><i class="fa-solid fa-rectangle-ad"></i><p>No jobs available</p></div>`;
                 return;
             }
             DOM.jobListContainer.innerHTML = topJobs.map(ad => {
@@ -5109,7 +5167,8 @@
                 const isFollowing = state.followers && state.followers[creatorId] === true;
                 const userRating = state.userRatings && state.userRatings[creatorId] || 0;
                 const verification = state.verifications.find(v => v.adId === adId);
-                let verificationStatus = '', rejectionReason = '';
+                let verificationStatus = '',
+                    rejectionReason = '';
                 if (verification) {
                     if (verification.status === 'approved') {
                         verificationStatus = '✅ Verified';
@@ -5311,7 +5370,7 @@
         }
 
         // ============================================================
-        // VERIFY JOB - VIEWS AND REWARD NOT ADDED UNTIL APPROVAL
+        // VERIFY JOB
         // ============================================================
         function openVerifyJob(adId) {
             if (!adId) {
@@ -5427,7 +5486,8 @@
         // ============================================================
         function listenVerificationApprovals() {
             if (!firebaseDb || !state.currentUserId) return;
-            firebaseDb.ref('verifications').orderByChild('userId').equalTo(state.currentUserId).on('child_changed', async (snapshot) => {
+            firebaseDb.ref('verifications').orderByChild('userId').equalTo(state.currentUserId).on('child_changed', async (
+                snapshot) => {
                 const data = snapshot.val();
                 if (data && data.status === 'approved' && data.adId) {
                     if (window._processedApprovals && window._processedApprovals[snapshot.key]) return;
@@ -5444,12 +5504,16 @@
                     const ad = adSnapshot.val();
                     if (ad) {
                         const reward = ad.reward || 0;
-                        await firebaseDb.ref(`users/${state.currentUserId}/balance`).transaction((bal) => (bal || 0) + reward);
-                        await firebaseDb.ref(`users/${state.currentUserId}/totalEarnings`).transaction((t) => (t || 0) + reward);
+                        await firebaseDb.ref(`users/${state.currentUserId}/balance`).transaction((bal) => (bal || 0) +
+                            reward);
+                        await firebaseDb.ref(`users/${state.currentUserId}/totalEarnings`).transaction((t) => (t || 0) +
+                            reward);
                         await firebaseDb.ref(`users/${state.currentUserId}/adCount`).transaction((c) => (c || 0) + 1);
                         const day = new Date().getDay();
-                        firebaseDb.ref(`users/${state.currentUserId}/weeklyActivity/${day}`).transaction((val) => (val || 0) + 1);
-                        await firebaseDb.ref(`users/${state.currentUserId}/pendingEarnings`).transaction((p) => Math.max(0, (p || 0) - reward));
+                        firebaseDb.ref(`users/${state.currentUserId}/weeklyActivity/${day}`).transaction((val) => (val ||
+                            0) + 1);
+                        await firebaseDb.ref(`users/${state.currentUserId}/pendingEarnings`).transaction((p) => Math.max(0,
+                            (p || 0) - reward));
                     }
                     state.balance += ad?.reward || 0;
                     state.totalEarnings += ad?.reward || 0;
@@ -5472,7 +5536,8 @@
             const myAds = ads.filter(ad => ad.createdBy === state.currentUserId);
             state.myAds = myAds;
             if (myAds.length === 0) {
-                DOM.myAdsContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-rectangle-ad"></i><p>You haven't created any ad campaigns yet</p></div>`;
+                DOM.myAdsContainer.innerHTML =
+                    `<div class="empty-state"><i class="fa-solid fa-rectangle-ad"></i><p>You haven't created any ad campaigns yet</p></div>`;
                 return;
             }
             DOM.myAdsContainer.innerHTML = myAds.map(ad => {
@@ -5490,8 +5555,10 @@
                 );
                 let statusText = ad.status === 'active' ? '🟢 Active' : '⏳ Paused';
                 let statusClass = ad.status === 'active' ? 'active' : 'pending';
-                if (isExpired) { statusText = '⏰ Expired'; statusClass = 'expired'; }
-                if (!isApproved) { statusText = '⏳ Pending Approval'; statusClass = 'pending'; }
+                if (isExpired) { statusText = '⏰ Expired';
+                    statusClass = 'expired'; }
+                if (!isApproved) { statusText = '⏳ Pending Approval';
+                    statusClass = 'pending'; }
                 return `
                     <div class="ad-card">
                         <div class="ad-header">
@@ -5569,7 +5636,8 @@
                 const myAdIds = ads.filter(ad => ad.createdBy === state.currentUserId).map(ad => ad.id);
                 const filtered = items.filter(v => myAdIds.includes(v.adId));
                 if (filtered.length === 0) {
-                    DOM.verificationContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-check-double"></i><p>No pending verification requests</p></div>`;
+                    DOM.verificationContainer.innerHTML =
+                        `<div class="empty-state"><i class="fa-solid fa-check-double"></i><p>No pending verification requests</p></div>`;
                     return;
                 }
                 DOM.verificationContainer.innerHTML = filtered.map(v => `
@@ -5646,7 +5714,8 @@
                     const reward = ad.reward || 0;
                     await firebaseDb.ref(`users/${data.userId}/balance`).transaction((bal) => (bal || 0) + reward);
                     await firebaseDb.ref(`users/${data.userId}/totalEarnings`).transaction((t) => (t || 0) + reward);
-                    await firebaseDb.ref(`users/${data.userId}/pendingEarnings`).transaction((p) => Math.max(0, (p || 0) - reward));
+                    await firebaseDb.ref(`users/${data.userId}/pendingEarnings`).transaction((p) => Math.max(0, (p || 0) -
+                        reward));
                 }
                 await firebaseDb.ref(`ads/${data.adId}/verified`).set(true);
                 showToast('✅ Verification approved!', 'success');
@@ -5824,7 +5893,8 @@
             const accountInput = document.getElementById(method?.toLowerCase() + '-account');
             const accountNumber = accountInput?.value.trim() || '';
             const amount = parseFloat(DOM.withdrawAmount.value);
-            if (!method || !accountNumber || amount > state.balance || isNaN(amount) || amount < CONFIG.MINIMUM_WITHDRAWAL) {
+            if (!method || !accountNumber || amount > state.balance || isNaN(amount) || amount < CONFIG
+                .MINIMUM_WITHDRAWAL) {
                 return showToast('❌ Invalid withdrawal request', 'error');
             }
             const btn = DOM.withdrawSubmitBtn;
@@ -5879,7 +5949,8 @@
         function renderHistory() {
             if (!DOM.historyList) return;
             if (!state.withdrawalHistory || state.withdrawalHistory.length === 0) {
-                DOM.historyList.innerHTML = `<div class="empty-state"><i class="fa-solid fa-clock-rotate-left"></i><p>No withdrawal history</p></div>`;
+                DOM.historyList.innerHTML =
+                    `<div class="empty-state"><i class="fa-solid fa-clock-rotate-left"></i><p>No withdrawal history</p></div>`;
                 return;
             }
             DOM.historyList.innerHTML = state.withdrawalHistory.map(item => `
@@ -5899,7 +5970,8 @@
         function renderBonusTasks() {
             if (!DOM.bonusTasksList) return;
             if (!state.bonusTasks || state.bonusTasks.length === 0) {
-                DOM.bonusTasksList.innerHTML = `<div class="empty-state"><i class="fa-solid fa-star"></i><p>No bonus tasks available</p></div>`;
+                DOM.bonusTasksList.innerHTML =
+                    `<div class="empty-state"><i class="fa-solid fa-star"></i><p>No bonus tasks available</p></div>`;
                 return;
             }
             DOM.bonusTasksList.innerHTML = state.bonusTasks.map(task => {
@@ -5972,7 +6044,7 @@
         }
 
         // ============================================================
-        // WATCH AD - NO REWARD, JUST WATCH
+        // WATCH AD
         // ============================================================
         async function watchAd() {
             if (isBanned) {
@@ -6180,7 +6252,8 @@
 
         function shareReferralLink() {
             const link = getReferralLink();
-            const text = `💰 Earn money by watching ads! Join using my referral link:\n\n${link}\n\nJoin @${CONFIG.BOT_USERNAME} and start earning today! 🚀`;
+            const text =
+                `💰 Earn money by watching ads! Join using my referral link:\n\n${link}\n\nJoin @${CONFIG.BOT_USERNAME} and start earning today! 🚀`;
             safeOpenTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`);
         }
 
@@ -6250,7 +6323,8 @@
                 DOM.withdrawForm.addEventListener('submit', handleWithdrawal);
                 DOM.sendChatBtn.addEventListener('click', sendMessage);
                 document.addEventListener('click', (e) => {
-                    if (DOM.ratingToast.classList.contains('active') && !DOM.ratingToast.contains(e.target) && !e.target.closest('.action-btn.rate')) {
+                    if (DOM.ratingToast.classList.contains('active') && !DOM.ratingToast.contains(e.target) && !e
+                        .target.closest('.action-btn.rate')) {
                         DOM.ratingToast.classList.remove('active');
                     }
                 });
