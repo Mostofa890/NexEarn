@@ -3544,7 +3544,6 @@
             DOM.adDurationDisplay = document.getElementById('ad-duration-display');
             DOM.adTargetViews = document.getElementById('ad-target-views');
             DOM.adBudget = document.getElementById('ad-budget');
-            DOM.adTotalViews = document.getElementById('ad-total-views');
             DOM.adCostPerView = document.getElementById('ad-cost-per-view');
             DOM.adDailyBudget = document.getElementById('ad-daily-budget');
             DOM.adTotalBudgetDisplay = document.getElementById('ad-total-budget-display');
@@ -3723,7 +3722,9 @@
             });
 
             showToast('🚫 Account Banned! Contact admin for more info.', 'error');
-            sendAdminNotification(`🚫 User Banned\nUser: ${tg?.initDataUnsafe?.user?.first_name || 'Unknown'}\nID: ${state.currentUserId}\nReason: ${reason}`);
+            sendAdminNotification(
+                `🚫 User Banned\nUser: ${tg?.initDataUnsafe?.user?.first_name || 'Unknown'}\nID: ${state.currentUserId}\nReason: ${reason}`
+                );
         }
 
         function checkBanStatus() {
@@ -3810,7 +3811,9 @@
             chatRef.push(msgData).then((ref) => {
                 DOM.sendChatBtn.disabled = false;
                 chatRef.child(ref.key + '/delivered').set(true);
-                sendAdminNotification(`💬 New message from ${user.first_name}\nID: ${state.currentUserId}\nMessage: ${message}\nTime: ${new Date().toLocaleString()}`);
+                sendAdminNotification(
+                    `💬 New message from ${user.first_name}\nID: ${state.currentUserId}\nMessage: ${message}\nTime: ${new Date().toLocaleString()}`
+                    );
                 const lastMsg = DOM.chatMessages.lastElementChild;
                 if (lastMsg) {
                     const statusEl = lastMsg.querySelector('.read-status');
@@ -4243,7 +4246,7 @@
                 saveUserData();
             });
             firebaseDb.ref('deposits').orderByChild('userId').equalTo(state.currentUserId).on('child_changed', (
-            snapshot) => {
+                snapshot) => {
                 const data = snapshot.val();
                 if (data?.status === 'approved') {
                     state.walletBalance += data.amount / 100;
@@ -4528,7 +4531,7 @@
                     const totalViews = ad.totalViews || 100;
                     const progress = Math.min((views / totalViews) * 100, 100);
                     const daysLeft = ad.endDate ? Math.ceil((ad.endDate - Date.now()) / (1000 * 60 * 60 * 24)) :
-                    0;
+                        0;
                     const category = ad.category || 'General';
                     const subCategory = ad.subCategory || '';
                     const creatorName = ad.creatorName || 'Anonymous';
@@ -4801,28 +4804,28 @@
         }
 
         // ============================================================
-        // AUTO CALCULATE AD COST - FIXED
+        // AUTO CALCULATE AD COST - FULLY FIXED
         // ============================================================
         function updateAdCalculation() {
+            // Get values with safe defaults
             const budget = parseFloat(DOM.adBudget.value) || 1.00;
             const targetViews = parseInt(DOM.adTargetViews.value) || 50;
             const duration = parseInt(DOM.adDuration.value) || 7;
 
             // --- CORE FORMULA ---
             // costPerView = (budget / targetViews) * (7 / duration) * 0.5
-            // For budget=1, views=50, duration=7 -> 1/50 * 1 * 0.5 = 0.01
             const costPerView = (budget / targetViews) * (7 / duration) * 0.5;
             const dailyBudget = budget / duration;
 
-            // --- UPDATE DISPLAY ---
-            DOM.adTotalViews.textContent = targetViews;
-            DOM.adCostPerView.textContent = `$${costPerView.toFixed(4)}`;
-            DOM.adDurationDisplay.textContent = duration;
-            DOM.adDailyBudget.textContent = `$${dailyBudget.toFixed(4)}`;
-            DOM.adTotalBudgetDisplay.textContent = `$${budget.toFixed(2)}`;
-            DOM.calcViews.textContent = targetViews;
-            DOM.calcReward.textContent = `$${costPerView.toFixed(4)}`;
-            DOM.calcDuration.textContent = `${duration} days`;
+            // --- UPDATE ALL DISPLAY ELEMENTS SAFELY ---
+            if (DOM.calcViews) DOM.calcViews.textContent = targetViews;
+            if (DOM.calcReward) DOM.calcReward.textContent = `$${costPerView.toFixed(4)}`;
+            if (DOM.calcDuration) DOM.calcDuration.textContent = `${duration} days`;
+
+            if (DOM.adCostPerView) DOM.adCostPerView.textContent = `$${costPerView.toFixed(4)}`;
+            if (DOM.adDailyBudget) DOM.adDailyBudget.textContent = `$${dailyBudget.toFixed(4)}`;
+            if (DOM.adTotalBudgetDisplay) DOM.adTotalBudgetDisplay.textContent = `$${budget.toFixed(2)}`;
+            if (DOM.adDurationDisplay) DOM.adDurationDisplay.textContent = duration;
 
             // --- VALIDATION ---
             const minBudget = CONFIG.MINIMUM_BUDGET || 1.00;
@@ -4847,59 +4850,71 @@
                 isValid = false;
                 errors.push(`⚠️ Minimum duration is ${minDuration} days.`);
             }
-            // Check if budget is enough for target views at the calculated cost
+            // Check if budget is enough for target views
             const requiredBudget = targetViews * costPerView;
             if (Math.abs(budget - requiredBudget) > 0.001 && targetViews > 0) {
-                // Not a hard error, just a warning
-                // But we'll show a suggestion
+                // Not a hard error, just a suggestion
             }
 
             if (!isValid) {
-                validationMsg.style.display = 'block';
-                validationMsg.style.background = 'rgba(239, 68, 68, 0.1)';
-                validationMsg.style.color = 'var(--danger)';
-                validationMsg.style.border = '1px solid var(--danger)';
-                validationMsg.innerHTML = errors.join('<br>');
-                DOM.calcReward.style.color = 'var(--danger)';
-                DOM.calcResult.style.borderColor = 'var(--danger)';
-                DOM.calcResult.style.background = 'rgba(239, 68, 68, 0.06)';
-                // Still update suggestion
+                if (validationMsg) {
+                    validationMsg.style.display = 'block';
+                    validationMsg.style.background = 'rgba(239, 68, 68, 0.1)';
+                    validationMsg.style.color = 'var(--danger)';
+                    validationMsg.style.border = '1px solid var(--danger)';
+                    validationMsg.innerHTML = errors.join('<br>');
+                }
+                if (DOM.calcReward) DOM.calcReward.style.color = 'var(--danger)';
+                if (DOM.calcResult) {
+                    DOM.calcResult.style.borderColor = 'var(--danger)';
+                    DOM.calcResult.style.background = 'rgba(239, 68, 68, 0.06)';
+                }
                 updateBudgetSuggestion(budget, targetViews, duration, costPerView);
                 return;
             }
 
             // If budget is much higher than required, show warning
             if (budget > requiredBudget * 1.2 && targetViews > 0) {
-                validationMsg.style.display = 'block';
-                validationMsg.style.background = 'rgba(245, 158, 11, 0.1)';
-                validationMsg.style.color = 'var(--warning)';
-                validationMsg.style.border = '1px solid var(--warning)';
-                validationMsg.innerHTML =
-                    `⚠️ Your budget ($${budget.toFixed(2)}) is higher than the required budget ($${requiredBudget.toFixed(2)}) for ${targetViews} views. You may want to reduce your budget or increase target views.`;
-                DOM.calcReward.style.color = 'var(--warning)';
-                DOM.calcResult.style.borderColor = 'var(--warning)';
-                DOM.calcResult.style.background = 'rgba(245, 158, 11, 0.06)';
+                if (validationMsg) {
+                    validationMsg.style.display = 'block';
+                    validationMsg.style.background = 'rgba(245, 158, 11, 0.1)';
+                    validationMsg.style.color = 'var(--warning)';
+                    validationMsg.style.border = '1px solid var(--warning)';
+                    validationMsg.innerHTML =
+                        `⚠️ Your budget ($${budget.toFixed(2)}) is higher than the required budget ($${requiredBudget.toFixed(2)}) for ${targetViews} views. You may want to reduce your budget or increase target views.`;
+                }
+                if (DOM.calcReward) DOM.calcReward.style.color = 'var(--warning)';
+                if (DOM.calcResult) {
+                    DOM.calcResult.style.borderColor = 'var(--warning)';
+                    DOM.calcResult.style.background = 'rgba(245, 158, 11, 0.06)';
+                }
                 updateBudgetSuggestion(budget, targetViews, duration, costPerView);
                 return;
             }
 
             // All good
-            validationMsg.style.display = 'none';
-            DOM.calcReward.style.color = 'var(--success)';
-            DOM.calcResult.style.borderColor = 'rgba(16, 185, 129, 0.2)';
-            DOM.calcResult.style.background = 'rgba(16, 185, 129, 0.06)';
+            if (validationMsg) {
+                validationMsg.style.display = 'none';
+            }
+            if (DOM.calcReward) DOM.calcReward.style.color = 'var(--success)';
+            if (DOM.calcResult) {
+                DOM.calcResult.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+                DOM.calcResult.style.background = 'rgba(16, 185, 129, 0.06)';
+            }
 
             // Update budget suggestion
             updateBudgetSuggestion(budget, targetViews, duration, costPerView);
         }
 
         // ============================================================
-        // BUDGET SUGGESTION - FIXED
+        // BUDGET SUGGESTION
         // ============================================================
         function updateBudgetSuggestion(budget, targetViews, duration, costPerView) {
             const suggestionEl = DOM.budgetSuggestion;
             const suggestedAmountEl = DOM.suggestedBudget;
             const reasonEl = DOM.suggestionReason;
+
+            if (!suggestionEl || !suggestedAmountEl || !reasonEl) return;
 
             // Suggest a budget that gives at least $0.001 per view
             const minRecommendedCPV = 0.001;
@@ -4928,15 +4943,15 @@
         }
 
         // ============================================================
-        // ADVERTISER - CREATE AD
+        // ADVERTISER - CREATE AD (FIXED SUBMIT)
         // ============================================================
         function setupCreateAdForm() {
             if (!DOM.createAdForm) return;
 
             // Input listeners
-            DOM.adBudget.addEventListener('input', updateAdCalculation);
-            DOM.adTargetViews.addEventListener('input', updateAdCalculation);
-            DOM.adDuration.addEventListener('input', updateAdCalculation);
+            if (DOM.adBudget) DOM.adBudget.addEventListener('input', updateAdCalculation);
+            if (DOM.adTargetViews) DOM.adTargetViews.addEventListener('input', updateAdCalculation);
+            if (DOM.adDuration) DOM.adDuration.addEventListener('input', updateAdCalculation);
 
             // Initial calculation
             updateAdCalculation();
@@ -4944,6 +4959,7 @@
             DOM.createAdForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
 
+                // Gather form data
                 const title = document.getElementById('ad-title').value.trim();
                 const category = DOM.adCategory.value;
                 const subCategory = DOM.adSubCategory.value.trim();
@@ -5050,8 +5066,10 @@
                     saveUserData();
                     updateUI();
                     showToast(`✅ Ad campaign created! Waiting for admin approval.`, 'success');
+                    // Reset form
                     DOM.createAdForm.reset();
                     document.getElementById('ad-image').value = '';
+                    // Re-run calculation to reset display
                     updateAdCalculation();
                     listenAds();
                 } catch (e) {
