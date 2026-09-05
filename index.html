@@ -309,74 +309,9 @@
             color: var(--primary-color);
             margin-top: 2px;
         }
-        .role-badge.advertiser {
-            background: rgba(16, 185, 129, 0.15);
-            color: #10b981;
-        }
         .role-badge.banned {
             background: rgba(239, 68, 68, 0.15);
             color: var(--danger);
-        }
-        .switch-role-btn {
-            background: rgba(var(--primary-color-rgb), 0.08);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            white-space: nowrap;
-        }
-        .switch-role-btn:hover {
-            background: rgba(var(--primary-color-rgb), 0.15);
-        }
-
-        /* ===== ROLE SELECTOR ===== */
-        .role-selector {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 18px;
-            animation: fadeIn 0.5s ease-out;
-        }
-        .role-btn {
-            padding: 14px 12px;
-            border-radius: var(--radius);
-            border: 2px solid var(--border-color);
-            background: var(--card-background);
-            color: var(--text-color);
-            cursor: pointer;
-            transition: var(--transition);
-            text-align: center;
-            font-family: inherit;
-            box-shadow: var(--shadow);
-        }
-        .role-btn .icon {
-            font-size: 24px;
-            display: block;
-            margin-bottom: 4px;
-        }
-        .role-btn .label {
-            font-weight: 700;
-            font-size: 15px;
-            display: block;
-        }
-        .role-btn .sub-label {
-            font-size: 11px;
-            color: var(--text-light);
-            display: block;
-            margin-top: 2px;
-        }
-        .role-btn.active {
-            border-color: var(--primary-color);
-            background: rgba(var(--primary-color-rgb), 0.06);
-            box-shadow: 0 0 0 4px rgba(var(--primary-color-rgb), 0.08), var(--shadow);
-        }
-        .role-btn:hover:not(.active) {
-            border-color: var(--text-light);
-            transform: translateY(-2px);
         }
 
         /* ===== BALANCE CARD ===== */
@@ -418,102 +353,6 @@
             line-height: 1.2;
             position: relative;
             z-index: 1;
-        }
-
-        /* ===== WALLET CARD ===== */
-        .wallet-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--card-background);
-            padding: 14px 18px;
-            border-radius: var(--radius);
-            border: 1px solid var(--border-color);
-            margin-bottom: 16px;
-            animation: fadeIn 0.7s ease-out;
-            transition: var(--transition);
-            display: none;
-            box-shadow: var(--shadow);
-        }
-        .wallet-card .label {
-            font-size: 13px;
-            color: var(--text-light);
-            font-weight: 500;
-        }
-        .wallet-card .value {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--text-color);
-        }
-        .wallet-card .deposit-btn {
-            background: var(--gradient);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .wallet-card .deposit-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 15px rgba(var(--primary-color-rgb), 0.3);
-        }
-
-        /* ===== CONVERT CARD ===== */
-        .convert-card {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.08));
-            border: 2px solid var(--success);
-            padding: 16px 18px;
-            border-radius: var(--radius);
-            margin-bottom: 16px;
-            animation: fadeIn 0.7s ease-out;
-        }
-        .convert-card .title {
-            font-weight: 700;
-            font-size: 14px;
-            color: var(--success);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .convert-card .info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 8px;
-        }
-        .convert-card .info .balance {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--text-color);
-        }
-        .convert-card .info .rate {
-            font-size: 12px;
-            color: var(--text-light);
-        }
-        .convert-btn {
-            background: var(--success);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            transition: var(--transition);
-            width: 100%;
-            margin-top: 10px;
-            font-family: inherit;
-        }
-        .convert-btn:hover:not(:disabled) {
-            transform: scale(1.02);
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-        }
-        .convert-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
         }
 
         /* ===== STATS GRID ===== */
@@ -584,34 +423,6 @@
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-
-        /* ===== AD FILTERS ===== */
-        .ad-filters {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 14px;
-            flex-wrap: wrap;
-        }
-        .filter-btn {
-            padding: 6px 14px;
-            border-radius: 20px;
-            border: 1px solid var(--border-color);
-            background: transparent;
-            color: var(--text-light);
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: inherit;
-        }
-        .filter-btn.active {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-        .filter-btn:hover:not(.active) {
-            border-color: var(--text-color);
         }
 
         /* ===== JOB CARD STYLES ===== */
@@ -768,131 +579,6 @@
         .job-card .days-left .days {
             font-weight: 700;
             color: var(--text-color);
-        }
-
-        /* ===== AD CARD ===== */
-        .ad-card {
-            background: var(--background-color);
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 12px;
-            border: 1px solid var(--border-color);
-            transition: var(--transition);
-        }
-        .ad-card:last-child {
-            margin-bottom: 0;
-        }
-        .ad-card:hover {
-            box-shadow: var(--shadow-hover);
-        }
-        .ad-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 10px;
-        }
-        .ad-title {
-            font-weight: 600;
-            font-size: 15px;
-            flex: 1;
-        }
-        .ad-reward {
-            font-weight: 700;
-            color: var(--primary-color);
-            font-size: 14px;
-            white-space: nowrap;
-        }
-        .ad-image {
-            width: 100%;
-            max-height: 120px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin: 8px 0;
-        }
-        .ad-desc {
-            font-size: 13px;
-            color: var(--text-light);
-            margin-bottom: 10px;
-            line-height: 1.4;
-        }
-        .ad-desc a {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-        .ad-desc a:hover {
-            text-decoration: underline;
-        }
-        .ad-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .ad-views {
-            font-size: 12px;
-            color: var(--text-light);
-        }
-        .ad-status {
-            font-size: 11px;
-            font-weight: 600;
-            padding: 2px 10px;
-            border-radius: 12px;
-        }
-        .ad-status.active {
-            color: #10b981;
-            background: rgba(16, 185, 129, 0.1);
-        }
-        .ad-status.pending {
-            color: #f59e0b;
-            background: rgba(245, 158, 11, 0.1);
-        }
-        .ad-status.completed {
-            color: #3b82f6;
-            background: rgba(59, 130, 246, 0.1);
-        }
-        .ad-status.expired {
-            color: #ef4444;
-            background: rgba(239, 68, 68, 0.1);
-        }
-        .ad-status.approved {
-            color: var(--success);
-            background: rgba(16, 185, 129, 0.1);
-        }
-        .ad-status.banned {
-            color: #ef4444;
-            background: rgba(239, 68, 68, 0.1);
-        }
-        .ad-btn {
-            padding: 6px 16px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: inherit;
-        }
-        .ad-btn.view {
-            background: var(--primary-color);
-            color: white;
-        }
-        .ad-btn.view:hover:not(:disabled) {
-            transform: scale(1.03);
-        }
-        .ad-btn.view:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .ad-btn.view.completed {
-            background: #10b981;
-        }
-        .ad-btn.edit {
-            background: #f59e0b;
-            color: white;
-        }
-        .ad-btn.edit:hover:not(:disabled) {
-            transform: scale(1.03);
         }
 
         /* ===== ACTION BUTTON ===== */
@@ -1115,86 +801,6 @@
             color: var(--text-light);
         }
 
-        /* ===== DEPOSIT METHODS ===== */
-        .deposit-method {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px;
-            background: var(--background-color);
-            border-radius: 12px;
-            border: 2px solid var(--border-color);
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .deposit-method:hover {
-            border-color: var(--text-light);
-        }
-        .deposit-method.selected {
-            border-color: #10b981;
-            background: rgba(16, 185, 129, 0.06);
-        }
-        .deposit-method .method-icon {
-            font-size: 28px;
-            flex-shrink: 0;
-        }
-        .deposit-method .method-info {
-            flex: 1;
-        }
-        .deposit-method .method-name {
-            font-weight: 600;
-            font-size: 14px;
-        }
-        .deposit-method .method-desc {
-            font-size: 12px;
-            color: var(--text-light);
-        }
-        .deposit-method .method-number {
-            font-weight: 700;
-            font-size: 14px;
-            color: var(--primary-color);
-        }
-
-        /* ===== DEPOSIT HISTORY TABLE ===== */
-        .table-container {
-            overflow-x: auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-        th {
-            text-align: left;
-            padding: 10px 8px;
-            color: var(--text-light);
-            font-weight: 600;
-            border-bottom: 1px solid var(--border-color);
-        }
-        td {
-            padding: 10px 8px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .status-badge {
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .status-badge.pending {
-            background: rgba(245, 158, 11, 0.2);
-            color: var(--warning);
-        }
-        .status-badge.approved {
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--success);
-        }
-        .status-badge.rejected {
-            background: rgba(239, 68, 68, 0.2);
-            color: var(--danger);
-        }
-
         /* ===== NAV BAR ===== */
         .nav-bar {
             position: fixed;
@@ -1396,12 +1002,6 @@
             .stat-item .value {
                 font-size: 17px;
             }
-            .role-btn {
-                padding: 10px 8px;
-            }
-            .role-btn .label {
-                font-size: 13px;
-            }
         }
         @media (min-width: 481px) {
             body {
@@ -1460,209 +1060,6 @@
             font-size: 40px;
             margin-bottom: 12px;
             opacity: 0.3;
-        }
-
-        /* ===== REJECT REASON MODAL ===== */
-        #rejectReasonModal .modal-content {
-            max-width: 480px;
-        }
-        #rejectReasonModal textarea {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            background: var(--background-color);
-            color: var(--text-color);
-            resize: vertical;
-            min-height: 80px;
-            transition: var(--transition);
-        }
-        #rejectReasonModal textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
-        }
-        .reject-reason-text {
-            padding: 10px 12px;
-            background: rgba(239, 68, 68, 0.08);
-            border-radius: 8px;
-            border-left: 3px solid var(--danger);
-            margin-top: 8px;
-            font-size: 13px;
-            color: var(--text-light);
-        }
-        .reject-reason-text strong {
-            color: var(--danger);
-        }
-
-        /* ===== AD CAMPAIGN INFO ===== */
-        .campaign-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin: 8px 0;
-            padding: 8px;
-            background: var(--background-color);
-            border-radius: 8px;
-        }
-        .campaign-info .info-item {
-            display: flex;
-            flex-direction: column;
-        }
-        .campaign-info .info-item .label {
-            font-size: 10px;
-            color: var(--text-light);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .campaign-info .info-item .value {
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        /* ===== DELETE CONFIRMATION MODAL ===== */
-        #deleteConfirmModal .modal-content {
-            max-width: 480px;
-        }
-        #deleteConfirmModal .warning-text {
-            color: var(--danger);
-            font-weight: 700;
-        }
-        #deleteConfirmModal .refund-info {
-            background: rgba(16, 185, 129, 0.08);
-            padding: 12px;
-            border-radius: 8px;
-            margin: 12px 0;
-            border-left: 3px solid var(--success);
-        }
-        #deleteConfirmModal .company-info {
-            background: rgba(239, 68, 68, 0.08);
-            padding: 12px;
-            border-radius: 8px;
-            margin: 12px 0;
-            border-left: 3px solid var(--danger);
-        }
-
-        /* ===== DEPOSIT FORM ===== */
-        .deposit-form-group {
-            margin-bottom: 12px;
-        }
-        .deposit-form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-color);
-            margin-bottom: 4px;
-        }
-        .deposit-form-group input,
-        .deposit-form-group textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            background: var(--background-color);
-            color: var(--text-color);
-            transition: var(--transition);
-        }
-        .deposit-form-group input:focus,
-        .deposit-form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
-        }
-        .deposit-form-group textarea {
-            min-height: 60px;
-            resize: vertical;
-        }
-        .deposit-form-group .form-hint {
-            font-size: 11px;
-            color: var(--text-light);
-            margin-top: 4px;
-        }
-
-        /* ===== AD STATUS BADGE ===== */
-        .ad-status-badge {
-            display: inline-block;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 600;
-        }
-        .ad-status-badge.pending {
-            background: rgba(245, 158, 11, 0.2);
-            color: var(--warning);
-        }
-        .ad-status-badge.approved {
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--success);
-        }
-        .ad-status-badge.rejected {
-            background: rgba(239, 68, 68, 0.2);
-            color: var(--danger);
-        }
-        .ad-status-badge.active {
-            background: rgba(59, 130, 246, 0.2);
-            color: var(--info);
-        }
-
-        /* ===== AD CALCULATOR ===== */
-        .calc-result {
-            background: rgba(16, 185, 129, 0.06);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            padding: 12px 14px;
-            border-radius: 10px;
-            margin-bottom: 14px;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 6px;
-            transition: var(--transition);
-        }
-        .calc-result .calc-item {
-            display: flex;
-            flex-direction: column;
-            text-align: center;
-        }
-        .calc-result .calc-item .label {
-            font-size: 9px;
-            color: var(--text-light);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .calc-result .calc-item .value {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text-color);
-        }
-        .calc-result .calc-item .value.highlight {
-            color: var(--primary-color);
-        }
-        .calc-result .calc-item .value.reward {
-            color: var(--success);
-            font-size: 18px;
-        }
-
-        /* Ad Category Badge */
-        .ad-category-badge {
-            display: inline-block;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 600;
-            background: rgba(var(--primary-color-rgb), 0.1);
-            color: var(--primary-color);
-        }
-        .sub-category-badge {
-            display: inline-block;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 600;
-            background: rgba(var(--primary-color-rgb), 0.05);
-            color: var(--text-light);
         }
 
         /* ===== JOB DETAILS PAGE ===== */
@@ -2087,11 +1484,6 @@
             font-weight: 800;
             color: var(--text-color);
         }
-        .profile-page .profile-card .profile-role {
-            font-size: 13px;
-            color: var(--text-light);
-            margin-top: 4px;
-        }
         .profile-page .profile-card .profile-stats-row {
             display: flex;
             justify-content: center;
@@ -2119,33 +1511,6 @@
         }
         .profile-page .profile-card .profile-stats-row .stat-item .num.rating {
             color: #f59e0b;
-        }
-        .profile-page .profile-tabs {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-        .profile-page .profile-tab {
-            padding: 12px;
-            border-radius: var(--radius);
-            border: 2px solid var(--border-color);
-            background: var(--card-background);
-            color: var(--text-color);
-            cursor: pointer;
-            transition: var(--transition);
-            text-align: center;
-            font-weight: 600;
-            font-family: inherit;
-            box-shadow: var(--shadow);
-        }
-        .profile-page .profile-tab.active {
-            border-color: var(--primary-color);
-            background: rgba(var(--primary-color-rgb), 0.06);
-            color: var(--primary-color);
-        }
-        .profile-page .profile-tab:hover:not(.active) {
-            border-color: var(--text-light);
         }
         .profile-page .profile-stats-grid {
             display: grid;
@@ -2235,14 +1600,6 @@
             color: var(--danger);
             background: rgba(239, 68, 68, 0.1);
         }
-        .profile-page .profile-list-item .right .status.active {
-            color: var(--info);
-            background: rgba(59, 130, 246, 0.1);
-        }
-        .profile-page .profile-list-item .right .status.expired {
-            color: var(--text-light);
-            background: rgba(110, 110, 132, 0.1);
-        }
         .profile-page .profile-list-item .right .count {
             font-size: 14px;
             font-weight: 700;
@@ -2296,7 +1653,7 @@
             margin-left: 8px;
         }
 
-        /* ===== VERIFY AD BUTTON IN JOB DETAILS ===== */
+        /* ===== VERIFY JOB BUTTON ===== */
         .verify-job-btn.active {
             background: var(--gradient);
             color: white;
@@ -2310,370 +1667,7 @@
             cursor: not-allowed;
         }
 
-        /* ===== EDIT AD MODAL ===== */
-        .edit-ad-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 3000;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            align-items: flex-end;
-            padding: 16px;
-        }
-        .edit-ad-modal.active {
-            display: flex;
-        }
-        .edit-ad-modal .modal-content {
-            background: var(--card-background);
-            padding: 20px;
-            border-radius: 20px 20px 0 0;
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto;
-            max-height: 85vh;
-            overflow-y: auto;
-            animation: slideUp 0.3s ease-out;
-            border: 1px solid var(--border-color);
-        }
-        .edit-ad-modal .modal-content .modal-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-
-        /* ===== FAB (Floating Action Button) FOR ADMIN CHAT ===== */
-        .fab {
-            position: fixed;
-            bottom: 100px;
-            right: 20px;
-            z-index: 500;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: var(--gradient);
-            color: white;
-            border: none;
-            box-shadow: 0 4px 20px rgba(var(--primary-color-rgb), 0.4);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            transition: all 0.3s ease;
-            animation: pulse 2s infinite;
-        }
-        .fab:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 30px rgba(var(--primary-color-rgb), 0.5);
-        }
-        .fab:active {
-            transform: scale(0.95);
-        }
-        .fab .badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--danger);
-            color: white;
-            font-size: 11px;
-            font-weight: 700;
-            min-width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid var(--card-background);
-        }
-
-        /* ===== ADMIN CHAT MODAL ===== */
-        .chat-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 6000;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            align-items: flex-end;
-            padding: 16px;
-        }
-        .chat-modal.active {
-            display: flex;
-        }
-        .chat-modal .modal-content {
-            background: var(--card-background);
-            padding: 20px;
-            border-radius: 20px 20px 0 0;
-            width: 100%;
-            max-width: 480px;
-            margin: 0 auto;
-            max-height: 85vh;
-            overflow-y: auto;
-            animation: slideUp 0.3s ease-out;
-            border: 1px solid var(--border-color);
-        }
-        .chat-modal .modal-content .chat-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .chat-modal .modal-content .chat-title .online-status {
-            font-size: 12px;
-            color: var(--success);
-            font-weight: 500;
-        }
-        .chat-modal .modal-content .chat-messages {
-            max-height: 400px;
-            overflow-y: auto;
-            margin-bottom: 12px;
-            padding: 8px;
-            background: var(--background-color);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            min-height: 200px;
-        }
-        .chat-modal .modal-content .chat-message {
-            padding: 10px 14px;
-            margin-bottom: 6px;
-            border-radius: 12px;
-            max-width: 85%;
-            word-wrap: break-word;
-            animation: fadeIn 0.2s ease;
-        }
-        .chat-modal .modal-content .chat-message.user {
-            background: var(--gradient);
-            color: white;
-            margin-left: auto;
-            border-bottom-right-radius: 4px;
-        }
-        .chat-modal .modal-content .chat-message.admin {
-            background: var(--border-color);
-            color: var(--text-color);
-            margin-right: auto;
-            border-bottom-left-radius: 4px;
-        }
-        .chat-modal .modal-content .chat-message .time {
-            font-size: 10px;
-            opacity: 0.7;
-            margin-top: 2px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .chat-modal .modal-content .chat-message .time .read-status {
-            font-size: 10px;
-        }
-        .chat-modal .modal-content .chat-message .time .read-status.delivered {
-            color: var(--text-light);
-        }
-        .chat-modal .modal-content .chat-message .time .read-status.seen {
-            color: var(--success);
-        }
-        .chat-modal .modal-content .chat-typing {
-            font-size: 12px;
-            color: var(--text-light);
-            font-style: italic;
-            padding: 4px 12px;
-            animation: pulse 1.5s infinite;
-            display: none;
-        }
-        .chat-modal .modal-content .chat-typing.active {
-            display: block;
-        }
-        .chat-modal .modal-content .chat-input-group {
-            display: flex;
-            gap: 10px;
-        }
-        .chat-modal .modal-content .chat-input-group input {
-            flex: 1;
-            padding: 12px 14px;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            background: var(--background-color);
-            color: var(--text-color);
-            transition: var(--transition);
-        }
-        .chat-modal .modal-content .chat-input-group input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
-        }
-        .chat-modal .modal-content .chat-input-group button {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 10px;
-            background: var(--gradient);
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: inherit;
-        }
-        .chat-modal .modal-content .chat-input-group button:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 15px rgba(var(--primary-color-rgb), 0.3);
-        }
-        .chat-modal .modal-content .chat-input-group button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .chat-modal .modal-content .chat-status {
-            font-size: 12px;
-            color: var(--text-light);
-            text-align: center;
-            margin-bottom: 8px;
-        }
-        .chat-modal .modal-content .chat-info {
-            font-size: 11px;
-            color: var(--text-light);
-            text-align: center;
-            padding: 4px;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 8px;
-        }
-
-        /* Banned overlay */
-        .banned-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 8000;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            color: white;
-            text-align: center;
-            padding: 30px;
-        }
-        .banned-overlay.active {
-            display: flex;
-        }
-        .banned-overlay .banned-icon {
-            font-size: 80px;
-            color: var(--danger);
-            margin-bottom: 20px;
-        }
-        .banned-overlay .banned-title {
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-        .banned-overlay .banned-reason {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-            max-width: 400px;
-            margin-bottom: 20px;
-        }
-        .banned-overlay .banned-btn {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 12px;
-            background: var(--primary-color);
-            color: white;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: inherit;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .banned-overlay .banned-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 20px rgba(var(--primary-color-rgb), 0.4);
-        }
-
-        .security-badge {
-            position: fixed;
-            bottom: 75px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 50;
-            font-size: 10px;
-            color: var(--text-light);
-            opacity: 0.3;
-            text-align: center;
-            pointer-events: none;
-        }
-
-        /* ===== BUDGET SUGGESTION STYLES ===== */
-        .budget-suggestion {
-            background: rgba(59, 130, 246, 0.08);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            padding: 10px 14px;
-            border-radius: 10px;
-            margin-top: 8px;
-            font-size: 13px;
-            color: var(--text-light);
-            display: none;
-        }
-        .budget-suggestion.active {
-            display: block;
-        }
-        .budget-suggestion .suggestion-text {
-            font-weight: 600;
-            color: var(--info);
-        }
-        .budget-suggestion .suggestion-amount {
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        /* Convert min amount warning */
-        .convert-min-warning {
-            font-size: 12px;
-            color: var(--warning);
-            margin-top: 4px;
-            display: none;
-        }
-        .convert-min-warning.active {
-            display: block;
-        }
-
-        /* ===== COST PER VIEW EXPLANATION ===== */
-        .cost-breakdown {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: var(--text-light);
-            padding: 6px 0;
-            border-bottom: 1px dashed var(--border-color);
-        }
-        .cost-breakdown:last-child {
-            border-bottom: none;
-        }
-        .cost-breakdown .label {
-            font-weight: 500;
-        }
-        .cost-breakdown .value {
-            font-weight: 700;
-            color: var(--text-color);
-        }
-        .cost-breakdown .value.warning {
-            color: var(--warning);
-        }
-        .cost-breakdown .value.success {
-            color: var(--success);
-        }
-        .cost-breakdown .value.danger {
-            color: var(--danger);
-        }
-
-        /* ============================================================ */
-        /* ===== WATCH & EARN PAGE - NEW ===== */
-        /* ============================================================ */
+        /* ===== WATCH & EARN PAGE ===== */
         .watch-earn-page {
             display: none;
             position: fixed;
@@ -3054,7 +2048,6 @@
             background: rgba(var(--primary-color-rgb), 0.04);
         }
 
-        /* Tier empty state */
         .tier-empty {
             text-align: center;
             padding: 40px 20px;
@@ -3064,6 +2057,74 @@
             font-size: 48px;
             margin-bottom: 12px;
             opacity: 0.3;
+        }
+
+        /* ===== Banned Overlay ===== */
+        .banned-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 8000;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+        .banned-overlay.active {
+            display: flex;
+        }
+        .banned-overlay .banned-icon {
+            font-size: 80px;
+            color: var(--danger);
+            margin-bottom: 20px;
+        }
+        .banned-overlay .banned-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        .banned-overlay .banned-reason {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+        .banned-overlay .banned-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 12px;
+            background: var(--primary-color);
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .banned-overlay .banned-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(var(--primary-color-rgb), 0.4);
+        }
+
+        .security-badge {
+            position: fixed;
+            bottom: 75px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+            font-size: 10px;
+            color: var(--text-light);
+            opacity: 0.3;
+            text-align: center;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -3113,106 +2174,6 @@
         </button>
     </div>
 
-    <!-- ===== FAB BUTTON ===== -->
-    <button class="fab" id="fabButton" onclick="openChatModal()">
-        <i class="fa-solid fa-comment-dots"></i>
-        <span class="badge" id="chatBadge" style="display:none;">0</span>
-    </button>
-
-    <!-- ===== CHAT MODAL ===== -->
-    <div class="chat-modal" id="chatModal">
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeChatModal()">&times;</button>
-            <div class="chat-title">
-                <i class="fa-solid fa-headset" style="color:var(--primary-color);"></i>
-                Admin Support
-                <span class="online-status">● Online</span>
-            </div>
-            <div class="chat-status" id="chatStatus">💬 Chat with admin for support</div>
-            <div class="chat-info" id="chatInfo">Messages are delivered in real-time</div>
-            <div class="chat-messages" id="chatMessages">
-                <div class="chat-message admin">
-                    👋 Welcome! How can I help you today?
-                    <div class="time">Just now <span class="read-status seen">✓✓</span></div>
-                </div>
-            </div>
-            <div class="chat-typing" id="chatTyping">✍️ Admin is typing...</div>
-            <div class="chat-input-group">
-                <input type="text" id="chatInput" placeholder="Type your message..." onkeydown="if(event.key==='Enter') sendMessage()" oninput="handleTyping()">
-                <button onclick="sendMessage()" id="sendChatBtn">
-                    <i class="fa-solid fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ============================================================ -->
-    <!-- ===== WATCH & EARN PAGE ===== -->
-    <!-- ============================================================ -->
-    <div class="watch-earn-page" id="watchEarnPage">
-        <button class="back-btn" onclick="closeWatchEarn()">
-            <i class="fa-solid fa-arrow-left"></i> Back
-        </button>
-        <div class="page-title">📺 Watch & Earn</div>
-        <div class="page-subtitle">Watch ads and claim your rewards!</div>
-
-        <!-- Tiers Container -->
-        <div id="tiers-container"></div>
-
-        <!-- ===== ADMIN TIER MANAGEMENT ===== -->
-        <!-- Only visible to admin users (advertiser role with admin flag) -->
-        <div class="admin-tier-section" id="adminTierSection" style="display:none;">
-            <div class="section-title">
-                <i class="fa-solid fa-gear"></i> Manage Ad Tiers
-                <span style="font-size:11px; font-weight:400; color:var(--text-light); margin-left:auto;">Admin Only</span>
-            </div>
-
-            <!-- Add Tier Form -->
-            <div class="admin-tier-form" id="adminTierForm">
-                <div class="form-row">
-                    <div class="form-group-sm">
-                        <label>Section Name *</label>
-                        <input type="text" id="tier-name" placeholder="e.g. Section 1" value="Section 1">
-                    </div>
-                    <div class="form-group-sm">
-                        <label>Prize ($) *</label>
-                        <input type="number" id="tier-prize" step="0.01" placeholder="1.20" value="1.20">
-                    </div>
-                    <div class="form-group-sm">
-                        <label>Required Ads *</label>
-                        <input type="number" id="tier-required" placeholder="6" value="6" min="1">
-                    </div>
-                    <div class="form-group-sm">
-                        <label>Status</label>
-                        <select id="tier-status">
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
-                    </div>
-                    <div class="form-group-sm full-width">
-                        <label>Description (Optional)</label>
-                        <input type="text" id="tier-desc" placeholder="Short description for this tier">
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button class="save-btn" id="save-tier-btn" onclick="saveTier()">
-                        <i class="fa-solid fa-save"></i> Save Tier
-                    </button>
-                    <button class="cancel-btn" onclick="closeTierForm()">Cancel</button>
-                </div>
-                <input type="hidden" id="edit-tier-id" value="">
-            </div>
-
-            <!-- Add Tier Button -->
-            <button class="add-tier-btn" onclick="openTierForm()">
-                <i class="fa-solid fa-plus"></i> Add New Tier
-            </button>
-
-            <!-- Tier List (Admin) -->
-            <div id="admin-tier-list"></div>
-        </div>
-    </div>
-
     <!-- ============================================================ -->
     <!-- MAIN CONTAINER -->
     <!-- ============================================================ -->
@@ -3224,62 +2185,12 @@
                 <div id="greeting">Welcome!</div>
                 <span id="userRoleBadge" class="role-badge">📖 Publisher</span>
             </div>
-            <button class="switch-role-btn" onclick="switchRole()">
-                <i class="fa-solid fa-arrows-rotate"></i> Switch
-            </button>
-        </div>
-
-        <!-- ===== ROLE SELECTOR ===== -->
-        <div class="role-selector" id="roleSelector">
-            <button class="role-btn publisher active" onclick="selectRole('publisher', this)">
-                <span class="icon">📖</span>
-                <span class="label">Publisher</span>
-                <span class="sub-label">Watch & Earn</span>
-            </button>
-            <button class="role-btn advertiser" onclick="selectRole('advertiser', this)">
-                <span class="icon">📢</span>
-                <span class="label">Advertiser</span>
-                <span class="sub-label">Create Ads</span>
-            </button>
         </div>
 
         <!-- ===== BALANCE ===== -->
         <div class="balance-card">
             <h3>💰 Balance</h3>
             <div class="amount" id="total-earning">$0.0000</div>
-        </div>
-
-        <!-- ===== WALLET CARD ===== -->
-        <div class="wallet-card" id="walletCard">
-            <div>
-                <div class="label" id="walletLabel">💳 Wallet Balance</div>
-                <div class="value" id="wallet-balance">$0.0000</div>
-            </div>
-            <button class="deposit-btn" id="depositButton" onclick="showDepositModal()">
-                + Deposit
-            </button>
-        </div>
-
-        <!-- ===== CONVERT CARD ===== -->
-        <div class="convert-card" id="convertCard">
-            <div class="title">
-                <i class="fa-solid fa-arrows-rotate"></i>
-                Convert Earnings to Wallet
-            </div>
-            <div class="info">
-                <div>
-                    <div style="font-size:12px; color:var(--text-light);">Available to Convert</div>
-                    <div class="balance" id="convert-balance">$0.0000</div>
-                </div>
-                <div class="rate">
-                    <div>1:1 Conversion</div>
-                    <div style="font-size:11px; opacity:0.7;">No fees</div>
-                </div>
-            </div>
-            <div class="convert-min-warning" id="convertMinWarning">⚠️ Minimum conversion amount is $1.00</div>
-            <button class="convert-btn" id="convertBtn" onclick="convertToWallet()">
-                <i class="fa-solid fa-exchange-alt"></i> Convert All to Wallet
-            </button>
         </div>
 
         <!-- ===== STATS ===== -->
@@ -3304,8 +2215,8 @@
             </div>
         </div>
 
-        <!-- ===== PUBLISHER VIEW ===== -->
-        <div id="publisherView">
+        <!-- ===== MAIN VIEW (Publisher) ===== -->
+        <div id="mainView">
             <div class="card">
                 <div class="card-title">
                     📋 Available Jobs
@@ -3325,126 +2236,6 @@
                     <i class="fa-brands fa-telegram"></i>
                     <span>Join Channel</span>
                 </button>
-            </div>
-        </div>
-
-        <!-- ===== ADVERTISER VIEW ===== -->
-        <div id="advertiserView" style="display:none;">
-            <div class="card">
-                <div class="card-title">📢 Create New Ad Campaign</div>
-                <form id="create-ad-form">
-                    <div class="form-group">
-                        <label>Ad Title *</label>
-                        <input type="text" id="ad-title" placeholder="Enter ad title" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Ad Category *</label>
-                        <select id="ad-category" required>
-                            <option value="">Select Category</option>
-                            <option value="YouTube Video View">YouTube Video View</option>
-                            <option value="YouTube Like">YouTube Like</option>
-                            <option value="YouTube Comment">YouTube Comment</option>
-                            <option value="YouTube Share">YouTube Share</option>
-                            <option value="App Download">App Download</option>
-                            <option value="Website Visit">Website Visit</option>
-                            <option value="Telegram Join">Telegram Join</option>
-                            <option value="Facebook Like">Facebook Like</option>
-                            <option value="Instagram Follow">Instagram Follow</option>
-                            <option value="Twitter Follow">Twitter Follow</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group" id="subCategoryGroup">
-                        <label>Sub Category (Optional)</label>
-                        <input type="text" id="ad-sub-category" placeholder="Enter sub-category (e.g., Gaming, Tech, etc.)">
-                        <div class="form-hint">You can add a specific sub-category for better targeting</div>
-                    </div>
-                    <div class="form-group">
-                        <label>Description *</label>
-                        <textarea id="ad-desc" placeholder="Describe your ad. You can include links here." required></textarea>
-                        <div class="form-hint">You can add links in the description. Users can click them.</div>
-                    </div>
-                    <div class="form-group">
-                        <label>Requirements *</label>
-                        <textarea id="ad-requirements" placeholder="What requirements must users meet to complete this job?" rows="3" required></textarea>
-                        <div class="form-hint">Example: Must have a YouTube account, must like the video, etc.</div>
-                    </div>
-                    <div class="form-group">
-                        <label>Instructions *</label>
-                        <textarea id="ad-instructions" placeholder="Step by step instructions for users to follow" rows="4" required></textarea>
-                        <div class="form-hint">Example: 1. Click the link below 2. Watch the video 3. Take a screenshot</div>
-                    </div>
-                    <div class="form-group">
-                        <label>Ad Image (Optional)</label>
-                        <input type="file" id="ad-image" accept="image/*">
-                        <div class="form-hint">Upload PNG, JPG or GIF (Max 5MB)</div>
-                    </div>
-                    <div class="calc-result" id="calcResult">
-                        <div class="calc-item">
-                            <span class="label">👁 Target Views</span>
-                            <span class="value highlight" id="calcViews">50</span>
-                        </div>
-                        <div class="calc-item">
-                            <span class="label">💰 Cost per View</span>
-                            <span class="value reward" id="calcReward">$0.0100</span>
-                        </div>
-                        <div class="calc-item">
-                            <span class="label">📅 Duration</span>
-                            <span class="value" id="calcDuration">7 days</span>
-                        </div>
-                    </div>
-                    <div style="background:var(--background-color); border-radius:8px; padding:10px 12px; margin-bottom:14px; border:1px solid var(--border-color);">
-                        <div class="cost-breakdown">
-                            <span class="label">Daily Budget</span>
-                            <span class="value" id="ad-daily-budget">$0.1428</span>
-                        </div>
-                        <div class="cost-breakdown">
-                            <span class="label">Total Budget</span>
-                            <span class="value" id="ad-total-budget-display">$1.00</span>
-                        </div>
-                        <div class="cost-breakdown">
-                            <span class="label">Cost per View (with promo)</span>
-                            <span class="value success" id="ad-cost-per-view">$0.0100</span>
-                        </div>
-                    </div>
-                    <div class="budget-suggestion" id="budgetSuggestion">
-                        <i class="fa-solid fa-lightbulb" style="color:var(--info);"></i>
-                        <span class="suggestion-text">Suggested Budget:</span>
-                        <span class="suggestion-amount" id="suggestedBudget">$0.00</span>
-                        <span style="font-size:12px; display:block; margin-top:4px;" id="suggestionReason">Based on your selected duration and views</span>
-                    </div>
-                    <div class="form-group">
-                        <label>Total Budget ($) *</label>
-                        <input type="number" id="ad-budget" step="0.01" value="1.00" min="0.10" required>
-                        <div class="form-hint">Total amount you want to spend (Minimum $1.00)</div>
-                    </div>
-                    <div class="form-group">
-                        <label>Target Views *</label>
-                        <input type="number" id="ad-target-views" value="50" min="1" required>
-                        <div class="form-hint">How many people should see this ad?</div>
-                    </div>
-                    <div class="form-group">
-                        <label>Campaign Duration (Days) *</label>
-                        <input type="number" id="ad-duration" value="7" min="3" max="30" required>
-                        <div class="form-hint">Minimum 3 days. Duration affects cost per view.</div>
-                    </div>
-                    <div id="ad-validation-message" style="font-size:13px; font-weight:600; margin-bottom:10px; padding:8px 12px; border-radius:8px; display:none;"></div>
-                    <button type="submit" class="action-button" id="create-ad-btn">
-                        <i class="fa-solid fa-plus"></i> <span>Create Ad Campaign</span>
-                    </button>
-                </form>
-            </div>
-            <div class="card">
-                <div class="card-title">📊 My Ad Campaigns</div>
-                <div id="my-ads-container"></div>
-            </div>
-            <div class="card">
-                <div class="card-title">📋 Deposit History</div>
-                <div id="deposit-history-container"></div>
-            </div>
-            <div class="card">
-                <div class="card-title">📋 Ad Verification Requests</div>
-                <div id="verification-requests"></div>
             </div>
         </div>
 
@@ -3507,56 +2298,6 @@
         </div>
     </div>
 
-    <!-- ===== EDIT AD MODAL ===== -->
-    <div class="edit-ad-modal" id="editAdModal">
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeEditAdModal()">&times;</button>
-            <div class="modal-title">✏️ Edit Ad Campaign</div>
-            <form id="edit-ad-form">
-                <div class="form-group">
-                    <label>Ad Title *</label>
-                    <input type="text" id="edit-ad-title" placeholder="Enter ad title" required>
-                </div>
-                <div class="form-group">
-                    <label>Ad Category *</label>
-                    <select id="edit-ad-category" required>
-                        <option value="">Select Category</option>
-                        <option value="YouTube Video View">YouTube Video View</option>
-                        <option value="YouTube Like">YouTube Like</option>
-                        <option value="YouTube Comment">YouTube Comment</option>
-                        <option value="YouTube Share">YouTube Share</option>
-                        <option value="App Download">App Download</option>
-                        <option value="Website Visit">Website Visit</option>
-                        <option value="Telegram Join">Telegram Join</option>
-                        <option value="Facebook Like">Facebook Like</option>
-                        <option value="Instagram Follow">Instagram Follow</option>
-                        <option value="Twitter Follow">Twitter Follow</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Sub Category (Optional)</label>
-                    <input type="text" id="edit-ad-sub-category" placeholder="Enter sub-category (e.g., Gaming, Tech, etc.)">
-                </div>
-                <div class="form-group">
-                    <label>Description *</label>
-                    <textarea id="edit-ad-desc" placeholder="Describe your ad. You can include links here." rows="3" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Requirements *</label>
-                    <textarea id="edit-ad-requirements" placeholder="What requirements must users meet to complete this job?" rows="3" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Instructions *</label>
-                    <textarea id="edit-ad-instructions" placeholder="Step by step instructions for users to follow" rows="4" required></textarea>
-                </div>
-                <button type="submit" class="action-button" id="edit-ad-btn">
-                    <i class="fa-solid fa-save"></i> <span>Save Changes</span>
-                </button>
-            </form>
-        </div>
-    </div>
-
     <!-- ===== NAV BAR ===== -->
     <div class="nav-bar">
         <button class="nav-button" id="withdrawNavBtn" onclick="showModal('withdrawModal', this)">
@@ -3615,140 +2356,6 @@
                     <div class="loader-spinner" style="display:none; width:20px; height:20px; border-width:3px;"></div>
                 </button>
             </form>
-        </div>
-    </div>
-
-    <!-- Deposit Modal -->
-    <div id="depositModal" class="modal">
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('depositModal')">&times;</button>
-            <h3 class="card-title">💳 Deposit Funds</h3>
-            <p style="font-size:13px; color:var(--text-light); margin-bottom:14px;">Select a payment method and provide transaction details</p>
-            <div class="deposit-form-group">
-                <label>Payment Method *</label>
-                <div id="deposit-methods-list"></div>
-            </div>
-            <div class="deposit-form-group">
-                <label>Sender Number *</label>
-                <input type="text" id="deposit-sender" placeholder="Enter your sending number">
-            </div>
-            <div class="deposit-form-group">
-                <label>Transaction ID *</label>
-                <input type="text" id="deposit-trxid" placeholder="Enter transaction ID">
-            </div>
-            <div class="deposit-form-group">
-                <label>Amount (BDT) *</label>
-                <input type="number" id="deposit-amount" step="1" placeholder="Enter amount in BDT">
-                <div class="form-hint">Minimum deposit: <span id="deposit-min-amount">10</span> BDT</div>
-            </div>
-            <button class="action-button" onclick="submitDeposit()">
-                <i class="fa-solid fa-check"></i> <span>Submit Deposit Request</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- Convert Modal -->
-    <div id="convertModal" class="modal">
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('convertModal')">&times;</button>
-            <h3 class="card-title">🔄 Convert to Wallet</h3>
-            <div style="text-align:center; padding:20px 0;">
-                <div style="font-size:48px; margin-bottom:12px;">💰</div>
-                <div style="font-size:14px; color:var(--text-light);">Amount to Convert</div>
-                <div style="font-size:32px; font-weight:800; color:var(--success);" id="convert-amount-display">$0.0000</div>
-                <div style="font-size:12px; color:var(--text-light); margin-top:4px;">1:1 conversion rate • No fees</div>
-                <div style="font-size:12px; color:var(--warning); margin-top:4px; font-weight:600;">Minimum conversion: $1.00</div>
-            </div>
-            <div class="form-group">
-                <label>Enter Amount to Convert</label>
-                <input type="number" step="0.0001" id="convert-input" placeholder="Enter amount" min="0.0001">
-                <div class="form-hint">Max: <span id="convert-max-display">$0.0000</span></div>
-                <div class="convert-min-warning" id="convertModalMinWarning">⚠️ Minimum conversion amount is $1.00</div>
-            </div>
-            <button class="action-button success" onclick="confirmConvert()">
-                <i class="fa-solid fa-exchange-alt"></i> <span>Convert Now</span>
-            </button>
-            <button class="action-button secondary" onclick="closeModal('convertModal')" style="margin-top:10px;">
-                Cancel
-            </button>
-        </div>
-    </div>
-
-    <!-- Verify Ad Modal -->
-    <div id="verifyAdModal" class="modal">
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('verifyAdModal')">&times;</button>
-            <h3 class="card-title">📸 Submit Ad Verification</h3>
-            <p style="font-size:13px; color:var(--text-light); margin-bottom:12px;">Please provide details about the ad you watched and upload a screenshot as proof.</p>
-            <div id="verify-ad-info"></div>
-            <div class="form-group">
-                <label>Ad Title *</label>
-                <input type="text" id="verify-ad-title" placeholder="Enter the ad title" required>
-            </div>
-            <div class="form-group">
-                <label>Ad Description *</label>
-                <textarea id="verify-ad-desc" placeholder="Describe the ad you watched" rows="3" required></textarea>
-            </div>
-            <div class="form-group">
-                <label>Upload Screenshot *</label>
-                <input type="file" id="verify-screenshot" accept="image/*" required>
-            </div>
-            <button class="action-button" onclick="submitVerification()">
-                <i class="fa-solid fa-upload"></i> <span>Submit for Verification</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- Reject Reason Modal -->
-    <div id="rejectReasonModal" class="modal">
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('rejectReasonModal')">&times;</button>
-            <h3 class="card-title">❌ Reject Verification</h3>
-            <p style="font-size:13px; color:var(--text-light); margin-bottom:12px;">Please provide a reason for rejecting this verification request.</p>
-            <div class="form-group">
-                <label>Rejection Reason *</label>
-                <textarea id="reject-reason" placeholder="Explain why this verification is being rejected..." rows="4" required></textarea>
-            </div>
-            <div style="display:flex; gap:10px; margin-top:12px;">
-                <button class="action-button" onclick="confirmReject()" style="flex:1; background:var(--danger);">
-                    <i class="fa-solid fa-times"></i> Reject
-                </button>
-                <button class="action-button secondary" onclick="closeModal('rejectReasonModal')" style="flex:1; margin-top:0;">
-                    Cancel
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteConfirmModal" class="modal">
-        <div class="modal-content">
-            <button class="close-btn" onclick="closeModal('deleteConfirmModal')">&times;</button>
-            <h3 class="card-title">⚠️ Delete Campaign</h3>
-            <p style="font-size:14px; margin-bottom:12px;">Are you sure you want to delete this ad campaign?</p>
-            <div class="refund-info">
-                <strong>💰 Refund Details:</strong><br>
-                <span style="font-size:13px;">You will receive <span class="warning-text">50%</span> of your budget back</span>
-            </div>
-            <div class="company-info">
-                <strong>🏢 Company Fee:</strong><br>
-                <span style="font-size:13px;"><span class="warning-text">50%</span> will be deducted as platform fee</span>
-            </div>
-            <div style="margin-top:12px; padding:10px; background:var(--background-color); border-radius:8px;">
-                <div style="font-size:13px; color:var(--text-light);">
-                    <div>Total Budget: <strong id="delete-budget">$0.00</strong></div>
-                    <div>Refund (50%): <strong style="color:var(--success);" id="delete-refund">$0.00</strong></div>
-                    <div>Fee (50%): <strong style="color:var(--danger);" id="delete-fee">$0.00</strong></div>
-                </div>
-            </div>
-            <div style="display:flex; gap:10px; margin-top:16px;">
-                <button class="action-button" onclick="confirmDeleteAd()" style="flex:1; background:var(--danger);">
-                    <i class="fa-solid fa-trash"></i> Confirm Delete
-                </button>
-                <button class="action-button secondary" onclick="closeModal('deleteConfirmModal')" style="flex:1; margin-top:0;">
-                    Cancel
-                </button>
-            </div>
         </div>
     </div>
 
@@ -3814,6 +2421,71 @@
         <button class="action-btn" style="padding:6px 20px; border:none; border-radius:8px; background:var(--primary-color); color:white; font-weight:600; cursor:pointer;" onclick="submitRating()">Submit</button>
     </div>
 
+    <!-- ===== WATCH & EARN PAGE ===== -->
+    <div class="watch-earn-page" id="watchEarnPage">
+        <button class="back-btn" onclick="closeWatchEarn()">
+            <i class="fa-solid fa-arrow-left"></i> Back
+        </button>
+        <div class="page-title">📺 Watch & Earn</div>
+        <div class="page-subtitle">Watch ads and claim your rewards!</div>
+
+        <!-- Tiers Container -->
+        <div id="tiers-container"></div>
+
+        <!-- ===== ADMIN TIER MANAGEMENT ===== -->
+        <!-- Only visible to admin users -->
+        <div class="admin-tier-section" id="adminTierSection" style="display:none;">
+            <div class="section-title">
+                <i class="fa-solid fa-gear"></i> Manage Ad Tiers
+                <span style="font-size:11px; font-weight:400; color:var(--text-light); margin-left:auto;">Admin Only</span>
+            </div>
+
+            <!-- Add Tier Form -->
+            <div class="admin-tier-form" id="adminTierForm">
+                <div class="form-row">
+                    <div class="form-group-sm">
+                        <label>Section Name *</label>
+                        <input type="text" id="tier-name" placeholder="e.g. Section 1" value="Section 1">
+                    </div>
+                    <div class="form-group-sm">
+                        <label>Prize ($) *</label>
+                        <input type="number" id="tier-prize" step="0.01" placeholder="1.20" value="1.20">
+                    </div>
+                    <div class="form-group-sm">
+                        <label>Required Ads *</label>
+                        <input type="number" id="tier-required" placeholder="6" value="6" min="1">
+                    </div>
+                    <div class="form-group-sm">
+                        <label>Status</label>
+                        <select id="tier-status">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="form-group-sm full-width">
+                        <label>Description (Optional)</label>
+                        <input type="text" id="tier-desc" placeholder="Short description for this tier">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="save-btn" id="save-tier-btn" onclick="saveTier()">
+                        <i class="fa-solid fa-save"></i> Save Tier
+                    </button>
+                    <button class="cancel-btn" onclick="closeTierForm()">Cancel</button>
+                </div>
+                <input type="hidden" id="edit-tier-id" value="">
+            </div>
+
+            <!-- Add Tier Button -->
+            <button class="add-tier-btn" onclick="openTierForm()">
+                <i class="fa-solid fa-plus"></i> Add New Tier
+            </button>
+
+            <!-- Tier List (Admin) -->
+            <div id="admin-tier-list"></div>
+        </div>
+    </div>
+
     <!-- ============================================================ -->
     <!-- JAVASCRIPT -->
     <!-- ============================================================ -->
@@ -3829,22 +2501,11 @@
             AD_REWARD: 0.001,
             DAILY_AD_LIMIT: 15,
             MINIMUM_WITHDRAWAL: 0.10,
-            MINIMUM_DEPOSIT: 10,
             COOLDOWN_MINUTES: 30,
             REFERRAL_REWARD: 0.01,
-            REFUND_PERCENTAGE: 50,
-            COMPANY_FEE_PERCENTAGE: 50,
             AD_COOLDOWN_MINUTES: 1,
-            MINIMUM_DURATION_DAYS: 3,
-            MINIMUM_BUDGET: 1.00,
-            MINIMUM_CONVERT: 1.00,
             ADMIN_CHAT_ID: 'YOUR_ADMIN_CHAT_ID',
             withdrawalMethods: ['Binance', 'Bikash', 'Nogad'],
-            depositMethods: [
-                { name: 'Bikash', number: '01712345678', icon: '💳' },
-                { name: 'Nogad', number: '01712345678', icon: '📱' },
-                { name: 'Bank', number: '1234567890', icon: '🏦' }
-            ],
             welcomeNotice: {
                 title: "Welcome to NexEarn! 🎉",
                 message: "Please follow the rules to ensure you receive your payment.\n\n💰 Reward per Ad: $0.0010\n💝 After watching 15 ads, there is a 30-minute break.\n✅ 100% Payment Guarantee\n💸 Withdraw via Binance UID or Email\n🔥 Minimum withdrawal is only $0.10"
@@ -3871,52 +2532,36 @@
 
         let firebaseDb = null;
         const tg = window.Telegram ? window.Telegram.WebApp : null;
-        let pendingRejectVerificationId = null;
-        let pendingDeleteAdId = null;
         let isAdShowing = false;
         let lastAdWatchTime = 0;
         let currentJobId = null;
         let selectedRating = 0;
         let ratingTargetId = null;
-        let editingAdId = null;
         let isBanned = false;
         let banReason = '';
-        let unreadCount = 0;
-        let typingTimeout = null;
-        let isTyping = false;
 
         // ============================================================
         // STATE
         // ============================================================
         const state = {
             balance: 0,
-            walletBalance: 0,
             adCount: 0,
             adsWatchedToday: 0,
             lastAdWatchedDate: null,
             cooldownUntil: null,
             weeklyActivity: [0, 0, 0, 0, 0, 0, 0],
             withdrawalHistory: [],
-            depositHistory: [],
             completedBonusTasks: [],
             rewardedReferrals: 0,
             lastUsedIp: null,
-            userRole: 'publisher',
             viewedAds: [],
-            myAds: [],
             currentUserId: null,
             currentIp: null,
-            currentFilter: 'all',
-            currentVerifyAdId: null,
-            selectedDepositMethod: null,
-            selectedDepositNumber: null,
             bonusTasks: [],
             verifications: [],
             ratings: {},
             followers: {},
             userRatings: {},
-            totalSpent: 0,
-            pendingEarnings: 0,
             totalEarnings: 0,
             adRejects: 0,
             profileFollowers: 0,
@@ -3926,9 +2571,9 @@
             jobCount: 0,
             isBanned: false,
             banReason: '',
-            // Watch & Earn state
-            tierProgress: {}, // { tierId: { watched: 0, claimed: false } }
-            tiers: []
+            tierProgress: {},
+            tiers: [],
+            isAdmin: false
         };
 
         // ============================================================
@@ -3943,8 +2588,6 @@
             DOM.preloaderPercentage = document.getElementById('preloader-percentage');
             DOM.container = document.querySelector('.container');
             DOM.totalEarning = document.getElementById('total-earning');
-            DOM.walletBalance = document.getElementById('wallet-balance');
-            DOM.walletCard = document.getElementById('walletCard');
             DOM.adCount = document.getElementById('ad-count');
             DOM.adsTodayCount = document.getElementById('ads-today-count');
             DOM.referralCount = document.getElementById('referral-count');
@@ -3958,17 +2601,7 @@
             DOM.minWithdrawText = document.getElementById('min-withdraw-text');
             DOM.welcomeTitle = document.getElementById('welcome-title');
             DOM.welcomeMessage = document.getElementById('welcome-message');
-            DOM.walletLabel = document.getElementById('walletLabel');
-            DOM.depositBtn = document.getElementById('depositButton');
-            DOM.userRoleBadge = document.getElementById('userRoleBadge');
-            DOM.publisherView = document.getElementById('publisherView');
-            DOM.advertiserView = document.getElementById('advertiserView');
             DOM.jobListContainer = document.getElementById('job-list-container');
-            DOM.myAdsContainer = document.getElementById('my-ads-container');
-            DOM.verificationContainer = document.getElementById('verification-requests');
-            DOM.depositHistoryContainer = document.getElementById('deposit-history-container');
-            DOM.createAdForm = document.getElementById('create-ad-form');
-            DOM.depositMethodsList = document.getElementById('deposit-methods-list');
             DOM.withdrawForm = document.getElementById('withdraw-form');
             DOM.methodSelect = document.getElementById('method');
             DOM.methodFieldsContainer = document.getElementById('method-fields-container');
@@ -3977,42 +2610,8 @@
             DOM.withdrawNavBtn = document.getElementById('withdrawNavBtn');
             DOM.adLoaderOverlay = document.getElementById('ad-loader-overlay');
             DOM.adLoaderProgress = document.getElementById('ad-loader-progress');
-            DOM.verifyAdInfo = document.getElementById('verify-ad-info');
-            DOM.verifyScreenshot = document.getElementById('verify-screenshot');
-            DOM.verifyAdTitle = document.getElementById('verify-ad-title');
-            DOM.verifyAdDesc = document.getElementById('verify-ad-desc');
             DOM.profilePic = document.getElementById('profile-pic');
             DOM.greeting = document.getElementById('greeting');
-            DOM.convertBalance = document.getElementById('convert-balance');
-            DOM.convertBtn = document.getElementById('convertBtn');
-            DOM.convertInput = document.getElementById('convert-input');
-            DOM.convertAmountDisplay = document.getElementById('convert-amount-display');
-            DOM.convertMaxDisplay = document.getElementById('convert-max-display');
-            DOM.convertMinWarning = document.getElementById('convertMinWarning');
-            DOM.convertModalMinWarning = document.getElementById('convertModalMinWarning');
-            DOM.rejectReason = document.getElementById('reject-reason');
-            DOM.adDuration = document.getElementById('ad-duration');
-            DOM.adDurationDisplay = document.getElementById('ad-duration-display');
-            DOM.adTargetViews = document.getElementById('ad-target-views');
-            DOM.adBudget = document.getElementById('ad-budget');
-            DOM.adCostPerView = document.getElementById('ad-cost-per-view');
-            DOM.adDailyBudget = document.getElementById('ad-daily-budget');
-            DOM.adTotalBudgetDisplay = document.getElementById('ad-total-budget-display');
-            DOM.deleteBudget = document.getElementById('delete-budget');
-            DOM.deleteRefund = document.getElementById('delete-refund');
-            DOM.deleteFee = document.getElementById('delete-fee');
-            DOM.depositSender = document.getElementById('deposit-sender');
-            DOM.depositTrxid = document.getElementById('deposit-trxid');
-            DOM.depositAmount = document.getElementById('deposit-amount');
-            DOM.depositMinAmount = document.getElementById('deposit-min-amount');
-            DOM.adCategory = document.getElementById('ad-category');
-            DOM.adSubCategory = document.getElementById('ad-sub-category');
-            DOM.adRequirements = document.getElementById('ad-requirements');
-            DOM.adInstructions = document.getElementById('ad-instructions');
-            DOM.calcViews = document.getElementById('calcViews');
-            DOM.calcReward = document.getElementById('calcReward');
-            DOM.calcDuration = document.getElementById('calcDuration');
-            DOM.calcResult = document.getElementById('calcResult');
             DOM.jobDetailsPage = document.getElementById('jobDetailsPage');
             DOM.jobDetailsContent = document.getElementById('job-details-content');
             DOM.verifyJobModal = document.getElementById('verifyJobModal');
@@ -4027,30 +2626,8 @@
             DOM.allJobsPage = document.getElementById('allJobsPage');
             DOM.allJobsContainer = document.getElementById('all-jobs-container');
             DOM.jobsCountBadge = document.getElementById('jobs-count-badge');
-            DOM.editAdModal = document.getElementById('editAdModal');
-            DOM.editAdForm = document.getElementById('edit-ad-form');
-            DOM.editAdTitle = document.getElementById('edit-ad-title');
-            DOM.editAdCategory = document.getElementById('edit-ad-category');
-            DOM.editAdSubCategory = document.getElementById('edit-ad-sub-category');
-            DOM.editAdDesc = document.getElementById('edit-ad-desc');
-            DOM.editAdRequirements = document.getElementById('edit-ad-requirements');
-            DOM.editAdInstructions = document.getElementById('edit-ad-instructions');
-            DOM.editAdBtn = document.getElementById('edit-ad-btn');
-            DOM.adValidationMessage = document.getElementById('ad-validation-message');
-            DOM.fabButton = document.getElementById('fabButton');
-            DOM.chatModal = document.getElementById('chatModal');
-            DOM.chatMessages = document.getElementById('chatMessages');
-            DOM.chatInput = document.getElementById('chatInput');
-            DOM.chatStatus = document.getElementById('chatStatus');
-            DOM.chatInfo = document.getElementById('chatInfo');
-            DOM.chatTyping = document.getElementById('chatTyping');
-            DOM.sendChatBtn = document.getElementById('sendChatBtn');
-            DOM.chatBadge = document.getElementById('chatBadge');
             DOM.bannedOverlay = document.getElementById('bannedOverlay');
             DOM.banReason = document.getElementById('banReason');
-            DOM.budgetSuggestion = document.getElementById('budgetSuggestion');
-            DOM.suggestedBudget = document.getElementById('suggestedBudget');
-            DOM.suggestionReason = document.getElementById('suggestionReason');
             DOM.maintenanceOverlay = document.getElementById('maintenance-overlay');
             DOM.maintenanceMessage = document.getElementById('maintenanceMessage');
             DOM.maintenanceTime = document.getElementById('maintenanceTime');
@@ -4145,12 +2722,6 @@
             await originalWatchAd.call(this);
         };
 
-        const originalConfirmConvert = confirmConvert;
-        confirmConvert = function() {
-            window._legitimateBalanceChange = true;
-            originalConfirmConvert.call(this);
-        };
-
         const originalHandleWithdrawal = handleWithdrawal;
         handleWithdrawal = async function(e) {
             window._legitimateWithdrawal = true;
@@ -4187,9 +2758,6 @@
                 });
 
             showToast('🚫 Account Banned! Contact admin for more info.', 'error');
-            sendAdminNotification(
-                `🚫 User Banned\nUser: ${tg?.initDataUnsafe?.user?.first_name || 'Unknown'}\nID: ${state.currentUserId}\nReason: ${reason}`
-                );
         }
 
         function checkBanStatus() {
@@ -4203,173 +2771,6 @@
                     });
                 }
             });
-        }
-
-        // ============================================================
-        // ADMIN CHAT SYSTEM
-        // ============================================================
-        function openChatModal() {
-            if (isBanned) {
-                DOM.bannedOverlay.classList.remove('active');
-            }
-            DOM.chatModal.classList.add('active');
-            unreadCount = 0;
-            DOM.chatBadge.style.display = 'none';
-            DOM.chatMessages.scrollTop = DOM.chatMessages.scrollHeight;
-
-            if (firebaseDb && state.currentUserId) {
-                const chatRef = firebaseDb.ref(`chats/${state.currentUserId}`);
-                chatRef.orderByChild('timestamp').once('value', (snapshot) => {
-                    const data = snapshot.val() || {};
-                    Object.entries(data).forEach(([key, msg]) => {
-                        if (msg.isFromUser === false && !msg.read) {
-                            chatRef.child(key + '/read').set(true);
-                        }
-                    });
-                });
-            }
-        }
-
-        function closeChatModal() {
-            DOM.chatModal.classList.remove('active');
-            if (isBanned) {
-                DOM.bannedOverlay.classList.add('active');
-            }
-        }
-
-        function handleTyping() {
-            if (!firebaseDb || !state.currentUserId) return;
-            const chatRef = firebaseDb.ref(`chats/${state.currentUserId}`);
-            if (typingTimeout) clearTimeout(typingTimeout);
-            chatRef.child('typing').set({
-                isTyping: true,
-                timestamp: Date.now(),
-                sender: 'user'
-            });
-            typingTimeout = setTimeout(() => {
-                chatRef.child('typing').remove();
-            }, 2000);
-        }
-
-        function sendMessage() {
-            const input = DOM.chatInput;
-            const message = input.value.trim();
-            if (!message) return;
-
-            const user = tg?.initDataUnsafe?.user || { first_name: 'User', id: 'unknown' };
-            const msgData = {
-                userId: state.currentUserId,
-                userName: user.first_name || 'User',
-                message: message,
-                timestamp: Date.now(),
-                isFromUser: true,
-                read: false,
-                delivered: false
-            };
-
-            addChatMessage(message, 'user', Date.now(), 'delivered');
-            input.value = '';
-            DOM.sendChatBtn.disabled = true;
-
-            const chatRef = firebaseDb.ref(`chats/${state.currentUserId}`);
-            chatRef.child('typing').remove();
-            chatRef.push(msgData).then((ref) => {
-                DOM.sendChatBtn.disabled = false;
-                chatRef.child(ref.key + '/delivered').set(true);
-                sendAdminNotification(
-                    `💬 New message from ${user.first_name}\nID: ${state.currentUserId}\nMessage: ${message}\nTime: ${new Date().toLocaleString()}`
-                    );
-                const lastMsg = DOM.chatMessages.lastElementChild;
-                if (lastMsg) {
-                    const statusEl = lastMsg.querySelector('.read-status');
-                    if (statusEl) {
-                        statusEl.textContent = '✓';
-                        statusEl.className = 'read-status delivered';
-                    }
-                }
-            }).catch(err => {
-                console.error("Chat send error:", err);
-                DOM.sendChatBtn.disabled = false;
-                showToast('❌ Failed to send message', 'error');
-            });
-        }
-
-        function addChatMessage(message, type = 'user', time = Date.now(), status = 'delivered') {
-            const div = document.createElement('div');
-            div.className = `chat-message ${type}`;
-            const timeStr = new Date(time).toLocaleString();
-            const statusClass = status === 'seen' ? 'seen' : 'delivered';
-            const statusText = status === 'seen' ? '✓✓' : '✓';
-            div.innerHTML = `
-                ${escapeHTML(message)}
-                <div class="time">${timeStr} <span class="read-status ${statusClass}">${statusText}</span></div>
-            `;
-            DOM.chatMessages.appendChild(div);
-            DOM.chatMessages.scrollTop = DOM.chatMessages.scrollHeight;
-        }
-
-        function listenChatMessages() {
-            if (!firebaseDb || !state.currentUserId) return;
-            const chatRef = firebaseDb.ref(`chats/${state.currentUserId}`);
-            chatRef.orderByChild('timestamp').on('child_added', (snapshot) => {
-                const data = snapshot.val();
-                if (!data) return;
-                if (data.isTyping) return;
-                if (data.isFromUser === false) {
-                    const status = data.read ? 'seen' : 'delivered';
-                    addChatMessage(data.message, 'admin', data.timestamp, status);
-                    if (!DOM.chatModal.classList.contains('active')) {
-                        unreadCount++;
-                        DOM.chatBadge.textContent = unreadCount;
-                        DOM.chatBadge.style.display = 'flex';
-                    } else {
-                        chatRef.child(snapshot.key + '/read').set(true);
-                        const lastMsg = DOM.chatMessages.lastElementChild;
-                        if (lastMsg) {
-                            const statusEl = lastMsg.querySelector('.read-status');
-                            if (statusEl) {
-                                statusEl.textContent = '✓✓';
-                                statusEl.className = 'read-status seen';
-                            }
-                        }
-                    }
-                } else if (data.isFromUser === true && DOM.chatModal.classList.contains('active')) {
-                    chatRef.child(snapshot.key + '/read').set(true);
-                }
-            });
-            chatRef.child('typing').on('value', (snapshot) => {
-                const typing = snapshot.val();
-                if (typing && typing.isTyping && typing.sender === 'admin') {
-                    DOM.chatTyping.textContent = '✍️ Admin is typing...';
-                    DOM.chatTyping.classList.add('active');
-                } else {
-                    DOM.chatTyping.classList.remove('active');
-                }
-            });
-        }
-
-        function sendAdminNotification(message) {
-            if (firebaseDb) {
-                firebaseDb.ref('adminNotifications').push({
-                    message: message,
-                    userId: state.currentUserId,
-                    timestamp: Date.now(),
-                    read: false,
-                    type: 'chat'
-                });
-            }
-            if (tg && CONFIG.ADMIN_CHAT_ID) {
-                try {
-                    tg.sendData(JSON.stringify({
-                        type: 'admin_notification',
-                        message: message,
-                        userId: state.currentUserId,
-                        userName: tg?.initDataUnsafe?.user?.first_name || 'User'
-                    }));
-                } catch (e) {
-                    console.warn("Telegram notification error:", e);
-                }
-            }
         }
 
         // ============================================================
@@ -4553,25 +2954,14 @@
                         if (data.adReward) CONFIG.AD_REWARD = data.adReward;
                         if (data.dailyLimit) CONFIG.DAILY_AD_LIMIT = data.dailyLimit;
                         if (data.minWithdraw) CONFIG.MINIMUM_WITHDRAWAL = data.minWithdraw;
-                        if (data.minDeposit) {
-                            CONFIG.MINIMUM_DEPOSIT = data.minDeposit;
-                            if (DOM.depositMinAmount) {
-                                DOM.depositMinAmount.textContent = data.minDeposit;
-                            }
-                        }
                         if (data.cooldown) CONFIG.COOLDOWN_MINUTES = data.cooldown;
                         if (data.referralReward) CONFIG.REFERRAL_REWARD = data.referralReward;
                         if (data.withdrawMethods) CONFIG.withdrawalMethods = data.withdrawMethods;
-                        if (data.depositMethods) CONFIG.depositMethods = data.depositMethods;
                         if (data.welcomeMessage) CONFIG.welcomeNotice.message = data.welcomeMessage;
                         if (data.adCooldownMinutes) CONFIG.AD_COOLDOWN_MINUTES = data.adCooldownMinutes;
-                        if (data.minDurationDays) CONFIG.MINIMUM_DURATION_DAYS = data.minDurationDays;
-                        if (data.minBudget) CONFIG.MINIMUM_BUDGET = data.minBudget;
-                        if (data.minConvert) CONFIG.MINIMUM_CONVERT = data.minConvert;
                         if (data.adminChatId) CONFIG.ADMIN_CHAT_ID = data.adminChatId;
                         if (data.supportLink) CONFIG.SUPPORT_LINK = data.supportLink;
                         console.log("✅ Config loaded from Firebase");
-                        renderDepositMethods();
                     }
                     resolve();
                 });
@@ -4601,28 +2991,22 @@
             if (!firebaseDb || !state.currentUserId) return;
             const data = {
                 balance: state.balance,
-                walletBalance: state.walletBalance,
                 adCount: state.adCount,
                 adsWatchedToday: state.adsWatchedToday,
                 lastAdWatchedDate: state.lastAdWatchedDate,
                 cooldownUntil: state.cooldownUntil,
                 weeklyActivity: state.weeklyActivity,
                 withdrawalHistory: state.withdrawalHistory,
-                depositHistory: state.depositHistory,
                 completedBonusTasks: state.completedBonusTasks,
                 rewardedReferrals: state.rewardedReferrals,
                 lastUsedIp: state.lastUsedIp,
-                userRole: state.userRole,
                 viewedAds: state.viewedAds,
-                myAds: state.myAds,
                 name: tg?.initDataUnsafe?.user?.first_name || 'User',
                 username: tg?.initDataUnsafe?.user?.username || null,
                 lastAdWatchTime: lastAdWatchTime,
                 ratings: state.ratings,
                 followers: state.followers,
                 userRatings: state.userRatings,
-                totalSpent: state.totalSpent,
-                pendingEarnings: state.pendingEarnings,
                 totalEarnings: state.totalEarnings,
                 adRejects: state.adRejects,
                 profileFollowers: state.profileFollowers,
@@ -4631,7 +3015,8 @@
                 followersCount: state.followersCount,
                 isBanned: state.isBanned,
                 banReason: state.banReason,
-                tierProgress: state.tierProgress
+                tierProgress: state.tierProgress,
+                isAdmin: state.isAdmin
             };
             firebaseDb.ref(`users/${state.currentUserId}`).update(data).catch(err => {
                 console.error("Save error:", err);
@@ -4645,25 +3030,19 @@
                     const data = snapshot.val();
                     if (data) {
                         state.balance = data.balance || 0;
-                        state.walletBalance = data.walletBalance || 0;
                         state.adCount = data.adCount || 0;
                         state.adsWatchedToday = data.adsWatchedToday || 0;
                         state.lastAdWatchedDate = data.lastAdWatchedDate || null;
                         state.cooldownUntil = data.cooldownUntil || null;
                         state.weeklyActivity = data.weeklyActivity || [0, 0, 0, 0, 0, 0, 0];
                         state.withdrawalHistory = data.withdrawalHistory || [];
-                        state.depositHistory = data.depositHistory || [];
                         state.completedBonusTasks = data.completedBonusTasks || [];
                         state.rewardedReferrals = data.rewardedReferrals || 0;
                         state.lastUsedIp = data.lastUsedIp || null;
-                        state.userRole = data.userRole || 'publisher';
                         state.viewedAds = data.viewedAds || [];
-                        state.myAds = data.myAds || [];
                         state.ratings = data.ratings || {};
                         state.followers = data.followers || {};
                         state.userRatings = data.userRatings || {};
-                        state.totalSpent = data.totalSpent || 0;
-                        state.pendingEarnings = data.pendingEarnings || 0;
                         state.totalEarnings = data.totalEarnings || 0;
                         state.adRejects = data.adRejects || 0;
                         state.profileFollowers = data.profileFollowers || 0;
@@ -4673,6 +3052,7 @@
                         state.isBanned = data.isBanned || false;
                         state.banReason = data.banReason || '';
                         state.tierProgress = data.tierProgress || {};
+                        state.isAdmin = data.isAdmin || false;
                         if (data.lastAdWatchTime) {
                             lastAdWatchTime = data.lastAdWatchTime;
                         }
@@ -4694,32 +3074,9 @@
                 const ads = snapshot.val() || {};
                 const adList = Object.entries(ads).map(([id, data]) => ({ id, ...data }));
                 renderJobList(adList);
-                renderMyAds(adList);
-                renderVerificationRequests(adList);
                 updateProfileData(adList);
                 if (DOM.allJobsPage.classList.contains('active')) {
                     renderAllJobs(adList);
-                }
-            });
-        }
-
-        function listenDeposits() {
-            if (!firebaseDb || !state.currentUserId) return;
-            firebaseDb.ref('deposits').orderByChild('userId').equalTo(state.currentUserId).on('value', (snapshot) => {
-                const data = snapshot.val() || {};
-                const list = Object.entries(data).map(([id, item]) => ({ id, ...item }));
-                state.depositHistory = list;
-                renderDepositHistory(list);
-                saveUserData();
-            });
-            firebaseDb.ref('deposits').orderByChild('userId').equalTo(state.currentUserId).on('child_changed', (
-                snapshot) => {
-                const data = snapshot.val();
-                if (data?.status === 'approved') {
-                    state.walletBalance += data.amount / 100;
-                    saveUserData();
-                    updateUI();
-                    showToast(`✅ Deposit of ${data.amount} BDT approved!`, 'success');
                 }
             });
         }
@@ -4742,73 +3099,6 @@
         }
 
         // ============================================================
-        // EDIT AD FUNCTIONS
-        // ============================================================
-        function openEditAd(adId) {
-            editingAdId = adId;
-            firebaseDb.ref(`ads/${adId}`).once('value').then(snapshot => {
-                const ad = snapshot.val();
-                if (!ad) {
-                    showToast('❌ Ad not found', 'error');
-                    return;
-                }
-                DOM.editAdTitle.value = ad.title || '';
-                DOM.editAdCategory.value = ad.category || '';
-                DOM.editAdSubCategory.value = ad.subCategory || '';
-                DOM.editAdDesc.value = ad.desc || '';
-                DOM.editAdRequirements.value = ad.requirements || '';
-                DOM.editAdInstructions.value = ad.instructions || '';
-                DOM.editAdModal.classList.add('active');
-            }).catch(err => {
-                console.error("Error loading ad for edit:", err);
-                showToast('❌ Failed to load ad data', 'error');
-            });
-        }
-
-        function closeEditAdModal() {
-            DOM.editAdModal.classList.remove('active');
-            editingAdId = null;
-        }
-
-        function setupEditAdForm() {
-            if (!DOM.editAdForm) return;
-            DOM.editAdForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                if (!editingAdId) {
-                    showToast('❌ No ad selected for editing', 'error');
-                    return;
-                }
-                const title = DOM.editAdTitle.value.trim();
-                const category = DOM.editAdCategory.value;
-                const subCategory = DOM.editAdSubCategory.value.trim();
-                const desc = DOM.editAdDesc.value.trim();
-                const requirements = DOM.editAdRequirements.value.trim();
-                const instructions = DOM.editAdInstructions.value.trim();
-                if (!title || !category || !desc || !requirements || !instructions) {
-                    showToast('❌ Please fill all required fields!', 'error');
-                    return;
-                }
-                try {
-                    await firebaseDb.ref(`ads/${editingAdId}`).update({
-                        title: title,
-                        category: category,
-                        subCategory: subCategory || '',
-                        desc: desc,
-                        requirements: requirements,
-                        instructions: instructions,
-                        updatedAt: Date.now()
-                    });
-                    closeEditAdModal();
-                    showToast('✅ Ad updated successfully!', 'success');
-                    listenAds();
-                } catch (e) {
-                    console.error("Edit ad error:", e);
-                    showToast('❌ Failed to update ad', 'error');
-                }
-            });
-        }
-
-        // ============================================================
         // PROFILE PAGE FUNCTIONS
         // ============================================================
         function openProfilePage() {
@@ -4827,116 +3117,46 @@
         function renderProfilePage() {
             const user = tg?.initDataUnsafe?.user || { first_name: 'User' };
             const initial = user.first_name?.charAt(0) || 'U';
-            const role = state.userRole === 'publisher' ? '📖 Publisher' : '📢 Advertiser';
             const followingCount = Object.keys(state.followers).filter(id => id !== state.currentUserId).length || 0;
             const followersCount = Object.keys(state.followers).length || 0;
             const ratingsArray = Object.values(state.ratings).filter(r => r > 0);
             const avgRating = ratingsArray.length > 0 ? ratingsArray.reduce((a, b) => a + b, 0) / ratingsArray.length : 0;
-            let content = '';
-            if (state.userRole === 'advertiser') {
-                const activeAds = state.myAds.filter(a => a.status === 'active' && a.approved).length;
-                const pendingReviews = state.verifications.filter(v => v.status === 'pending').length;
-                const expiredAds = state.myAds.filter(a => a.status === 'expired' || (a.endDate && a.endDate < Date.now()))
-                    .length;
-                content = `
-                    <div class="profile-card">
-                        <div class="big-avatar">${initial}</div>
-                        <div class="profile-name">${escapeHTML(user.first_name || 'User')}</div>
-                        <div class="profile-role">${role}</div>
-                        <div class="profile-stats-row">
-                            <div class="stat-item"><span class="num following">${followingCount}</span> Following</div>
-                            <div class="stat-item"><span class="num followers">${followersCount}</span> Followers</div>
-                            <div class="stat-item"><span class="num rating">${avgRating.toFixed(1)}</span> ★ Rating</div>
-                        </div>
-                    </div>
-                    <div class="profile-tabs">
-                        <button class="profile-tab active" onclick="switchProfileTab('advertiser', this)">📢 Advertiser</button>
-                        <button class="profile-tab" onclick="switchProfileTab('publisher', this)">📖 Publisher</button>
-                    </div>
-                    <div class="profile-stats-grid">
-                        <div class="profile-stat-box"><div class="label">💰 Available Balance</div><div class="value reward">$${formatBalance(state.walletBalance)}</div></div>
-                        <div class="profile-stat-box"><div class="label">📊 Total Spent</div><div class="value highlight">$${formatBalance(state.totalSpent)}</div></div>
-                        <div class="profile-stat-box"><div class="label">❌ Ad Rejects</div><div class="value danger">${state.adRejects}</div></div>
-                    </div>
-                    <div style="display:flex; gap:10px; margin-bottom:16px;">
-                        <button class="action-button" style="flex:1; padding:12px;" onclick="closeProfilePage(); document.querySelector('.role-btn.advertiser').click();">
-                            <i class="fa-solid fa-eye"></i> View Ads
-                        </button>
-                        <button class="action-button secondary" style="flex:1; padding:12px;" onclick="closeProfilePage(); document.querySelector('.role-btn.advertiser').click();">
-                            <i class="fa-solid fa-plus"></i> Create Ad
-                        </button>
-                    </div>
-                    <div class="card">
-                        <div class="profile-section-title">📊 Ad Statistics</div>
-                        <div class="profile-list-item"><div class="left"><span class="icon"><i class="fa-solid fa-play-circle"></i></span><div class="info"><div class="title">Active Ads</div></div></div><div class="right"><span class="count">${activeAds}</span></div></div>
-                        <div class="profile-list-item"><div class="left"><span class="icon"><i class="fa-solid fa-clock"></i></span><div class="info"><div class="title">Pending Review</div></div></div><div class="right"><span class="count">${pendingReviews}</span></div></div>
-                        <div class="profile-list-item"><div class="left"><span class="icon"><i class="fa-solid fa-calendar-times"></i></span><div class="info"><div class="title">Expired Ads</div></div></div><div class="right"><span class="count">${expiredAds}</span></div></div>
-                    </div>
-                    <div class="card">
-                        <div class="profile-section-title">📋 Recent Activity</div>
-                        ${state.depositHistory.slice(0, 5).map(d => `
-                            <div class="profile-list-item">
-                                <div class="left"><span class="icon"><i class="fa-solid fa-arrow-down"></i></span><div class="info"><div class="title">Deposit via ${escapeHTML(d.method)}</div><div class="sub">${new Date(d.createdAt).toLocaleDateString()}</div></div></div>
-                                <div class="right"><span class="status ${d.status || 'pending'}">${d.status || 'Pending'}</span></div>
-                            </div>
-                        `).join('') || '<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No recent activity</p></div>'}
-                    </div>
-                `;
-            } else {
-                content = `
-                    <div class="profile-card">
-                        <div class="big-avatar">${initial}</div>
-                        <div class="profile-name">${escapeHTML(user.first_name || 'User')}</div>
-                        <div class="profile-role">${role}</div>
-                        <div class="profile-stats-row">
-                            <div class="stat-item"><span class="num following">${followingCount}</span> Following</div>
-                            <div class="stat-item"><span class="num followers">${followersCount}</span> Followers</div>
-                            <div class="stat-item"><span class="num rating">${avgRating.toFixed(1)}</span> ★ Rating</div>
-                        </div>
-                    </div>
-                    <div class="profile-tabs">
-                        <button class="profile-tab" onclick="switchProfileTab('advertiser', this)">📢 Advertiser</button>
-                        <button class="profile-tab active" onclick="switchProfileTab('publisher', this)">📖 Publisher</button>
-                    </div>
-                    <div class="profile-stats-grid">
-                        <div class="profile-stat-box"><div class="label">💰 Available Balance</div><div class="value reward">$${formatBalance(state.balance)}</div></div>
-                        <div class="profile-stat-box"><div class="label">⏳ Pending Earnings</div><div class="value highlight">$${formatBalance(state.pendingEarnings)}</div></div>
-                        <div class="profile-stat-box"><div class="label">📈 Total Earnings</div><div class="value">$${formatBalance(state.totalEarnings)}</div></div>
-                    </div>
-                    <div class="card">
-                        <div class="profile-section-title">📋 My Submissions</div>
-                        ${state.verifications.length > 0 ? state.verifications.slice(0, 5).map(v => `
-                            <div class="profile-list-item">
-                                <div class="left"><span class="icon"><i class="fa-solid fa-file-alt"></i></span><div class="info"><div class="title">${escapeHTML(v.adTitle || 'Job')}</div><div class="sub">${new Date(v.createdAt).toLocaleDateString()}</div></div></div>
-                                <div class="right"><span class="status ${v.status || 'pending'}">${v.status || 'Pending'}</span></div>
-                            </div>
-                        `).join('') : '<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No submissions yet</p></div>'}
-                    </div>
-                    <div class="card">
-                        <div class="profile-section-title">📋 Recent Activity</div>
-                        ${state.withdrawalHistory.slice(0, 5).map(w => `
-                            <div class="profile-list-item">
-                                <div class="left"><span class="icon"><i class="fa-solid fa-arrow-up"></i></span><div class="info"><div class="title">Withdrawal via ${escapeHTML(w.method)}</div><div class="sub">${new Date(w.date).toLocaleDateString()}</div></div></div>
-                                <div class="right"><span class="status ${w.status.toLowerCase()}">${w.status}</span></div>
-                            </div>
-                        `).join('') || '<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No recent activity</p></div>'}
-                    </div>
-                `;
-            }
-            DOM.profileContent.innerHTML = content;
-        }
 
-        function switchProfileTab(tab, btn) {
-            document.querySelectorAll('.profile-tab').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            if (tab === 'advertiser') {
-                state.userRole = 'advertiser';
-                selectRole('advertiser', document.querySelector('.role-btn.advertiser'));
-            } else {
-                state.userRole = 'publisher';
-                selectRole('publisher', document.querySelector('.role-btn.publisher'));
-            }
-            renderProfilePage();
+            let content = `
+                <div class="profile-card">
+                    <div class="big-avatar">${initial}</div>
+                    <div class="profile-name">${escapeHTML(user.first_name || 'User')}</div>
+                    <div class="profile-stats-row">
+                        <div class="stat-item"><span class="num following">${followingCount}</span> Following</div>
+                        <div class="stat-item"><span class="num followers">${followersCount}</span> Followers</div>
+                        <div class="stat-item"><span class="num rating">${avgRating.toFixed(1)}</span> ★ Rating</div>
+                    </div>
+                </div>
+                <div class="profile-stats-grid">
+                    <div class="profile-stat-box"><div class="label">💰 Balance</div><div class="value reward">$${formatBalance(state.balance)}</div></div>
+                    <div class="profile-stat-box"><div class="label">📈 Total Earnings</div><div class="value">$${formatBalance(state.totalEarnings)}</div></div>
+                    <div class="profile-stat-box"><div class="label">👁 Ads Watched</div><div class="value highlight">${state.adCount}</div></div>
+                </div>
+                <div class="card">
+                    <div class="profile-section-title">📋 My Submissions</div>
+                    ${state.verifications.length > 0 ? state.verifications.slice(0, 5).map(v => `
+                        <div class="profile-list-item">
+                            <div class="left"><span class="icon"><i class="fa-solid fa-file-alt"></i></span><div class="info"><div class="title">${escapeHTML(v.adTitle || 'Job')}</div><div class="sub">${new Date(v.createdAt).toLocaleDateString()}</div></div></div>
+                            <div class="right"><span class="status ${v.status || 'pending'}">${v.status || 'Pending'}</span></div>
+                        </div>
+                    `).join('') : '<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No submissions yet</p></div>'}
+                </div>
+                <div class="card">
+                    <div class="profile-section-title">📋 Recent Activity</div>
+                    ${state.withdrawalHistory.slice(0, 5).map(w => `
+                        <div class="profile-list-item">
+                            <div class="left"><span class="icon"><i class="fa-solid fa-arrow-up"></i></span><div class="info"><div class="title">Withdrawal via ${escapeHTML(w.method)}</div><div class="sub">${new Date(w.date).toLocaleDateString()}</div></div></div>
+                            <div class="right"><span class="status ${w.status.toLowerCase()}">${w.status}</span></div>
+                        </div>
+                    `).join('') || '<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No recent activity</p></div>'}
+                </div>
+            `;
+            DOM.profileContent.innerHTML = content;
         }
 
         function updateProfileData(ads) {
@@ -5142,407 +3362,6 @@
         }
 
         // ============================================================
-        // CONVERT EARNINGS TO WALLET
-        // ============================================================
-        function convertToWallet() {
-            if (state.balance <= 0) {
-                showToast('❌ No earnings to convert!', 'error');
-                return;
-            }
-            if (state.balance < CONFIG.MINIMUM_CONVERT) {
-                showToast(`❌ Minimum conversion amount is $${CONFIG.MINIMUM_CONVERT.toFixed(2)}!`, 'error');
-                return;
-            }
-            DOM.convertInput.value = '';
-            DOM.convertAmountDisplay.textContent = `$${formatBalance(state.balance)}`;
-            DOM.convertMaxDisplay.textContent = `$${formatBalance(state.balance)}`;
-            DOM.convertInput.max = state.balance;
-            DOM.convertInput.placeholder = `Max $${formatBalance(state.balance)}`;
-            DOM.convertModalMinWarning.classList.remove('active');
-            document.getElementById('convertModal').style.display = 'flex';
-        }
-
-        function confirmConvert() {
-            const amount = parseFloat(DOM.convertInput.value);
-            if (!amount || amount <= 0) {
-                showToast('❌ Please enter a valid amount', 'error');
-                return;
-            }
-            if (amount < CONFIG.MINIMUM_CONVERT) {
-                DOM.convertModalMinWarning.classList.add('active');
-                showToast(`❌ Minimum conversion amount is $${CONFIG.MINIMUM_CONVERT.toFixed(2)}!`, 'error');
-                return;
-            }
-            DOM.convertModalMinWarning.classList.remove('active');
-            if (amount > state.balance) {
-                showToast(`❌ You only have $${formatBalance(state.balance)} to convert`, 'error');
-                return;
-            }
-            window._legitimateBalanceChange = true;
-            state.balance -= amount;
-            state.walletBalance += amount;
-            saveUserData();
-            updateUI();
-            closeModal('convertModal');
-            showToast(`✅ $${formatBalance(amount)} converted to wallet successfully!`, 'success');
-        }
-
-        // ============================================================
-        // RENDER DEPOSIT HISTORY
-        // ============================================================
-        function renderDepositHistory(deposits) {
-            if (!DOM.depositHistoryContainer) return;
-            if (!deposits || deposits.length === 0) {
-                DOM.depositHistoryContainer.innerHTML =
-                    `<div class="empty-state"><i class="fa-solid fa-credit-card"></i><p>No deposit history</p></div>`;
-                return;
-            }
-            DOM.depositHistoryContainer.innerHTML = `
-                <div class="table-container">
-                    <table>
-                        <thead><tr><th>Method</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
-                        <tbody>
-                            ${deposits.map(d => `
-                                <tr>
-                                    <td>${escapeHTML(d.method)}</td>
-                                    <td><strong>${d.amount} BDT</strong></td>
-                                    <td><span class="status-badge ${d.status || 'pending'}">${d.status || 'Pending'}</span></td>
-                                    <td style="font-size:12px; color:var(--text-light);">${new Date(d.createdAt).toLocaleDateString()}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-        }
-
-        // ============================================================
-        // ROLE MANAGEMENT
-        // ============================================================
-        function selectRole(role, btn) {
-            if (isBanned) {
-                showToast('🚫 You are banned. Contact admin for support.', 'error');
-                return;
-            }
-            document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
-            state.userRole = role;
-            saveUserData();
-            if (role === 'publisher') {
-                DOM.publisherView.style.display = 'block';
-                DOM.advertiserView.style.display = 'none';
-                DOM.userRoleBadge.textContent = '📖 Publisher';
-                DOM.userRoleBadge.className = 'role-badge';
-                DOM.walletCard.style.display = 'none';
-                document.getElementById('convertCard').style.display = 'block';
-                DOM.withdrawNavBtn.style.opacity = '1';
-                DOM.withdrawNavBtn.style.pointerEvents = 'auto';
-                listenAds();
-                // Show admin tier management if user is admin
-                checkAdminStatus();
-            } else {
-                DOM.publisherView.style.display = 'none';
-                DOM.advertiserView.style.display = 'block';
-                DOM.userRoleBadge.textContent = '📢 Advertiser';
-                DOM.userRoleBadge.className = 'role-badge advertiser';
-                DOM.walletCard.style.display = 'flex';
-                document.getElementById('convertCard').style.display = 'none';
-                DOM.withdrawNavBtn.style.opacity = '0.5';
-                DOM.withdrawNavBtn.style.pointerEvents = 'none';
-                listenAds();
-                checkAdminStatus();
-            }
-            updateUI();
-        }
-
-        function switchRole() {
-            const newRole = state.userRole === 'publisher' ? 'advertiser' : 'publisher';
-            const btn = document.querySelector(`.role-btn.${newRole}`);
-            if (btn) selectRole(newRole, btn);
-        }
-
-        // ============================================================
-        // CHECK ADMIN STATUS
-        // ============================================================
-        function checkAdminStatus() {
-            if (!firebaseDb || !state.currentUserId) return;
-            firebaseDb.ref(`users/${state.currentUserId}/isAdmin`).once('value', (snapshot) => {
-                const isAdmin = snapshot.val() === true;
-                if (isAdmin) {
-                    DOM.adminTierSection.style.display = 'block';
-                    loadAdminTiers();
-                } else {
-                    DOM.adminTierSection.style.display = 'none';
-                }
-            });
-        }
-
-        // ============================================================
-        // FILTER JOBS
-        // ============================================================
-        function filterJobs(filter, btn) {
-            if (btn) {
-                document.querySelectorAll('.ad-filters .filter-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            }
-            state.currentFilter = filter;
-            listenAds();
-        }
-
-        // ============================================================
-        // AUTO CALCULATE AD COST
-        // ============================================================
-        function updateAdCalculation() {
-            const budget = parseFloat(DOM.adBudget.value) || 1.00;
-            const targetViews = parseInt(DOM.adTargetViews.value) || 50;
-            const duration = parseInt(DOM.adDuration.value) || 7;
-
-            const costPerView = (budget / targetViews) * (7 / duration) * 0.5;
-            const dailyBudget = budget / duration;
-
-            if (DOM.calcViews) DOM.calcViews.textContent = targetViews;
-            if (DOM.calcReward) DOM.calcReward.textContent = `$${costPerView.toFixed(4)}`;
-            if (DOM.calcDuration) DOM.calcDuration.textContent = `${duration} days`;
-
-            if (DOM.adCostPerView) DOM.adCostPerView.textContent = `$${costPerView.toFixed(4)}`;
-            if (DOM.adDailyBudget) DOM.adDailyBudget.textContent = `$${dailyBudget.toFixed(4)}`;
-            if (DOM.adTotalBudgetDisplay) DOM.adTotalBudgetDisplay.textContent = `$${budget.toFixed(2)}`;
-            if (DOM.adDurationDisplay) DOM.adDurationDisplay.textContent = duration;
-
-            const minBudget = CONFIG.MINIMUM_BUDGET || 1.00;
-            const minDuration = CONFIG.MINIMUM_DURATION_DAYS || 3;
-            const minCostPerView = 0.0001;
-
-            const validationMsg = DOM.adValidationMessage;
-            let isValid = true;
-            let errors = [];
-
-            if (budget < minBudget) {
-                isValid = false;
-                errors.push(`⚠️ Minimum budget is $${minBudget.toFixed(2)}.`);
-            }
-            if (costPerView < minCostPerView) {
-                isValid = false;
-                errors.push(
-                    `⚠️ Cost per view is too low ($${costPerView.toFixed(4)}). Minimum is $${minCostPerView.toFixed(4)}. Try increasing budget, reducing target views, or increasing duration.`
-                    );
-            }
-            if (duration < minDuration) {
-                isValid = false;
-                errors.push(`⚠️ Minimum duration is ${minDuration} days.`);
-            }
-            const requiredBudget = targetViews * costPerView;
-            if (Math.abs(budget - requiredBudget) > 0.001 && targetViews > 0) {}
-
-            if (!isValid) {
-                if (validationMsg) {
-                    validationMsg.style.display = 'block';
-                    validationMsg.style.background = 'rgba(239, 68, 68, 0.1)';
-                    validationMsg.style.color = 'var(--danger)';
-                    validationMsg.style.border = '1px solid var(--danger)';
-                    validationMsg.innerHTML = errors.join('<br>');
-                }
-                if (DOM.calcReward) DOM.calcReward.style.color = 'var(--danger)';
-                if (DOM.calcResult) {
-                    DOM.calcResult.style.borderColor = 'var(--danger)';
-                    DOM.calcResult.style.background = 'rgba(239, 68, 68, 0.06)';
-                }
-                updateBudgetSuggestion(budget, targetViews, duration, costPerView);
-                return;
-            }
-
-            if (budget > requiredBudget * 1.2 && targetViews > 0) {
-                if (validationMsg) {
-                    validationMsg.style.display = 'block';
-                    validationMsg.style.background = 'rgba(245, 158, 11, 0.1)';
-                    validationMsg.style.color = 'var(--warning)';
-                    validationMsg.style.border = '1px solid var(--warning)';
-                    validationMsg.innerHTML =
-                        `⚠️ Your budget ($${budget.toFixed(2)}) is higher than the required budget ($${requiredBudget.toFixed(2)}) for ${targetViews} views. You may want to reduce your budget or increase target views.`;
-                }
-                if (DOM.calcReward) DOM.calcReward.style.color = 'var(--warning)';
-                if (DOM.calcResult) {
-                    DOM.calcResult.style.borderColor = 'var(--warning)';
-                    DOM.calcResult.style.background = 'rgba(245, 158, 11, 0.06)';
-                }
-                updateBudgetSuggestion(budget, targetViews, duration, costPerView);
-                return;
-            }
-
-            if (validationMsg) {
-                validationMsg.style.display = 'none';
-            }
-            if (DOM.calcReward) DOM.calcReward.style.color = 'var(--success)';
-            if (DOM.calcResult) {
-                DOM.calcResult.style.borderColor = 'rgba(16, 185, 129, 0.2)';
-                DOM.calcResult.style.background = 'rgba(16, 185, 129, 0.06)';
-            }
-            updateBudgetSuggestion(budget, targetViews, duration, costPerView);
-        }
-
-        function updateBudgetSuggestion(budget, targetViews, duration, costPerView) {
-            const suggestionEl = DOM.budgetSuggestion;
-            const suggestedAmountEl = DOM.suggestedBudget;
-            const reasonEl = DOM.suggestionReason;
-
-            if (!suggestionEl || !suggestedAmountEl || !reasonEl) return;
-
-            const minRecommendedCPV = 0.001;
-            const suggestedBudget = Math.max(
-                CONFIG.MINIMUM_BUDGET,
-                targetViews * minRecommendedCPV * (duration / 7) / 0.5
-            );
-
-            if (costPerView < minRecommendedCPV && targetViews > 0) {
-                suggestionEl.classList.add('active');
-                suggestedAmountEl.textContent = `$${suggestedBudget.toFixed(2)}`;
-                reasonEl.textContent =
-                    `To achieve at least $${minRecommendedCPV.toFixed(4)} per view for ${targetViews} views over ${duration} days, we recommend a budget of $${suggestedBudget.toFixed(2)}.`;
-                suggestionEl.style.borderColor = 'var(--warning)';
-                suggestionEl.style.background = 'rgba(245, 158, 11, 0.08)';
-            } else if (budget < suggestedBudget * 0.8 && targetViews > 0) {
-                suggestionEl.classList.add('active');
-                suggestedAmountEl.textContent = `$${suggestedBudget.toFixed(2)}`;
-                reasonEl.textContent =
-                    `For better results with ${targetViews} views over ${duration} days, consider increasing your budget to $${suggestedBudget.toFixed(2)}.`;
-                suggestionEl.style.borderColor = 'var(--info)';
-                suggestionEl.style.background = 'rgba(59, 130, 246, 0.08)';
-            } else {
-                suggestionEl.classList.remove('active');
-            }
-        }
-
-        // ============================================================
-        // ADVERTISER - CREATE AD
-        // ============================================================
-        function setupCreateAdForm() {
-            if (!DOM.createAdForm) return;
-
-            if (DOM.adBudget) DOM.adBudget.addEventListener('input', updateAdCalculation);
-            if (DOM.adTargetViews) DOM.adTargetViews.addEventListener('input', updateAdCalculation);
-            if (DOM.adDuration) DOM.adDuration.addEventListener('input', updateAdCalculation);
-
-            updateAdCalculation();
-
-            DOM.createAdForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-
-                const title = document.getElementById('ad-title').value.trim();
-                const category = DOM.adCategory.value;
-                const subCategory = DOM.adSubCategory.value.trim();
-                const desc = document.getElementById('ad-desc').value.trim();
-                const requirements = DOM.adRequirements.value.trim();
-                const instructions = DOM.adInstructions.value.trim();
-                const budget = parseFloat(DOM.adBudget.value) || 1.00;
-                const duration = parseInt(DOM.adDuration.value) || 3;
-                const targetViews = parseInt(DOM.adTargetViews.value) || 10;
-                const fileInput = document.getElementById('ad-image');
-
-                if (!title || !category || !desc || !requirements || !instructions) {
-                    showToast('❌ Please fill all required fields!', 'error');
-                    return;
-                }
-                if (duration < CONFIG.MINIMUM_DURATION_DAYS) {
-                    showToast(`❌ Minimum duration is ${CONFIG.MINIMUM_DURATION_DAYS} days!`, 'error');
-                    return;
-                }
-                if (budget < CONFIG.MINIMUM_BUDGET) {
-                    showToast(`❌ Minimum budget is $${CONFIG.MINIMUM_BUDGET.toFixed(2)}!`, 'error');
-                    return;
-                }
-                if (state.walletBalance < budget) {
-                    showToast(`❌ Insufficient wallet balance! You need $${budget.toFixed(2)}.`, 'error');
-                    return;
-                }
-
-                const costPerView = (budget / targetViews) * (7 / duration) * 0.5;
-                const requiredBudget = targetViews * costPerView;
-
-                if (costPerView < 0.0001) {
-                    showToast(
-                        `❌ Cost per view is too low ($${costPerView.toFixed(4)})! Minimum is $0.0001. Please increase budget or reduce target views.`,
-                        'error');
-                    return;
-                }
-
-                if (budget > requiredBudget * 1.2) {
-                    if (!confirm(
-                            `⚠️ Your budget ($${budget.toFixed(2)}) is higher than the required budget ($${requiredBudget.toFixed(2)}) for ${targetViews} views. Do you want to continue?`
-                            )) {
-                        return;
-                    }
-                }
-
-                let imageUrl = '';
-                if (fileInput.files.length > 0) {
-                    const file = fileInput.files[0];
-                    if (file.size > 5 * 1024 * 1024) {
-                        showToast('❌ Image size must be less than 5MB!', 'error');
-                        return;
-                    }
-                    try {
-                        showToast('📤 Uploading image...', '');
-                        imageUrl = await uploadImage(file);
-                        showToast('✅ Image uploaded!', 'success');
-                    } catch (e) {
-                        showToast('❌ Failed to upload image: ' + e.message, 'error');
-                        return;
-                    }
-                }
-
-                state.walletBalance -= budget;
-                state.totalSpent += budget;
-
-                const endDate = Date.now() + (duration * 24 * 60 * 60 * 1000);
-                const user = tg?.initDataUnsafe?.user || { first_name: 'User' };
-
-                const adData = {
-                    title,
-                    category,
-                    subCategory: subCategory || '',
-                    desc: desc || 'No description',
-                    requirements: requirements,
-                    instructions: instructions,
-                    reward: costPerView,
-                    totalViews: targetViews,
-                    views: 0,
-                    status: 'active',
-                    approved: false,
-                    createdBy: state.currentUserId,
-                    creatorName: user.first_name || 'User',
-                    creatorRating: 0,
-                    creatorFollowers: 0,
-                    createdAt: Date.now(),
-                    budget: budget,
-                    imageUrl,
-                    verified: false,
-                    duration: duration,
-                    endDate: endDate,
-                    costPerView: costPerView,
-                    dailyBudget: budget / duration
-                };
-
-                try {
-                    const newRef = firebaseDb.ref('ads').push();
-                    await newRef.set(adData);
-                    saveUserData();
-                    updateUI();
-                    showToast(`✅ Ad campaign created! Waiting for admin approval.`, 'success');
-                    DOM.createAdForm.reset();
-                    document.getElementById('ad-image').value = '';
-                    updateAdCalculation();
-                    listenAds();
-                } catch (e) {
-                    console.error("Create ad error:", e);
-                    state.walletBalance += budget;
-                    state.totalSpent -= budget;
-                    saveUserData();
-                    showToast('❌ Failed to create ad.', 'error');
-                }
-            });
-        }
-
-        // ============================================================
         // RENDER JOB LIST (Homepage)
         // ============================================================
         function renderJobList(ads) {
@@ -5558,9 +3377,6 @@
                 ad.approved === true &&
                 ad.createdBy !== state.currentUserId
             );
-            if (state.currentFilter === 'completed') {
-                filtered = filtered.filter(ad => ad.views >= ad.totalViews);
-            }
             filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
             const topJobs = filtered.slice(0, 3);
             if (topJobs.length === 0) {
@@ -5990,13 +3806,10 @@
                         const day = new Date().getDay();
                         firebaseDb.ref(`users/${state.currentUserId}/weeklyActivity/${day}`).transaction((val) => (val ||
                             0) + 1);
-                        await firebaseDb.ref(`users/${state.currentUserId}/pendingEarnings`).transaction((p) => Math.max(0,
-                            (p || 0) - reward));
                     }
                     state.balance += ad?.reward || 0;
                     state.totalEarnings += ad?.reward || 0;
                     state.adCount += 1;
-                    state.pendingEarnings = Math.max(0, state.pendingEarnings - (ad?.reward || 0));
                     const day = new Date().getDay();
                     state.weeklyActivity[day] = (state.weeklyActivity[day] || 0) + 1;
                     saveUserData();
@@ -6004,421 +3817,6 @@
                     showToast(`🎉 Ad verified! +$${ad?.reward?.toFixed(4) || '0.0000'} added!`, 'success');
                 }
             });
-        }
-
-        // ============================================================
-        // RENDER MY ADS
-        // ============================================================
-        function renderMyAds(ads) {
-            if (!DOM.myAdsContainer) return;
-            const myAds = ads.filter(ad => ad.createdBy === state.currentUserId);
-            state.myAds = myAds;
-            if (myAds.length === 0) {
-                DOM.myAdsContainer.innerHTML =
-                    `<div class="empty-state"><i class="fa-solid fa-rectangle-ad"></i><p>You haven't created any ad campaigns yet</p></div>`;
-                return;
-            }
-            DOM.myAdsContainer.innerHTML = myAds.map(ad => {
-                const views = ad.views || 0;
-                const totalViews = ad.totalViews || 100;
-                const progress = Math.min((views / totalViews) * 100, 100);
-                const daysLeft = ad.endDate ? Math.ceil((ad.endDate - Date.now()) / (1000 * 60 * 60 * 24)) : 0;
-                const isExpired = ad.endDate && ad.endDate < Date.now();
-                const isApproved = ad.approved || false;
-                const category = ad.category || 'General';
-                const subCategory = ad.subCategory || '';
-                const descWithLinks = (ad.desc || '').replace(
-                    /(https?:\/\/[^\s]+)/g,
-                    '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
-                );
-                let statusText = ad.status === 'active' ? '🟢 Active' : '⏳ Paused';
-                let statusClass = ad.status === 'active' ? 'active' : 'pending';
-                if (isExpired) { statusText = '⏰ Expired';
-                    statusClass = 'expired'; }
-                if (!isApproved) { statusText = '⏳ Pending Approval';
-                    statusClass = 'pending'; }
-                return `
-                    <div class="ad-card">
-                        <div class="ad-header">
-                            <span class="ad-title">${escapeHTML(ad.title || 'Untitled')}</span>
-                            <span class="ad-status ${statusClass}">${statusText}</span>
-                        </div>
-                        <div style="display:flex; gap:6px; margin:4px 0; flex-wrap:wrap;">
-                            <span class="ad-category-badge">📌 ${escapeHTML(category)}</span>
-                            ${subCategory ? `<span class="sub-category-badge">🏷️ ${escapeHTML(subCategory)}</span>` : ''}
-                        </div>
-                        ${ad.imageUrl ? `<img src="${ad.imageUrl}" class="ad-image" alt="Ad image" loading="lazy">` : ''}
-                        <div class="ad-desc">${descWithLinks}</div>
-                        <div class="campaign-info">
-                            <div class="info-item"><span class="label">Views</span><span class="value">${views}/${totalViews}</span></div>
-                            <div class="info-item"><span class="label">Budget</span><span class="value">$${(ad.budget || 0).toFixed(2)}</span></div>
-                            <div class="info-item"><span class="label">Reward/View</span><span class="value">$${ad.reward?.toFixed(4) || '0.0010'}</span></div>
-                            <div class="info-item"><span class="label">Days Left</span><span class="value">${daysLeft > 0 ? daysLeft : 'Expired'}</span></div>
-                            <div class="info-item"><span class="label">Status</span><span class="value"><span class="ad-status-badge ${isApproved ? 'approved' : 'pending'}">${isApproved ? '✅ Approved' : '⏳ Pending'}</span></span></div>
-                        </div>
-                        <div style="width:100%; height:4px; background:var(--border-color); border-radius:4px; margin-top:8px; overflow:hidden;">
-                            <div style="width:${progress}%; height:100%; background:linear-gradient(90deg, #10b981, #3b82f6); border-radius:4px; transition:width 0.3s;"></div>
-                        </div>
-                        <div class="ad-footer" style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border-color);">
-                            <button class="ad-btn edit" onclick="openEditAd('${ad.id}')" ${!isApproved ? 'disabled' : ''}>
-                                <i class="fa-solid fa-pen"></i> Edit
-                            </button>
-                            <button class="ad-btn" style="background:#ef4444; color:#fff; padding:4px 14px; border:none; border-radius:6px; font-size:11px; cursor:pointer;" onclick="openDeleteConfirm('${ad.id}')">
-                                <i class="fa-solid fa-trash"></i> Delete
-                            </button>
-                            ${!isExpired && isApproved ? `
-                                <button class="ad-btn" style="background:#f59e0b; color:#fff; padding:4px 14px; border:none; border-radius:6px; font-size:11px; cursor:pointer;" onclick="toggleAdStatus('${ad.id}')">
-                                    ${ad.status === 'active' ? '⏸ Pause' : '▶️ Activate'}
-                                </button>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // ============================================================
-        // TOGGLE AD STATUS
-        // ============================================================
-        async function toggleAdStatus(adId) {
-            try {
-                const snapshot = await firebaseDb.ref(`ads/${adId}`).once('value');
-                const ad = snapshot.val();
-                if (!ad) return;
-                if (ad.endDate && ad.endDate < Date.now()) {
-                    showToast('❌ This ad has expired!', 'error');
-                    return;
-                }
-                if (!ad.approved) {
-                    showToast('❌ This ad is pending approval!', 'error');
-                    return;
-                }
-                const newStatus = ad.status === 'active' ? 'paused' : 'active';
-                await firebaseDb.ref(`ads/${adId}/status`).set(newStatus);
-                showToast(`✅ Ad ${newStatus === 'active' ? 'activated' : 'paused'}!`, 'success');
-                listenAds();
-            } catch (e) {
-                console.error("Toggle status error:", e);
-                showToast('❌ Failed to update ad status.', 'error');
-            }
-        }
-
-        // ============================================================
-        // VERIFICATION REQUESTS (Advertiser)
-        // ============================================================
-        function renderVerificationRequests(ads) {
-            if (!DOM.verificationContainer || state.userRole !== 'advertiser') return;
-            firebaseDb.ref('verifications').orderByChild('status').equalTo('pending').on('value', (snapshot) => {
-                const verifications = snapshot.val() || {};
-                const items = Object.entries(verifications).map(([id, data]) => ({ id, ...data }));
-                const myAdIds = ads.filter(ad => ad.createdBy === state.currentUserId).map(ad => ad.id);
-                const filtered = items.filter(v => myAdIds.includes(v.adId));
-                if (filtered.length === 0) {
-                    DOM.verificationContainer.innerHTML =
-                        `<div class="empty-state"><i class="fa-solid fa-check-double"></i><p>No pending verification requests</p></div>`;
-                    return;
-                }
-                DOM.verificationContainer.innerHTML = filtered.map(v => `
-                    <div class="ad-card">
-                        <div class="ad-header">
-                            <span class="ad-title">Verification from ${escapeHTML(v.userName || 'User')}</span>
-                            <span class="ad-status pending">⏳ Pending</span>
-                        </div>
-                        <div style="font-size:13px; color:var(--text-light); margin:6px 0;">
-                            <strong>Title:</strong> ${escapeHTML(v.adTitle || 'N/A')}<br>
-                            <strong>Description:</strong> ${escapeHTML(v.adDescription || 'N/A')}
-                        </div>
-                        ${v.screenshot ? `<img src="${v.screenshot}" class="ad-image" alt="Screenshot" style="cursor:pointer; max-height:80px;" onclick="window.open('${v.screenshot}','_blank')" loading="lazy">` : ''}
-                        <div class="ad-footer" style="margin-top:8px;">
-                            <button class="ad-btn" style="background:#10b981; color:#fff; padding:4px 14px; border:none; border-radius:6px; font-size:11px; cursor:pointer;" onclick="verifyAdRequest('${v.id}')">
-                                ✅ Approve
-                            </button>
-                            <button class="ad-btn" style="background:#ef4444; color:#fff; padding:4px 14px; border:none; border-radius:6px; font-size:11px; cursor:pointer;" onclick="openRejectModal('${v.id}')">
-                                ❌ Reject
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            });
-        }
-
-        function openRejectModal(verificationId) {
-            pendingRejectVerificationId = verificationId;
-            DOM.rejectReason.value = '';
-            document.getElementById('rejectReasonModal').style.display = 'flex';
-        }
-
-        async function confirmReject() {
-            const reason = DOM.rejectReason.value.trim();
-            if (!reason || reason.length < 3) {
-                showToast('❌ Please provide a valid rejection reason (min 3 characters)', 'error');
-                return;
-            }
-            if (!pendingRejectVerificationId) {
-                showToast('❌ No verification selected', 'error');
-                return;
-            }
-            try {
-                await firebaseDb.ref(`verifications/${pendingRejectVerificationId}/status`).set('rejected');
-                await firebaseDb.ref(`verifications/${pendingRejectVerificationId}/rejectReason`).set(reason);
-                state.adRejects += 1;
-                saveUserData();
-                closeModal('rejectReasonModal');
-                pendingRejectVerificationId = null;
-                showToast('❌ Verification rejected', 'error');
-                listenAds();
-            } catch (e) {
-                console.error("Reject error:", e);
-                showToast('❌ Failed to reject verification.', 'error');
-            }
-        }
-
-        async function verifyAdRequest(verificationId) {
-            try {
-                const snapshot = await firebaseDb.ref(`verifications/${verificationId}`).once('value');
-                const data = snapshot.val();
-                if (!data) return;
-                await firebaseDb.ref(`verifications/${verificationId}/status`).set('approved');
-                const adRef = firebaseDb.ref(`ads/${data.adId}`);
-                await adRef.transaction((current) => {
-                    if (current) {
-                        current.views = (current.views || 0) + 1;
-                    }
-                    return current;
-                });
-                const adSnapshot = await adRef.once('value');
-                const ad = adSnapshot.val();
-                if (ad) {
-                    const reward = ad.reward || 0;
-                    await firebaseDb.ref(`users/${data.userId}/balance`).transaction((bal) => (bal || 0) + reward);
-                    await firebaseDb.ref(`users/${data.userId}/totalEarnings`).transaction((t) => (t || 0) + reward);
-                    await firebaseDb.ref(`users/${data.userId}/pendingEarnings`).transaction((p) => Math.max(0, (p || 0) -
-                        reward));
-                }
-                await firebaseDb.ref(`ads/${data.adId}/verified`).set(true);
-                showToast('✅ Verification approved!', 'success');
-                listenAds();
-            } catch (e) {
-                console.error("Verify error:", e);
-                showToast('❌ Failed to approve verification.', 'error');
-            }
-        }
-
-        // ============================================================
-        // DELETE AD WITH REFUND (50/50)
-        // ============================================================
-        function openDeleteConfirm(adId) {
-            pendingDeleteAdId = adId;
-            firebaseDb.ref(`ads/${adId}`).once('value').then(snapshot => {
-                const ad = snapshot.val();
-                if (!ad) return;
-                const budget = ad.budget || 0;
-                const refund = budget * (CONFIG.REFUND_PERCENTAGE / 100);
-                const fee = budget * (CONFIG.COMPANY_FEE_PERCENTAGE / 100);
-                DOM.deleteBudget.textContent = `$${budget.toFixed(2)}`;
-                DOM.deleteRefund.textContent = `$${refund.toFixed(2)}`;
-                DOM.deleteFee.textContent = `$${fee.toFixed(2)}`;
-                document.getElementById('deleteConfirmModal').style.display = 'flex';
-            });
-        }
-
-        async function confirmDeleteAd() {
-            if (!pendingDeleteAdId) {
-                showToast('❌ No ad selected', 'error');
-                return;
-            }
-            try {
-                const snapshot = await firebaseDb.ref(`ads/${pendingDeleteAdId}`).once('value');
-                const ad = snapshot.val();
-                if (!ad) {
-                    showToast('❌ Ad not found', 'error');
-                    return;
-                }
-                const budget = ad.budget || 0;
-                const refund = budget * (CONFIG.REFUND_PERCENTAGE / 100);
-                state.walletBalance += refund;
-                state.totalSpent -= refund;
-                await firebaseDb.ref(`ads/${pendingDeleteAdId}`).remove();
-                state.withdrawalHistory.unshift({
-                    method: 'Ad Deleted (Refund)',
-                    number: `${ad.title || 'Untitled'}`,
-                    amount: refund,
-                    date: new Date().toISOString(),
-                    status: 'Refunded'
-                });
-                saveUserData();
-                updateUI();
-                closeModal('deleteConfirmModal');
-                pendingDeleteAdId = null;
-                showToast(`✅ Ad deleted! Refund of $${refund.toFixed(2)} added.`, 'success');
-                listenAds();
-            } catch (e) {
-                console.error("Delete ad error:", e);
-                showToast('❌ Failed to delete ad.', 'error');
-            }
-        }
-
-        // ============================================================
-        // DEPOSIT SYSTEM
-        // ============================================================
-        function renderDepositMethods() {
-            if (!DOM.depositMethodsList) return;
-            const methods = CONFIG.depositMethods || [
-                { name: 'Bikash', number: '01712345678', icon: '💳' },
-                { name: 'Nogad', number: '01712345678', icon: '📱' },
-                { name: 'Bank', number: '1234567890', icon: '🏦' }
-            ];
-            DOM.depositMethodsList.innerHTML = methods.map(m => `
-                <div class="deposit-method" onclick="selectDepositMethod('${m.name}', '${m.number}', this)">
-                    <div class="method-icon">${m.icon}</div>
-                    <div class="method-info">
-                        <div class="method-name">${m.name}</div>
-                        <div class="method-desc">Send money to this number</div>
-                    </div>
-                    <div class="method-number">${m.number}</div>
-                </div>
-            `).join('');
-        }
-
-        function selectDepositMethod(name, number, el) {
-            document.querySelectorAll('.deposit-method').forEach(m => m.classList.remove('selected'));
-            if (el) el.classList.add('selected');
-            state.selectedDepositMethod = name;
-            state.selectedDepositNumber = number;
-            showToast(`✅ Selected: ${name}`, 'success');
-        }
-
-        function showDepositModal() {
-            if (state.userRole !== 'advertiser') {
-                showToast('❌ Deposit is only available for Advertisers.', 'error');
-                return;
-            }
-            DOM.depositMinAmount.textContent = CONFIG.MINIMUM_DEPOSIT;
-            document.getElementById('depositModal').style.display = 'flex';
-        }
-
-        async function submitDeposit() {
-            const sender = DOM.depositSender.value.trim();
-            const trxid = DOM.depositTrxid.value.trim();
-            const amount = parseInt(DOM.depositAmount.value);
-            if (!sender || !trxid || !amount || amount < CONFIG.MINIMUM_DEPOSIT || !state.selectedDepositMethod) {
-                showToast('❌ Please fill all fields correctly', 'error');
-                return;
-            }
-            const user = tg?.initDataUnsafe?.user || { first_name: 'User', id: 'testuser' };
-            const depositData = {
-                userId: state.currentUserId,
-                userName: user.first_name || 'User',
-                method: state.selectedDepositMethod,
-                number: state.selectedDepositNumber,
-                senderNumber: sender,
-                transactionId: trxid,
-                amount: amount,
-                status: 'pending',
-                createdAt: Date.now()
-            };
-            try {
-                await firebaseDb.ref('deposits').push(depositData);
-                closeModal('depositModal');
-                showToast(`✅ Deposit request sent!`, 'success');
-                DOM.depositSender.value = '';
-                DOM.depositTrxid.value = '';
-                DOM.depositAmount.value = '';
-            } catch (e) {
-                console.error("Deposit error:", e);
-                showToast('❌ Failed to submit deposit.', 'error');
-            }
-        }
-
-        // ============================================================
-        // WITHDRAWAL
-        // ============================================================
-        function populateWithdrawalMethods() {
-            if (!DOM.methodSelect) return;
-            DOM.methodSelect.innerHTML = '<option value="" disabled selected>Select Payment Method</option>';
-            DOM.methodFieldsContainer.innerHTML = '';
-            CONFIG.withdrawalMethods.forEach((method) => {
-                const option = document.createElement('option');
-                option.value = method;
-                option.textContent = method;
-                DOM.methodSelect.appendChild(option);
-                const fieldDiv = document.createElement('div');
-                fieldDiv.id = method.toLowerCase() + '-field';
-                fieldDiv.className = 'method-field';
-                fieldDiv.innerHTML = `
-                    <label>${method} Account</label>
-                    <div class="field-hint">Enter your ${method} account details</div>
-                    <input type="text" id="${method.toLowerCase()}-account" placeholder="Enter ${method} Account">
-                `;
-                DOM.methodFieldsContainer.appendChild(fieldDiv);
-            });
-            DOM.methodSelect.addEventListener('change', function() {
-                document.querySelectorAll('.method-field').forEach(el => el.classList.remove('active'));
-                if (this.value) {
-                    const field = document.getElementById(this.value.toLowerCase() + '-field');
-                    if (field) field.classList.add('active');
-                }
-            });
-        }
-
-        async function handleWithdrawal(e) {
-            e.preventDefault();
-            if (state.userRole !== 'publisher') {
-                showToast('❌ Only Publishers can withdraw!', 'error');
-                return;
-            }
-            const method = DOM.methodSelect.value;
-            const accountInput = document.getElementById(method?.toLowerCase() + '-account');
-            const accountNumber = accountInput?.value.trim() || '';
-            const amount = parseFloat(DOM.withdrawAmount.value);
-            if (!method || !accountNumber || amount > state.balance || isNaN(amount) || amount < CONFIG
-                .MINIMUM_WITHDRAWAL) {
-                return showToast('❌ Invalid withdrawal request', 'error');
-            }
-            const btn = DOM.withdrawSubmitBtn;
-            const text = btn.querySelector('.button-text');
-            const spinner = btn.querySelector('.loader-spinner');
-            text.style.display = 'none';
-            spinner.style.display = 'block';
-            btn.disabled = true;
-            const user = tg?.initDataUnsafe?.user || { first_name: 'User', last_name: '', username: 'N/A' };
-            const withdrawalData = {
-                userId: state.currentUserId,
-                userName: `${user.first_name} ${user.last_name || ''}`,
-                username: user.username || 'N/A',
-                method,
-                accountNumber,
-                amount,
-                date: new Date().toISOString(),
-                status: 'Pending'
-            };
-            try {
-                const ref = firebaseDb.ref('withdrawals').push();
-                await ref.set(withdrawalData);
-                window._legitimateWithdrawal = true;
-                state.balance -= amount;
-                state.withdrawalHistory.unshift({
-                    method,
-                    number: accountNumber,
-                    amount,
-                    date: new Date().toISOString(),
-                    status: 'Pending'
-                });
-                saveUserData();
-                updateUI();
-                closeModal('withdrawModal');
-                DOM.withdrawForm.reset();
-                document.querySelectorAll('.method-field').forEach(el => el.classList.remove('active'));
-                DOM.methodSelect.selectedIndex = 0;
-                showToast('✅ Withdrawal request submitted!', 'success');
-            } catch (error) {
-                console.error("Withdrawal error:", error);
-                showToast('❌ Failed to submit request.', 'error');
-            } finally {
-                text.style.display = 'inline';
-                spinner.style.display = 'none';
-                btn.disabled = false;
-            }
         }
 
         // ============================================================
@@ -6533,7 +3931,13 @@
             document.body.style.overflow = 'hidden';
             document.querySelector('.container').style.display = 'none';
             loadTiers();
-            checkAdminStatus();
+            // Show admin tier management if user is admin
+            if (state.isAdmin) {
+                DOM.adminTierSection.style.display = 'block';
+                loadAdminTiers();
+            } else {
+                DOM.adminTierSection.style.display = 'none';
+            }
         }
 
         function closeWatchEarn() {
@@ -6553,7 +3957,6 @@
             firebaseDb.ref('adTiers').orderByChild('order').on('value', (snapshot) => {
                 const data = snapshot.val() || {};
                 const tiers = Object.entries(data).map(([id, tier]) => ({ id, ...tier }));
-                // Sort by order or createdAt
                 tiers.sort((a, b) => (a.order || a.createdAt || 0) - (b.order || b.createdAt || 0));
                 state.tiers = tiers;
                 renderTiers(tiers);
@@ -6904,9 +4307,94 @@
         }
 
         function loadAdminTiers() {
-            // This is called from checkAdminStatus
-            if (DOM.adminTierSection.style.display === 'block') {
-                loadTiers();
+            // This is called from openWatchEarn if user is admin
+            loadTiers();
+        }
+
+        // ============================================================
+        // WITHDRAWAL
+        // ============================================================
+        function populateWithdrawalMethods() {
+            if (!DOM.methodSelect) return;
+            DOM.methodSelect.innerHTML = '<option value="" disabled selected>Select Payment Method</option>';
+            DOM.methodFieldsContainer.innerHTML = '';
+            CONFIG.withdrawalMethods.forEach((method) => {
+                const option = document.createElement('option');
+                option.value = method;
+                option.textContent = method;
+                DOM.methodSelect.appendChild(option);
+                const fieldDiv = document.createElement('div');
+                fieldDiv.id = method.toLowerCase() + '-field';
+                fieldDiv.className = 'method-field';
+                fieldDiv.innerHTML = `
+                    <label>${method} Account</label>
+                    <div class="field-hint">Enter your ${method} account details</div>
+                    <input type="text" id="${method.toLowerCase()}-account" placeholder="Enter ${method} Account">
+                `;
+                DOM.methodFieldsContainer.appendChild(fieldDiv);
+            });
+            DOM.methodSelect.addEventListener('change', function() {
+                document.querySelectorAll('.method-field').forEach(el => el.classList.remove('active'));
+                if (this.value) {
+                    const field = document.getElementById(this.value.toLowerCase() + '-field');
+                    if (field) field.classList.add('active');
+                }
+            });
+        }
+
+        async function handleWithdrawal(e) {
+            e.preventDefault();
+            const method = DOM.methodSelect.value;
+            const accountInput = document.getElementById(method?.toLowerCase() + '-account');
+            const accountNumber = accountInput?.value.trim() || '';
+            const amount = parseFloat(DOM.withdrawAmount.value);
+            if (!method || !accountNumber || amount > state.balance || isNaN(amount) || amount < CONFIG
+                .MINIMUM_WITHDRAWAL) {
+                return showToast('❌ Invalid withdrawal request', 'error');
+            }
+            const btn = DOM.withdrawSubmitBtn;
+            const text = btn.querySelector('.button-text');
+            const spinner = btn.querySelector('.loader-spinner');
+            text.style.display = 'none';
+            spinner.style.display = 'block';
+            btn.disabled = true;
+            const user = tg?.initDataUnsafe?.user || { first_name: 'User', last_name: '', username: 'N/A' };
+            const withdrawalData = {
+                userId: state.currentUserId,
+                userName: `${user.first_name} ${user.last_name || ''}`,
+                username: user.username || 'N/A',
+                method,
+                accountNumber,
+                amount,
+                date: new Date().toISOString(),
+                status: 'Pending'
+            };
+            try {
+                const ref = firebaseDb.ref('withdrawals').push();
+                await ref.set(withdrawalData);
+                window._legitimateWithdrawal = true;
+                state.balance -= amount;
+                state.withdrawalHistory.unshift({
+                    method,
+                    number: accountNumber,
+                    amount,
+                    date: new Date().toISOString(),
+                    status: 'Pending'
+                });
+                saveUserData();
+                updateUI();
+                closeModal('withdrawModal');
+                DOM.withdrawForm.reset();
+                document.querySelectorAll('.method-field').forEach(el => el.classList.remove('active'));
+                DOM.methodSelect.selectedIndex = 0;
+                showToast('✅ Withdrawal request submitted!', 'success');
+            } catch (error) {
+                console.error("Withdrawal error:", error);
+                showToast('❌ Failed to submit request.', 'error');
+            } finally {
+                text.style.display = 'inline';
+                spinner.style.display = 'none';
+                btn.disabled = false;
             }
         }
 
@@ -6923,17 +4411,9 @@
                 saveUserData();
             }
             DOM.totalEarning.textContent = `$${formatBalance(state.balance)}`;
-            DOM.walletBalance.textContent = `$${formatBalance(state.walletBalance)}`;
             DOM.adCount.textContent = state.adCount;
             DOM.adsTodayCount.textContent = `${state.adsWatchedToday} / ${CONFIG.DAILY_AD_LIMIT}`;
             DOM.minWithdrawText.textContent = `Minimum withdrawal is $${CONFIG.MINIMUM_WITHDRAWAL.toFixed(2)}.`;
-            DOM.convertBalance.textContent = `$${formatBalance(state.balance)}`;
-            DOM.convertBtn.disabled = state.balance <= 0 || state.balance < CONFIG.MINIMUM_CONVERT;
-            if (state.balance < CONFIG.MINIMUM_CONVERT && state.balance > 0) {
-                DOM.convertMinWarning.classList.add('active');
-            } else {
-                DOM.convertMinWarning.classList.remove('active');
-            }
             clearInterval(cooldownInterval);
             clearInterval(adCooldownInterval);
             const now = Date.now();
@@ -7088,15 +4568,11 @@
                 await loadUserData();
                 await loadBonusTasks();
                 populateWithdrawalMethods();
-                setupCreateAdForm();
-                setupEditAdForm();
-                renderDepositMethods();
                 DOM.welcomeTitle.textContent = CONFIG.welcomeNotice.title;
                 DOM.welcomeMessage.textContent = CONFIG.welcomeNotice.message;
                 await handleReferral();
                 await processReferralRewards();
                 listenReferrals();
-                listenDeposits();
                 listenAds();
                 listenUserVerifications();
                 listenVerificationApprovals();
@@ -7114,7 +4590,6 @@
                 DOM.copyLinkBtn.addEventListener('click', copyReferralLink);
                 DOM.shareLinkBtn.addEventListener('click', shareReferralLink);
                 DOM.withdrawForm.addEventListener('submit', handleWithdrawal);
-                DOM.sendChatBtn.addEventListener('click', sendMessage);
                 document.addEventListener('click', (e) => {
                     if (DOM.ratingToast.classList.contains('active') && !DOM.ratingToast.contains(e.target) && !e
                         .target.closest('.action-btn.rate')) {
@@ -7126,9 +4601,6 @@
                         closeModal(event.target.id);
                     }
                 };
-                const initialRole = state.userRole || 'publisher';
-                const roleBtn = document.querySelector(`.role-btn.${initialRole}`);
-                if (roleBtn) selectRole(initialRole, roleBtn);
                 if (tg) {
                     tg.ready();
                     tg.expand();
@@ -7146,14 +4618,11 @@
                 }
                 setupBalanceProtection();
                 checkBanStatus();
-                listenChatMessages();
                 checkMaintenanceMode();
                 updateUI();
                 console.log("✅ NexEarn initialized successfully!");
                 console.log("👤 User ID:", state.currentUserId);
                 console.log("💰 Balance:", state.balance);
-                console.log("💳 Wallet:", state.walletBalance);
-                console.log("🎯 Role:", state.userRole);
                 console.log("🔒 Security: Active");
                 console.log("📺 Watch & Earn: Loaded");
             } catch (error) {
