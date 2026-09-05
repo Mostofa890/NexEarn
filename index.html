@@ -16,7 +16,7 @@
     <script src='//libtl.com/sdk.js' data-zone='11573980' data-sdk='show_11573980'>
     </script>
     <style>
-        /* ===== ALL EXISTING STYLES REMAIN SAME ===== */
+        /* ===== ALL EXISTING STYLES REMAIN ===== */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
         :root {
@@ -1609,7 +1609,7 @@
             color: var(--info);
         }
 
-        /* ===== AD CALCULATOR - FIXED ===== */
+        /* ===== AD CALCULATOR ===== */
         .calc-result {
             background: rgba(16, 185, 129, 0.06);
             border: 1px solid rgba(16, 185, 129, 0.2);
@@ -2642,7 +2642,7 @@
             display: block;
         }
 
-        /* ===== NEW: COST PER VIEW EXPLANATION ===== */
+        /* ===== COST PER VIEW EXPLANATION ===== */
         .cost-breakdown {
             display: flex;
             justify-content: space-between;
@@ -2669,6 +2669,401 @@
         }
         .cost-breakdown .value.danger {
             color: var(--danger);
+        }
+
+        /* ============================================================ */
+        /* ===== WATCH & EARN PAGE - NEW ===== */
+        /* ============================================================ */
+        .watch-earn-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1800;
+            background: var(--background-color);
+            overflow-y: auto;
+            padding: 16px 12px 100px 12px;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .watch-earn-page.active {
+            display: block;
+        }
+
+        .watch-earn-page .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 16px;
+            font-family: inherit;
+        }
+        .watch-earn-page .back-btn:hover {
+            background: var(--border-color);
+        }
+
+        .watch-earn-page .page-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .watch-earn-page .page-subtitle {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        /* Tier Card */
+        .tier-card {
+            background: var(--card-background);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            padding: 18px 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .tier-card:hover {
+            box-shadow: var(--shadow-hover);
+        }
+        .tier-card .tier-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        .tier-card .tier-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+        .tier-card .tier-prize {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+            padding: 2px 14px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+        .tier-card .tier-progress {
+            margin: 10px 0 12px 0;
+        }
+        .tier-card .tier-progress .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .tier-card .tier-progress .progress-bar .fill {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 8px;
+            transition: width 0.5s ease;
+        }
+        .tier-card .tier-progress .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+        .tier-card .tier-progress .progress-text .watched {
+            font-weight: 700;
+            color: var(--text-color);
+        }
+        .tier-card .tier-progress .progress-text .remaining {
+            font-weight: 600;
+            color: var(--warning);
+        }
+        .tier-card .tier-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .tier-card .tier-actions .tier-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .tier-card .tier-actions .tier-btn.watch {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.2);
+        }
+        .tier-card .tier-actions .tier-btn.watch:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(var(--primary-color-rgb), 0.3);
+        }
+        .tier-card .tier-actions .tier-btn.watch:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .tier-card .tier-actions .tier-btn.watch.watched {
+            background: #10b981;
+        }
+        .tier-card .tier-actions .tier-btn.claim {
+            background: var(--warning);
+            color: white;
+        }
+        .tier-card .tier-actions .tier-btn.claim:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+        .tier-card .tier-actions .tier-btn.claim:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .tier-card .tier-actions .tier-btn.claim.claimed {
+            background: var(--success);
+            cursor: default;
+        }
+        .tier-card .tier-status-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 12px;
+        }
+        .tier-card .tier-status-badge.active {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--success);
+        }
+        .tier-card .tier-status-badge.inactive {
+            background: rgba(239, 68, 68, 0.12);
+            color: var(--danger);
+        }
+        .tier-card .tier-status-badge.completed {
+            background: rgba(59, 130, 246, 0.12);
+            color: var(--info);
+        }
+        .tier-card .tier-status-badge.claimed {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--success);
+        }
+
+        /* Admin Tier Management */
+        .admin-tier-section {
+            margin-top: 20px;
+            border-top: 2px solid var(--border-color);
+            padding-top: 16px;
+        }
+        .admin-tier-section .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .admin-tier-section .admin-tier-card {
+            background: var(--background-color);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .admin-tier-section .admin-tier-card .info {
+            flex: 1;
+            min-width: 140px;
+        }
+        .admin-tier-section .admin-tier-card .info .name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .admin-tier-section .admin-tier-card .info .details {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        .admin-tier-section .admin-tier-card .actions {
+            display: flex;
+            gap: 6px;
+        }
+        .admin-tier-section .admin-tier-card .actions button {
+            padding: 4px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        .admin-tier-section .admin-tier-card .actions .edit-btn {
+            background: var(--warning);
+            color: white;
+        }
+        .admin-tier-section .admin-tier-card .actions .edit-btn:hover {
+            transform: scale(1.05);
+        }
+        .admin-tier-section .admin-tier-card .actions .delete-btn {
+            background: var(--danger);
+            color: white;
+        }
+        .admin-tier-section .admin-tier-card .actions .delete-btn:hover {
+            transform: scale(1.05);
+        }
+        .admin-tier-section .admin-tier-card .status-badge {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 12px;
+        }
+        .admin-tier-section .admin-tier-card .status-badge.active {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+        .admin-tier-section .admin-tier-card .status-badge.inactive {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
+        .admin-tier-form {
+            background: var(--background-color);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 14px;
+            display: none;
+        }
+        .admin-tier-form.active {
+            display: block;
+        }
+        .admin-tier-form .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .admin-tier-form .form-row .full-width {
+            grid-column: 1 / -1;
+        }
+        .admin-tier-form .form-group-sm label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-color);
+            display: block;
+            margin-bottom: 2px;
+        }
+        .admin-tier-form .form-group-sm input,
+        .admin-tier-form .form-group-sm select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            background: var(--card-background);
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+        .admin-tier-form .form-group-sm input:focus,
+        .admin-tier-form .form-group-sm select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+        }
+        .admin-tier-form .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .admin-tier-form .form-actions button {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        .admin-tier-form .form-actions .save-btn {
+            background: var(--gradient);
+            color: white;
+        }
+        .admin-tier-form .form-actions .save-btn:hover {
+            transform: scale(1.03);
+        }
+        .admin-tier-form .form-actions .cancel-btn {
+            background: var(--border-color);
+            color: var(--text-color);
+        }
+        .admin-tier-form .form-actions .cancel-btn:hover {
+            background: var(--text-light);
+            color: white;
+        }
+
+        .add-tier-btn {
+            width: 100%;
+            padding: 12px;
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            background: transparent;
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .add-tier-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: rgba(var(--primary-color-rgb), 0.04);
+        }
+
+        /* Tier empty state */
+        .tier-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+        }
+        .tier-empty i {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.3;
         }
     </style>
 </head>
@@ -2751,6 +3146,76 @@
         </div>
     </div>
 
+    <!-- ============================================================ -->
+    <!-- ===== WATCH & EARN PAGE ===== -->
+    <!-- ============================================================ -->
+    <div class="watch-earn-page" id="watchEarnPage">
+        <button class="back-btn" onclick="closeWatchEarn()">
+            <i class="fa-solid fa-arrow-left"></i> Back
+        </button>
+        <div class="page-title">📺 Watch & Earn</div>
+        <div class="page-subtitle">Watch ads and claim your rewards!</div>
+
+        <!-- Tiers Container -->
+        <div id="tiers-container"></div>
+
+        <!-- ===== ADMIN TIER MANAGEMENT ===== -->
+        <!-- Only visible to admin users (advertiser role with admin flag) -->
+        <div class="admin-tier-section" id="adminTierSection" style="display:none;">
+            <div class="section-title">
+                <i class="fa-solid fa-gear"></i> Manage Ad Tiers
+                <span style="font-size:11px; font-weight:400; color:var(--text-light); margin-left:auto;">Admin Only</span>
+            </div>
+
+            <!-- Add Tier Form -->
+            <div class="admin-tier-form" id="adminTierForm">
+                <div class="form-row">
+                    <div class="form-group-sm">
+                        <label>Section Name *</label>
+                        <input type="text" id="tier-name" placeholder="e.g. Section 1" value="Section 1">
+                    </div>
+                    <div class="form-group-sm">
+                        <label>Prize ($) *</label>
+                        <input type="number" id="tier-prize" step="0.01" placeholder="1.20" value="1.20">
+                    </div>
+                    <div class="form-group-sm">
+                        <label>Required Ads *</label>
+                        <input type="number" id="tier-required" placeholder="6" value="6" min="1">
+                    </div>
+                    <div class="form-group-sm">
+                        <label>Status</label>
+                        <select id="tier-status">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="form-group-sm full-width">
+                        <label>Description (Optional)</label>
+                        <input type="text" id="tier-desc" placeholder="Short description for this tier">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="save-btn" id="save-tier-btn" onclick="saveTier()">
+                        <i class="fa-solid fa-save"></i> Save Tier
+                    </button>
+                    <button class="cancel-btn" onclick="closeTierForm()">Cancel</button>
+                </div>
+                <input type="hidden" id="edit-tier-id" value="">
+            </div>
+
+            <!-- Add Tier Button -->
+            <button class="add-tier-btn" onclick="openTierForm()">
+                <i class="fa-solid fa-plus"></i> Add New Tier
+            </button>
+
+            <!-- Tier List (Admin) -->
+            <div id="admin-tier-list"></div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MAIN CONTAINER -->
+    <!-- ============================================================ -->
     <div class="container">
         <!-- ===== PROFILE HEADER ===== -->
         <div class="profile-header">
@@ -2852,7 +3317,7 @@
 
             <div class="card">
                 <div class="card-title">🎯 Today's Task</div>
-                <button class="action-button pulsing" id="watch-ad-button">
+                <button class="action-button pulsing" id="watch-ad-button" onclick="openWatchEarn()">
                     <i class="fa-solid fa-play"></i>
                     <span>Watch Ad</span>
                 </button>
@@ -2899,28 +3364,21 @@
                         <textarea id="ad-desc" placeholder="Describe your ad. You can include links here." required></textarea>
                         <div class="form-hint">You can add links in the description. Users can click them.</div>
                     </div>
-
-                    <!-- NEW: Requirements Field -->
                     <div class="form-group">
                         <label>Requirements *</label>
                         <textarea id="ad-requirements" placeholder="What requirements must users meet to complete this job?" rows="3" required></textarea>
                         <div class="form-hint">Example: Must have a YouTube account, must like the video, etc.</div>
                     </div>
-
-                    <!-- NEW: Instructions Field -->
                     <div class="form-group">
                         <label>Instructions *</label>
                         <textarea id="ad-instructions" placeholder="Step by step instructions for users to follow" rows="4" required></textarea>
                         <div class="form-hint">Example: 1. Click the link below 2. Watch the video 3. Take a screenshot</div>
                     </div>
-
                     <div class="form-group">
                         <label>Ad Image (Optional)</label>
                         <input type="file" id="ad-image" accept="image/*">
                         <div class="form-hint">Upload PNG, JPG or GIF (Max 5MB)</div>
                     </div>
-
-                    <!-- ===== AUTO CALCULATION - FIXED ===== -->
                     <div class="calc-result" id="calcResult">
                         <div class="calc-item">
                             <span class="label">👁 Target Views</span>
@@ -2935,8 +3393,6 @@
                             <span class="value" id="calcDuration">7 days</span>
                         </div>
                     </div>
-
-                    <!-- Detailed breakdown -->
                     <div style="background:var(--background-color); border-radius:8px; padding:10px 12px; margin-bottom:14px; border:1px solid var(--border-color);">
                         <div class="cost-breakdown">
                             <span class="label">Daily Budget</span>
@@ -2951,15 +3407,12 @@
                             <span class="value success" id="ad-cost-per-view">$0.0100</span>
                         </div>
                     </div>
-
-                    <!-- Budget Suggestion -->
                     <div class="budget-suggestion" id="budgetSuggestion">
                         <i class="fa-solid fa-lightbulb" style="color:var(--info);"></i>
                         <span class="suggestion-text">Suggested Budget:</span>
                         <span class="suggestion-amount" id="suggestedBudget">$0.00</span>
                         <span style="font-size:12px; display:block; margin-top:4px;" id="suggestionReason">Based on your selected duration and views</span>
                     </div>
-
                     <div class="form-group">
                         <label>Total Budget ($) *</label>
                         <input type="number" id="ad-budget" step="0.01" value="1.00" min="0.10" required>
@@ -2975,25 +3428,20 @@
                         <input type="number" id="ad-duration" value="7" min="3" max="30" required>
                         <div class="form-hint">Minimum 3 days. Duration affects cost per view.</div>
                     </div>
-
                     <div id="ad-validation-message" style="font-size:13px; font-weight:600; margin-bottom:10px; padding:8px 12px; border-radius:8px; display:none;"></div>
-
                     <button type="submit" class="action-button" id="create-ad-btn">
                         <i class="fa-solid fa-plus"></i> <span>Create Ad Campaign</span>
                     </button>
                 </form>
             </div>
-
             <div class="card">
                 <div class="card-title">📊 My Ad Campaigns</div>
                 <div id="my-ads-container"></div>
             </div>
-
             <div class="card">
                 <div class="card-title">📋 Deposit History</div>
                 <div id="deposit-history-container"></div>
             </div>
-
             <div class="card">
                 <div class="card-title">📋 Ad Verification Requests</div>
                 <div id="verification-requests"></div>
@@ -3477,7 +3925,10 @@
             followersCount: 0,
             jobCount: 0,
             isBanned: false,
-            banReason: ''
+            banReason: '',
+            // Watch & Earn state
+            tierProgress: {}, // { tierId: { watched: 0, claimed: false } }
+            tiers: []
         };
 
         // ============================================================
@@ -3603,6 +4054,19 @@
             DOM.maintenanceOverlay = document.getElementById('maintenance-overlay');
             DOM.maintenanceMessage = document.getElementById('maintenanceMessage');
             DOM.maintenanceTime = document.getElementById('maintenanceTime');
+            // Watch & Earn
+            DOM.watchEarnPage = document.getElementById('watchEarnPage');
+            DOM.tiersContainer = document.getElementById('tiers-container');
+            DOM.adminTierSection = document.getElementById('adminTierSection');
+            DOM.adminTierList = document.getElementById('admin-tier-list');
+            DOM.adminTierForm = document.getElementById('adminTierForm');
+            DOM.tierName = document.getElementById('tier-name');
+            DOM.tierPrize = document.getElementById('tier-prize');
+            DOM.tierRequired = document.getElementById('tier-required');
+            DOM.tierStatus = document.getElementById('tier-status');
+            DOM.tierDesc = document.getElementById('tier-desc');
+            DOM.editTierId = document.getElementById('edit-tier-id');
+            DOM.saveTierBtn = document.getElementById('save-tier-btn');
         }
 
         // ============================================================
@@ -3716,10 +4180,11 @@
             });
 
             DOM.container.style.display = 'none';
-            document.querySelectorAll('.modal, .job-details-page, .profile-page, .all-jobs-page').forEach(el => {
-                el.classList.remove('active');
-                el.style.display = 'none';
-            });
+            document.querySelectorAll('.modal, .job-details-page, .profile-page, .all-jobs-page, .watch-earn-page').forEach(
+                el => {
+                    el.classList.remove('active');
+                    el.style.display = 'none';
+                });
 
             showToast('🚫 Account Banned! Contact admin for more info.', 'error');
             sendAdminNotification(
@@ -4165,7 +4630,8 @@
                 followingCount: state.followingCount,
                 followersCount: state.followersCount,
                 isBanned: state.isBanned,
-                banReason: state.banReason
+                banReason: state.banReason,
+                tierProgress: state.tierProgress
             };
             firebaseDb.ref(`users/${state.currentUserId}`).update(data).catch(err => {
                 console.error("Save error:", err);
@@ -4206,6 +4672,7 @@
                         state.followersCount = data.followersCount || 0;
                         state.isBanned = data.isBanned || false;
                         state.banReason = data.banReason || '';
+                        state.tierProgress = data.tierProgress || {};
                         if (data.lastAdWatchTime) {
                             lastAdWatchTime = data.lastAdWatchTime;
                         }
@@ -4771,6 +5238,8 @@
                 DOM.withdrawNavBtn.style.opacity = '1';
                 DOM.withdrawNavBtn.style.pointerEvents = 'auto';
                 listenAds();
+                // Show admin tier management if user is admin
+                checkAdminStatus();
             } else {
                 DOM.publisherView.style.display = 'none';
                 DOM.advertiserView.style.display = 'block';
@@ -4781,6 +5250,7 @@
                 DOM.withdrawNavBtn.style.opacity = '0.5';
                 DOM.withdrawNavBtn.style.pointerEvents = 'none';
                 listenAds();
+                checkAdminStatus();
             }
             updateUI();
         }
@@ -4789,6 +5259,22 @@
             const newRole = state.userRole === 'publisher' ? 'advertiser' : 'publisher';
             const btn = document.querySelector(`.role-btn.${newRole}`);
             if (btn) selectRole(newRole, btn);
+        }
+
+        // ============================================================
+        // CHECK ADMIN STATUS
+        // ============================================================
+        function checkAdminStatus() {
+            if (!firebaseDb || !state.currentUserId) return;
+            firebaseDb.ref(`users/${state.currentUserId}/isAdmin`).once('value', (snapshot) => {
+                const isAdmin = snapshot.val() === true;
+                if (isAdmin) {
+                    DOM.adminTierSection.style.display = 'block';
+                    loadAdminTiers();
+                } else {
+                    DOM.adminTierSection.style.display = 'none';
+                }
+            });
         }
 
         // ============================================================
@@ -4804,20 +5290,16 @@
         }
 
         // ============================================================
-        // AUTO CALCULATE AD COST - FULLY FIXED
+        // AUTO CALCULATE AD COST
         // ============================================================
         function updateAdCalculation() {
-            // Get values with safe defaults
             const budget = parseFloat(DOM.adBudget.value) || 1.00;
             const targetViews = parseInt(DOM.adTargetViews.value) || 50;
             const duration = parseInt(DOM.adDuration.value) || 7;
 
-            // --- CORE FORMULA ---
-            // costPerView = (budget / targetViews) * (7 / duration) * 0.5
             const costPerView = (budget / targetViews) * (7 / duration) * 0.5;
             const dailyBudget = budget / duration;
 
-            // --- UPDATE ALL DISPLAY ELEMENTS SAFELY ---
             if (DOM.calcViews) DOM.calcViews.textContent = targetViews;
             if (DOM.calcReward) DOM.calcReward.textContent = `$${costPerView.toFixed(4)}`;
             if (DOM.calcDuration) DOM.calcDuration.textContent = `${duration} days`;
@@ -4827,7 +5309,6 @@
             if (DOM.adTotalBudgetDisplay) DOM.adTotalBudgetDisplay.textContent = `$${budget.toFixed(2)}`;
             if (DOM.adDurationDisplay) DOM.adDurationDisplay.textContent = duration;
 
-            // --- VALIDATION ---
             const minBudget = CONFIG.MINIMUM_BUDGET || 1.00;
             const minDuration = CONFIG.MINIMUM_DURATION_DAYS || 3;
             const minCostPerView = 0.0001;
@@ -4850,11 +5331,8 @@
                 isValid = false;
                 errors.push(`⚠️ Minimum duration is ${minDuration} days.`);
             }
-            // Check if budget is enough for target views
             const requiredBudget = targetViews * costPerView;
-            if (Math.abs(budget - requiredBudget) > 0.001 && targetViews > 0) {
-                // Not a hard error, just a suggestion
-            }
+            if (Math.abs(budget - requiredBudget) > 0.001 && targetViews > 0) {}
 
             if (!isValid) {
                 if (validationMsg) {
@@ -4873,7 +5351,6 @@
                 return;
             }
 
-            // If budget is much higher than required, show warning
             if (budget > requiredBudget * 1.2 && targetViews > 0) {
                 if (validationMsg) {
                     validationMsg.style.display = 'block';
@@ -4892,7 +5369,6 @@
                 return;
             }
 
-            // All good
             if (validationMsg) {
                 validationMsg.style.display = 'none';
             }
@@ -4901,14 +5377,9 @@
                 DOM.calcResult.style.borderColor = 'rgba(16, 185, 129, 0.2)';
                 DOM.calcResult.style.background = 'rgba(16, 185, 129, 0.06)';
             }
-
-            // Update budget suggestion
             updateBudgetSuggestion(budget, targetViews, duration, costPerView);
         }
 
-        // ============================================================
-        // BUDGET SUGGESTION
-        // ============================================================
         function updateBudgetSuggestion(budget, targetViews, duration, costPerView) {
             const suggestionEl = DOM.budgetSuggestion;
             const suggestedAmountEl = DOM.suggestedBudget;
@@ -4916,7 +5387,6 @@
 
             if (!suggestionEl || !suggestedAmountEl || !reasonEl) return;
 
-            // Suggest a budget that gives at least $0.001 per view
             const minRecommendedCPV = 0.001;
             const suggestedBudget = Math.max(
                 CONFIG.MINIMUM_BUDGET,
@@ -4943,23 +5413,20 @@
         }
 
         // ============================================================
-        // ADVERTISER - CREATE AD (FIXED SUBMIT)
+        // ADVERTISER - CREATE AD
         // ============================================================
         function setupCreateAdForm() {
             if (!DOM.createAdForm) return;
 
-            // Input listeners
             if (DOM.adBudget) DOM.adBudget.addEventListener('input', updateAdCalculation);
             if (DOM.adTargetViews) DOM.adTargetViews.addEventListener('input', updateAdCalculation);
             if (DOM.adDuration) DOM.adDuration.addEventListener('input', updateAdCalculation);
 
-            // Initial calculation
             updateAdCalculation();
 
             DOM.createAdForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
 
-                // Gather form data
                 const title = document.getElementById('ad-title').value.trim();
                 const category = DOM.adCategory.value;
                 const subCategory = DOM.adSubCategory.value.trim();
@@ -4971,7 +5438,6 @@
                 const targetViews = parseInt(DOM.adTargetViews.value) || 10;
                 const fileInput = document.getElementById('ad-image');
 
-                // --- VALIDATION ---
                 if (!title || !category || !desc || !requirements || !instructions) {
                     showToast('❌ Please fill all required fields!', 'error');
                     return;
@@ -4989,7 +5455,6 @@
                     return;
                 }
 
-                // Calculate cost per view
                 const costPerView = (budget / targetViews) * (7 / duration) * 0.5;
                 const requiredBudget = targetViews * costPerView;
 
@@ -5000,7 +5465,6 @@
                     return;
                 }
 
-                // Warn if budget is much higher than required
                 if (budget > requiredBudget * 1.2) {
                     if (!confirm(
                             `⚠️ Your budget ($${budget.toFixed(2)}) is higher than the required budget ($${requiredBudget.toFixed(2)}) for ${targetViews} views. Do you want to continue?`
@@ -5009,7 +5473,6 @@
                     }
                 }
 
-                // Upload image
                 let imageUrl = '';
                 if (fileInput.files.length > 0) {
                     const file = fileInput.files[0];
@@ -5027,7 +5490,6 @@
                     }
                 }
 
-                // Deduct from wallet
                 state.walletBalance -= budget;
                 state.totalSpent += budget;
 
@@ -5066,10 +5528,8 @@
                     saveUserData();
                     updateUI();
                     showToast(`✅ Ad campaign created! Waiting for admin approval.`, 'success');
-                    // Reset form
                     DOM.createAdForm.reset();
                     document.getElementById('ad-image').value = '';
-                    // Re-run calculation to reset display
                     updateAdCalculation();
                     listenAds();
                 } catch (e) {
@@ -6062,68 +6522,204 @@
         }
 
         // ============================================================
-        // WATCH AD
+        // WATCH AD (Main button opens Watch & Earn page)
         // ============================================================
-        async function watchAd() {
+        function openWatchEarn() {
+            if (isBanned) {
+                showToast('🚫 You are banned. Contact admin for support.', 'error');
+                return;
+            }
+            DOM.watchEarnPage.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            document.querySelector('.container').style.display = 'none';
+            loadTiers();
+            checkAdminStatus();
+        }
+
+        function closeWatchEarn() {
+            DOM.watchEarnPage.classList.remove('active');
+            document.body.style.overflow = '';
+            document.querySelector('.container').style.display = 'block';
+            DOM.profilePage.classList.remove('active');
+            DOM.allJobsPage.classList.remove('active');
+            DOM.jobDetailsPage.classList.remove('active');
+        }
+
+        // ============================================================
+        // LOAD TIERS FROM FIREBASE
+        // ============================================================
+        function loadTiers() {
+            if (!firebaseDb) return;
+            firebaseDb.ref('adTiers').orderByChild('order').on('value', (snapshot) => {
+                const data = snapshot.val() || {};
+                const tiers = Object.entries(data).map(([id, tier]) => ({ id, ...tier }));
+                // Sort by order or createdAt
+                tiers.sort((a, b) => (a.order || a.createdAt || 0) - (b.order || b.createdAt || 0));
+                state.tiers = tiers;
+                renderTiers(tiers);
+                renderAdminTierList(tiers);
+            });
+        }
+
+        // ============================================================
+        // RENDER TIERS (User View)
+        // ============================================================
+        function renderTiers(tiers) {
+            if (!DOM.tiersContainer) return;
+            const activeTiers = tiers.filter(t => t.status !== 'inactive');
+
+            if (activeTiers.length === 0) {
+                DOM.tiersContainer.innerHTML = `
+                    <div class="tier-empty">
+                        <i class="fa-solid fa-rectangle-ad"></i>
+                        <p>No ad tiers available right now.<br>Check back later!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            DOM.tiersContainer.innerHTML = activeTiers.map((tier, index) => {
+                const progress = state.tierProgress[tier.id] || { watched: 0, claimed: false };
+                const watched = progress.watched || 0;
+                const claimed = progress.claimed || false;
+                const required = tier.requiredAds || 6;
+                const remaining = Math.max(0, required - watched);
+                const isComplete = watched >= required;
+                const pct = Math.min((watched / required) * 100, 100);
+                const prize = tier.prize || 0;
+
+                let statusClass = 'active';
+                let statusText = 'Active';
+                if (claimed) { statusClass = 'claimed';
+                    statusText = '✅ Claimed'; } else if (isComplete) { statusClass = 'completed';
+                    statusText = '🎯 Ready to Claim'; }
+
+                return `
+                    <div class="tier-card">
+                        <div class="tier-header">
+                            <div>
+                                <div class="tier-name">${escapeHTML(tier.name || `Section ${index + 1}`)}</div>
+                                ${tier.desc ? `<div style="font-size:12px; color:var(--text-light);">${escapeHTML(tier.desc)}</div>` : ''}
+                            </div>
+                            <div class="tier-prize">$${prize.toFixed(2)}</div>
+                        </div>
+                        <span class="tier-status-badge ${statusClass}">${statusText}</span>
+                        <div class="tier-progress">
+                            <div class="progress-bar">
+                                <div class="fill" style="width:${pct}%"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span class="watched">👁 ${watched} / ${required}</span>
+                                <span class="remaining">${remaining > 0 ? `${remaining} remaining` : '✅ Complete'}</span>
+                            </div>
+                        </div>
+                        <div class="tier-actions">
+                            <button class="tier-btn watch ${watched >= required ? 'watched' : ''}" 
+                                    onclick="watchTierAd('${tier.id}')"
+                                    ${watched >= required ? 'disabled' : ''}>
+                                <i class="fa-solid fa-play"></i> 
+                                ${watched >= required ? '✅ All Watched' : 'Watch Ad'}
+                            </button>
+                            <button class="tier-btn claim ${claimed ? 'claimed' : ''}" 
+                                    onclick="claimTierReward('${tier.id}')"
+                                    ${!isComplete || claimed ? 'disabled' : ''}>
+                                <i class="fa-solid fa-gift"></i> 
+                                ${claimed ? '✅ Claimed' : 'Claim Reward'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ============================================================
+        // WATCH TIER AD
+        // ============================================================
+        async function watchTierAd(tierId) {
             if (isBanned) {
                 showToast('🚫 You are banned. Contact admin for support.', 'error');
                 return;
             }
             if (isAdShowing) return;
             if (DOM.adLoaderOverlay.style.display === 'flex') return;
+
+            // Check daily limit
+            if (state.adsWatchedToday >= CONFIG.DAILY_AD_LIMIT) {
+                showToast(`📊 Daily limit reached! (${CONFIG.DAILY_AD_LIMIT})`, 'warning');
+                return;
+            }
+
+            // Check cooldown
             const now = Date.now();
             if (now - lastAdWatchTime < CONFIG.AD_COOLDOWN_MINUTES * 60 * 1000) {
                 const remaining = Math.ceil((CONFIG.AD_COOLDOWN_MINUTES * 60 * 1000 - (now - lastAdWatchTime)) / 1000);
                 showToast(`⏳ Please wait ${remaining}s before watching another ad`, 'warning');
                 return;
             }
-            if (state.lastUsedIp && !state.cooldownUntil) {
-                const newIp = await getIpAddress();
-                if (newIp === state.lastUsedIp) {
-                    showToast('Please change your IP address before continuing.', 'warning');
-                    return;
-                } else {
-                    state.lastUsedIp = null;
-                    saveUserData();
-                }
-            }
-            if (state.adsWatchedToday >= CONFIG.DAILY_AD_LIMIT) {
-                showToast(`📊 Daily limit reached! (${CONFIG.DAILY_AD_LIMIT})`, 'warning');
+
+            // Check if already completed
+            const progress = state.tierProgress[tierId] || { watched: 0, claimed: false };
+            const tier = state.tiers.find(t => t.id === tierId);
+            if (!tier) {
+                showToast('❌ Tier not found', 'error');
                 return;
             }
+            if (progress.watched >= tier.requiredAds) {
+                showToast('✅ You already watched all ads for this tier!', 'success');
+                return;
+            }
+
             isAdShowing = true;
             DOM.adLoaderOverlay.style.display = 'flex';
             DOM.adLoaderProgress.style.width = '0%';
             DOM.adLoaderOverlay.querySelector('.loader-text').textContent = 'Loading Ad...';
-            DOM.adLoaderOverlay.querySelector('.loader-sub').textContent = 'Please wait while the ad loads';
+            DOM.adLoaderOverlay.querySelector('.loader-sub').textContent = 'Watch the ad to earn progress';
+
             try {
-                let progress = 0;
+                let progressPct = 0;
                 const progressInterval = setInterval(() => {
-                    progress += Math.random() * 8 + 2;
-                    if (progress > 90) progress = 90;
-                    DOM.adLoaderProgress.style.width = `${progress}%`;
+                    progressPct += Math.random() * 8 + 2;
+                    if (progressPct > 90) progressPct = 90;
+                    DOM.adLoaderProgress.style.width = `${progressPct}%`;
                 }, 300);
+
                 const adShown = await showRewardedAd();
                 clearInterval(progressInterval);
                 DOM.adLoaderProgress.style.width = '100%';
+
                 if (adShown) {
                     lastAdWatchTime = Date.now();
                     state.adsWatchedToday++;
                     const day = new Date().getDay();
                     state.weeklyActivity[day] = (state.weeklyActivity[day] || 0) + 1;
-                    let alertMsg = `✅ Ad watched! Please verify to earn reward.`;
-                    if (state.adsWatchedToday >= CONFIG.DAILY_AD_LIMIT) {
-                        const cdDate = new Date();
-                        cdDate.setMinutes(cdDate.getMinutes() + CONFIG.COOLDOWN_MINUTES);
-                        state.cooldownUntil = cdDate.toISOString();
-                        state.lastUsedIp = await getIpAddress();
-                        alertMsg = `✅ Daily limit reached! Take a ${CONFIG.COOLDOWN_MINUTES}-minute break.`;
+
+                    // Update tier progress
+                    if (!state.tierProgress[tierId]) {
+                        state.tierProgress[tierId] = { watched: 0, claimed: false };
                     }
+                    state.tierProgress[tierId].watched = (state.tierProgress[tierId].watched || 0) + 1;
+
                     saveUserData();
                     updateUI();
-                    setTimeout(() => {
-                        showToast(alertMsg, 'success');
-                    }, 300);
+                    loadTiers();
+
+                    const newWatched = state.tierProgress[tierId].watched;
+                    const required = tier.requiredAds || 6;
+                    if (newWatched >= required) {
+                        showToast(`🎉 You completed all ads for ${tier.name}! Claim your reward now.`, 'success');
+                    } else {
+                        showToast(`✅ Ad watched! ${newWatched}/${required} completed for ${tier.name}.`, 'success');
+                    }
+
+                    // Update the watch button text
+                    const watchBtn = document.querySelector(`.tier-card .tier-btn.watch[onclick*="${tierId}"]`);
+                    if (watchBtn) {
+                        if (newWatched >= required) {
+                            watchBtn.disabled = true;
+                            watchBtn.innerHTML = '<i class="fa-solid fa-check"></i> ✅ All Watched';
+                            watchBtn.classList.add('watched');
+                        }
+                    }
                 } else {
                     showToast('❌ Ad was not shown. Please try again.', 'error');
                 }
@@ -6135,6 +6731,182 @@
                 DOM.adLoaderOverlay.style.display = 'none';
                 DOM.adLoaderOverlay.querySelector('.loader-text').textContent = 'Loading Ad...';
                 DOM.adLoaderOverlay.querySelector('.loader-sub').textContent = 'Please wait while the ad loads';
+            }
+        }
+
+        // ============================================================
+        // CLAIM TIER REWARD
+        // ============================================================
+        async function claimTierReward(tierId) {
+            if (isBanned) {
+                showToast('🚫 You are banned. Contact admin for support.', 'error');
+                return;
+            }
+
+            const tier = state.tiers.find(t => t.id === tierId);
+            if (!tier) {
+                showToast('❌ Tier not found', 'error');
+                return;
+            }
+
+            const progress = state.tierProgress[tierId] || { watched: 0, claimed: false };
+            const required = tier.requiredAds || 6;
+
+            if (progress.watched < required) {
+                showToast(`❌ You need to watch all ${required} ads first!`, 'warning');
+                return;
+            }
+
+            if (progress.claimed) {
+                showToast('✅ You already claimed this reward!', 'success');
+                return;
+            }
+
+            // Claim the reward
+            const prize = tier.prize || 0;
+            window._legitimateBalanceChange = true;
+            state.balance += prize;
+            state.totalEarnings += prize;
+            state.tierProgress[tierId].claimed = true;
+
+            saveUserData();
+            updateUI();
+            loadTiers();
+
+            showToast(`🎉 You claimed $${prize.toFixed(2)} from ${tier.name}!`, 'success');
+
+            // Update UI
+            const claimBtn = document.querySelector(`.tier-card .tier-btn.claim[onclick*="${tierId}"]`);
+            if (claimBtn) {
+                claimBtn.disabled = true;
+                claimBtn.innerHTML = '<i class="fa-solid fa-check"></i> ✅ Claimed';
+                claimBtn.classList.add('claimed');
+            }
+            const statusBadge = document.querySelector(`.tier-card .tier-status-badge`);
+            if (statusBadge) {
+                statusBadge.textContent = '✅ Claimed';
+                statusBadge.className = 'tier-status-badge claimed';
+            }
+        }
+
+        // ============================================================
+        // ADMIN TIER MANAGEMENT
+        // ============================================================
+        function openTierForm(tierId = null) {
+            DOM.adminTierForm.classList.add('active');
+            if (tierId) {
+                // Edit mode
+                const tier = state.tiers.find(t => t.id === tierId);
+                if (tier) {
+                    DOM.tierName.value = tier.name || '';
+                    DOM.tierPrize.value = tier.prize || 0;
+                    DOM.tierRequired.value = tier.requiredAds || 6;
+                    DOM.tierStatus.value = tier.status || 'active';
+                    DOM.tierDesc.value = tier.desc || '';
+                    DOM.editTierId.value = tierId;
+                    DOM.saveTierBtn.innerHTML = '<i class="fa-solid fa-save"></i> Update Tier';
+                }
+            } else {
+                // Add mode
+                DOM.tierName.value = `Section ${state.tiers.length + 1}`;
+                DOM.tierPrize.value = '1.00';
+                DOM.tierRequired.value = '6';
+                DOM.tierStatus.value = 'active';
+                DOM.tierDesc.value = '';
+                DOM.editTierId.value = '';
+                DOM.saveTierBtn.innerHTML = '<i class="fa-solid fa-save"></i> Save Tier';
+            }
+        }
+
+        function closeTierForm() {
+            DOM.adminTierForm.classList.remove('active');
+            DOM.editTierId.value = '';
+        }
+
+        async function saveTier() {
+            const name = DOM.tierName.value.trim();
+            const prize = parseFloat(DOM.tierPrize.value);
+            const requiredAds = parseInt(DOM.tierRequired.value);
+            const status = DOM.tierStatus.value;
+            const desc = DOM.tierDesc.value.trim();
+            const editId = DOM.editTierId.value;
+
+            if (!name || !prize || prize <= 0 || !requiredAds || requiredAds < 1) {
+                showToast('❌ Please fill all fields correctly', 'error');
+                return;
+            }
+
+            const tierData = {
+                name: name,
+                prize: prize,
+                requiredAds: requiredAds,
+                status: status,
+                desc: desc || '',
+                updatedAt: Date.now()
+            };
+
+            try {
+                if (editId) {
+                    // Update existing
+                    await firebaseDb.ref(`adTiers/${editId}`).update(tierData);
+                    showToast('✅ Tier updated successfully!', 'success');
+                } else {
+                    // Create new
+                    tierData.createdAt = Date.now();
+                    tierData.order = state.tiers.length;
+                    await firebaseDb.ref('adTiers').push(tierData);
+                    showToast('✅ Tier added successfully!', 'success');
+                }
+                closeTierForm();
+                loadTiers();
+            } catch (e) {
+                console.error("Save tier error:", e);
+                showToast('❌ Failed to save tier', 'error');
+            }
+        }
+
+        async function deleteTier(tierId) {
+            if (!confirm('Are you sure you want to delete this tier? This cannot be undone.')) return;
+            try {
+                await firebaseDb.ref(`adTiers/${tierId}`).remove();
+                showToast('✅ Tier deleted', 'success');
+                loadTiers();
+            } catch (e) {
+                console.error("Delete tier error:", e);
+                showToast('❌ Failed to delete tier', 'error');
+            }
+        }
+
+        function editTier(tierId) {
+            openTierForm(tierId);
+        }
+
+        function renderAdminTierList(tiers) {
+            if (!DOM.adminTierList) return;
+            if (tiers.length === 0) {
+                DOM.adminTierList.innerHTML =
+                    `<div style="text-align:center; padding:16px; color:var(--text-light); font-size:13px;">No tiers created yet. Click "Add New Tier" to get started.</div>`;
+                return;
+            }
+            DOM.adminTierList.innerHTML = tiers.map(tier => `
+                <div class="admin-tier-card">
+                    <div class="info">
+                        <div class="name">${escapeHTML(tier.name || 'Unnamed')}</div>
+                        <div class="details">💰 $${(tier.prize || 0).toFixed(2)} • 👁 ${tier.requiredAds || 0} ads • ${tier.desc ? escapeHTML(tier.desc) : ''}</div>
+                    </div>
+                    <span class="status-badge ${tier.status === 'active' ? 'active' : 'inactive'}">${tier.status === 'active' ? 'Active' : 'Inactive'}</span>
+                    <div class="actions">
+                        <button class="edit-btn" onclick="editTier('${tier.id}')"><i class="fa-solid fa-pen"></i></button>
+                        <button class="delete-btn" onclick="deleteTier('${tier.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadAdminTiers() {
+            // This is called from checkAdminStatus
+            if (DOM.adminTierSection.style.display === 'block') {
+                loadTiers();
             }
         }
 
@@ -6328,12 +7100,15 @@
                 listenAds();
                 listenUserVerifications();
                 listenVerificationApprovals();
+                // Load tiers
+                loadTiers();
                 if (user?.first_name) {
                     DOM.greeting.textContent = `Welcome, ${escapeHTML(user.first_name)}!`;
                     DOM.profilePic.innerHTML = `<span>${escapeHTML(user.first_name.charAt(0))}</span>`;
                 }
                 state.currentIp = await getIpAddress();
-                DOM.watchAdBtn.addEventListener('click', watchAd);
+                // Watch button now opens Watch & Earn
+                DOM.watchAdBtn.addEventListener('click', openWatchEarn);
                 DOM.joinChannelBtn.addEventListener('click', () => safeOpenTelegramLink(CONFIG.CHANNEL_LINK));
                 DOM.supportBtn.addEventListener('click', () => safeOpenTelegramLink(CONFIG.SUPPORT_LINK));
                 DOM.copyLinkBtn.addEventListener('click', copyReferralLink);
@@ -6380,7 +7155,7 @@
                 console.log("💳 Wallet:", state.walletBalance);
                 console.log("🎯 Role:", state.userRole);
                 console.log("🔒 Security: Active");
-                console.log("💱 Min Convert: $", CONFIG.MINIMUM_CONVERT);
+                console.log("📺 Watch & Earn: Loaded");
             } catch (error) {
                 console.error("Init error:", error);
                 showToast('❌ Failed to load app. Please refresh.', 'error');
