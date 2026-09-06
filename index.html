@@ -182,6 +182,74 @@
     .bonus-btn:disabled{opacity:0.7;cursor:not-allowed;}
     .bonus-claim{background:linear-gradient(135deg,#6C5CE7,#A29BFE);color:#fff;}
     .bonus-close{background:rgba(255,255,255,.08);color:#e5e7eb;border:1px solid rgba(255,255,255,.12);}
+
+    /* Join Channel Modal Styles */
+    #joinModal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    #joinModal.active { display: flex; }
+    #joinModal .box {
+        background: var(--surface);
+        max-width: 400px;
+        width: 100%;
+        padding: 32px 24px;
+        border-radius: 24px;
+        text-align: center;
+        border: 1px solid rgba(108,92,231,0.1);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        animation: pop 0.3s ease-out;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    @keyframes pop {
+        from { opacity: 0; transform: scale(0.95) translateY(20px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    #joinModal .box .icon { font-size: 56px; color: var(--primary); margin-bottom: 12px; }
+    #joinModal .box h2 { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+    #joinModal .box p { font-size: 14px; color: var(--text-light); line-height: 1.6; margin-bottom: 20px; }
+    #joinModal .channel-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        padding: 14px;
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        background: var(--bg);
+        color: var(--text);
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        font-family: inherit;
+        margin-bottom: 10px;
+    }
+    #joinModal .channel-btn:hover { border-color: var(--primary); background: rgba(108,92,231,0.05); }
+    #joinModal .channel-btn i { color: var(--primary); font-size: 20px; }
+    #joinModal .channel-btn.joined { border-color: var(--success); background: rgba(16,185,129,0.05); }
+    #joinModal .channel-btn.joined i { color: var(--success); }
+    #joinModal .channel-btn.joined::after { content: ' ✅'; color: var(--success); }
+    .verify-status {
+        margin-top: 12px;
+        font-size: 13px;
+        font-weight: 600;
+        min-height: 24px;
+    }
+    .verify-status.success { color: var(--success); }
+    .verify-status.error { color: var(--danger); }
+    .verify-status.loading { color: var(--warning); animation: pulseText 1s ease-in-out infinite; }
+    @keyframes pulseText { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
   </style>
 </head>
 <body>
@@ -198,6 +266,17 @@
   </div>
 
   <div id="toast" class="toast">Alert</div>
+
+  <!-- ✅ Join Channel Modal -->
+  <div id="joinModal">
+    <div class="box">
+      <div class="icon">📢</div>
+      <h2>Join Our Channels</h2>
+      <p>Please join all Telegram channels below to access the dashboard.</p>
+      <div id="channelLinks"></div>
+      <div class="verify-status" id="verifyStatus"></div>
+    </div>
+  </div>
 
   <!-- ✅ Daily Bonus Modal -->
   <div id="bonusOverlay" class="bonus-overlay">
@@ -323,7 +402,7 @@
     if(tg){ try{ tg.ready(); tg.expand(); }catch(e){} }
 
     // ===================================================
-    // ✅ BOT CONFIGURATION (Your Provided Info)
+    // ✅ BOT CONFIGURATION
     // ===================================================
     const BOT_USERNAME = "NexEarn2_Bot";
     const BOT_TOKEN = "8072034659:AAE_I05sswA8gBYVOSHtjGEf1LE6i6aq0T8";
@@ -334,18 +413,11 @@
     let tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : {id: '123456', first_name: 'Guest User', photo_url: 'https://via.placeholder.com/100'};
 
     // ===================================================
-    // ✅ GLOBAL ERROR HANDLING
+    // ✅ CHANNEL VERIFICATION STATE
     // ===================================================
-    window.onerror = function(msg, url, line, col, error) {
-      toast('Something went wrong! Please try again.');
-      console.error('Error:', msg, error);
-      return false;
-    };
-
-    window.addEventListener('unhandledrejection', function(e) {
-      toast('Error occurred. Please refresh.');
-      console.error('Promise rejection:', e.reason);
-    });
+    let channelVerified = false;
+    let channelLinks = [];
+    let verifyInterval = null;
 
     // ===================================================
     // ✅ TOAST FUNCTION
@@ -356,38 +428,6 @@
       setTimeout(() => t.classList.remove('show'), 3000);
     }
     function todayStr() { return new Date().toISOString().slice(0, 10); }
-
-    // ===================================================
-    // ✅ RATE LIMITING
-    // ===================================================
-    const rateLimit = {
-      lastClick: {},
-      cooldown: 5000 // 5 seconds
-    };
-
-    // ===================================================
-    // ✅ NOTIFICATION SYSTEM
-    // ===================================================
-    async function sendNotification(userId, message) {
-      if(!BOT_TOKEN) {
-        console.log('Bot token not configured');
-        return;
-      }
-      try {
-        const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: userId,
-            text: message,
-            parse_mode: 'HTML'
-          })
-        });
-        return await response.json();
-      } catch(e) {
-        console.error('Notification error:', e);
-      }
-    }
 
     // ===================================================
     // ✅ SWITCH TAB
@@ -481,16 +521,6 @@
     let slotLocks = {};
     async function watchAd(i) {
       if(slotLocks[i]) return;
-      
-      // Rate Limit Check
-      const key = tgUser.id + '_' + i;
-      const now = Date.now();
-      if(rateLimit.lastClick[key] && (now - rateLimit.lastClick[key] < rateLimit.cooldown)) {
-        toast('Please wait a few seconds before watching another ad.');
-        return;
-      }
-      rateLimit.lastClick[key] = now;
-      
       slotLocks[i] = true;
       const slot = appState.config.adSlots[i];
       try {
@@ -599,7 +629,6 @@
         const agSlot = slots.find(s => s.network === 'adsgram');
         const mtSlot = slots.find(s => s.network === 'monetag');
 
-        // 1. Show Adsgram Ad First
         if (agSlot && agSlot.id) {
           subText.innerText = "১ম অ্যাড লোড হচ্ছে (Adsgram)... অ্যাডটি সম্পূর্ণ দেখুন।";
           btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading Ad 1...';
@@ -609,7 +638,6 @@
           if(!res || res.done !== true) throw new Error("Ad Closed or Cancelled");
         }
 
-        // 2. Show Monetag Ad Second
         if (mtSlot && mtSlot.id) {
           subText.innerText = "২য় অ্যাড লোড হচ্ছে (Monetag)... এটি শেষ অ্যাড।";
           btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading Ad 2...';
@@ -620,7 +648,6 @@
           }
         }
 
-        // 3. Claim Money
         btn.innerHTML = '<i class="fas fa-check"></i> Claiming...';
         subText.innerText = "অ্যাড দেখা সফল হয়েছে! বোনাস যোগ করা হচ্ছে...";
         
@@ -654,7 +681,6 @@
       const amount = Number(document.getElementById('wd-amount').value);
       const minWd = Number(appState.config.minWithdraw || 10);
 
-      // Validation
       if(!method) return toast('Please select a payment method.');
       if(!account || account.length < 3) return toast('Please enter a valid account number.');
       if(isNaN(amount) || amount <= 0) return toast('Please enter a valid amount.');
@@ -677,7 +703,6 @@
         document.getElementById('wd-account').value = ''; document.getElementById('wd-amount').value = '';
         toast('Withdraw Request Sent Successfully!');
 
-        // Send notifications
         await sendNotification(tgUser.id, 
           `✅ <b>Withdraw Request Submitted!</b>\n\n` +
           `💰 Amount: ${amount} TK\n` +
@@ -765,6 +790,24 @@
     }
 
     // ===================================================
+    // ✅ NOTIFICATION SYSTEM
+    // ===================================================
+    async function sendNotification(userId, message) {
+      if(!BOT_TOKEN) return;
+      try {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: userId,
+            text: message,
+            parse_mode: 'HTML'
+          })
+        });
+      } catch(e) { console.error('Notification error:', e); }
+    }
+
+    // ===================================================
     // ✅ LOADER MANAGEMENT
     // ===================================================
     function setLoading(isLoading) {
@@ -832,6 +875,112 @@
     }
 
     // ===================================================
+    // ✅ CHANNEL VERIFICATION SYSTEM (AUTO)
+    // ===================================================
+    async function checkChannelMembership(userId, chatId) {
+      try {
+        const response = await fetch(
+          `https://api.telegram.org/bot${BOT_TOKEN}/getChatMember?chat_id=@${chatId}&user_id=${userId}`
+        );
+        const data = await response.json();
+        return data.ok && ['member', 'administrator', 'creator'].includes(data.result?.status);
+      } catch(e) {
+        return false;
+      }
+    }
+
+    function renderChannelButtons() {
+      const container = document.getElementById('channelLinks');
+      container.innerHTML = '';
+      
+      const links = channelLinks.length ? channelLinks : [
+        { label: 'NexEarn Channel', chatId: 'nexearn2' },
+        { label: 'NexEarn Adda', chatId: 'nexearn2_adda' },
+        { label: 'NexEarn Official', chatId: 'nexearn2_official' },
+        { label: 'NexEarn Payment', chatId: 'nexearn2_payment' }
+      ];
+
+      links.forEach(link => {
+        const btn = document.createElement('button');
+        btn.className = 'channel-btn';
+        btn.dataset.chatId = link.chatId;
+        btn.innerHTML = `<i class="fa-brands fa-telegram"></i> ${link.label}`;
+        btn.onclick = () => {
+          openLink(`https://t.me/${link.chatId}`);
+          checkAndUpdateStatus();
+        };
+        container.appendChild(btn);
+      });
+
+      // Status display
+      const statusEl = document.getElementById('verifyStatus');
+      statusEl.textContent = '⏳ Checking channel membership...';
+      statusEl.className = 'verify-status loading';
+
+      // Auto-check every 3 seconds
+      if (verifyInterval) clearInterval(verifyInterval);
+      verifyInterval = setInterval(checkAndUpdateStatus, 3000);
+      
+      // Initial check after 1 second
+      setTimeout(checkAndUpdateStatus, 1500);
+    }
+
+    async function checkAndUpdateStatus() {
+      const userId = tgUser.id;
+      const buttons = document.querySelectorAll('.channel-btn');
+      const statusEl = document.getElementById('verifyStatus');
+      
+      if (!userId || userId === '123456') {
+        statusEl.textContent = '⚠️ Unable to verify. Please open in Telegram.';
+        statusEl.className = 'verify-status error';
+        return;
+      }
+
+      let allJoined = true;
+      let checked = 0;
+
+      for (const btn of buttons) {
+        const chatId = btn.dataset.chatId;
+        const joined = await checkChannelMembership(userId, chatId);
+        checked++;
+        
+        if (joined) {
+          btn.classList.add('joined');
+        } else {
+          btn.classList.remove('joined');
+          allJoined = false;
+        }
+      }
+
+      if (allJoined && buttons.length > 0) {
+        statusEl.textContent = '✅ All channels joined!';
+        statusEl.className = 'verify-status success';
+        if (verifyInterval) clearInterval(verifyInterval);
+        verifyInterval = null;
+        
+        // Mark as verified and proceed
+        channelVerified = true;
+        await db.ref('users/' + tgUser.id + '/channelVerified').set(true);
+        
+        // Close modal and show app after 1 second
+        setTimeout(() => {
+          document.getElementById('joinModal').classList.remove('active');
+          showAppAfterVerify();
+        }, 800);
+      } else if (checked === buttons.length) {
+        const remaining = buttons.length - document.querySelectorAll('.channel-btn.joined').length;
+        statusEl.textContent = `❌ Please join ${remaining} more channel(s)`;
+        statusEl.className = 'verify-status error';
+      }
+    }
+
+    function showAppAfterVerify() {
+      document.getElementById('app').style.display = 'block';
+      setLoading(false);
+      if(appState.user.dailyBonusDate !== todayStr()) showBonus();
+    }
+
+    // ===================================================
     // ✅ INITIALIZATION
     // ===================================================
     window.onload = () => {
@@ -845,13 +994,12 @@
       db.ref('config').on('value', snap => {
         if(snap.exists()) {
           appState.config = snap.val();
-          // Ensure bot info is in config
           if(!appState.config.botUsername) appState.config.botUsername = BOT_USERNAME;
           if(!appState.config.botToken) appState.config.botToken = BOT_TOKEN;
+          if(appState.config.channelLinks) channelLinks = appState.config.channelLinks;
           preloadAds();
           if(isBooted) { updateTextElements(); renderAds(); renderTasks(); }
         } else {
-          // Create default config if not exists
           const defaultConfig = {
             refBonus: 5,
             adReward: 0.5,
@@ -863,9 +1011,16 @@
             botToken: BOT_TOKEN,
             paymentMethods: ['bKash', 'Nagad', 'Rocket'],
             adSlots: [],
-            webTasks: {}
+            webTasks: {},
+            channelLinks: [
+              { label: 'NexEarn Channel', chatId: 'nexearn2' },
+              { label: 'NexEarn Adda', chatId: 'nexearn2_adda' },
+              { label: 'NexEarn Official', chatId: 'nexearn2_official' },
+              { label: 'NexEarn Payment', chatId: 'nexearn2_payment' }
+            ]
           };
           db.ref('config').set(defaultConfig);
+          channelLinks = defaultConfig.channelLinks;
         }
       });
 
@@ -875,7 +1030,6 @@
         const today = todayStr();
 
         if(!snap.exists()) {
-          // --- New User ---
           appState.user = { 
             id: tgUser.id, 
             name: tgUser.first_name, 
@@ -886,14 +1040,13 @@
             dailyAds: {}, 
             taskHistory: {}, 
             lastActive: today, 
-            dailyBonusDate: '' 
+            dailyBonusDate: '',
+            channelVerified: false
           };
-          
           await userRef.set(appState.user);
 
-          // --- Process Referral ---
+          // Process Referral
           let refBy = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) ? tg.initDataUnsafe.start_param : null;
-          
           if(!refBy) {
              const urlParams = new URLSearchParams(window.location.search);
              refBy = urlParams.get('tgWebAppStartParam') || urlParams.get('startapp');
@@ -902,7 +1055,6 @@
           if(refBy && String(refBy) !== String(tgUser.id)) {
              let cSnap = await db.ref('config').once('value');
              let rBonus = (cSnap.exists() && cSnap.val().refBonus) ? Number(cSnap.val().refBonus) : 5;
-
              let refSnap = await db.ref('users/' + refBy).once('value');
              if(refSnap.exists()){
                 let r = refSnap.val();
@@ -911,8 +1063,6 @@
                    balance: (r.balance || 0) + rBonus,
                    totalEarned: (r.totalEarned || 0) + rBonus
                 });
-                
-                // Notify referrer
                 await sendNotification(refBy, 
                   `🎉 <b>New Referral!</b>\n\n` +
                   `👤 ${tgUser.first_name} joined using your referral link.\n` +
@@ -940,8 +1090,21 @@
 
             if(!isBooted) {
               isBooted = true;
-              setLoading(false);
-              if(appState.user.dailyBonusDate !== today) showBonus();
+              
+              // Check if channel verification is needed
+              const isVerified = appState.user.channelVerified || false;
+              
+              if (!isVerified) {
+                // Show channel verification modal
+                document.getElementById('joinModal').classList.add('active');
+                renderChannelButtons();
+                // App will be shown after verification
+              } else {
+                channelVerified = true;
+                document.getElementById('app').style.display = 'block';
+                setLoading(false);
+                if(appState.user.dailyBonusDate !== today) showBonus();
+              }
             }
           }
         });
