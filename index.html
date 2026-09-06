@@ -182,68 +182,6 @@
     .bonus-btn:disabled{opacity:0.7;cursor:not-allowed;}
     .bonus-claim{background:linear-gradient(135deg,#6C5CE7,#A29BFE);color:#fff;}
     .bonus-close{background:rgba(255,255,255,.08);color:#e5e7eb;border:1px solid rgba(255,255,255,.12);}
-
-    /* Admin Panel Styles */
-    #adminPanel {
-      display: none;
-      background: #fff;
-      margin: 20px;
-      padding: 20px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      border: 2px solid var(--primary);
-    }
-    #adminPanel h3 {
-      color: var(--primary);
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .admin-input-group {
-      margin-bottom: 12px;
-    }
-    .admin-input-group label {
-      display: block;
-      font-weight: 600;
-      font-size: 0.85rem;
-      margin-bottom: 5px;
-      color: #555;
-    }
-    .admin-input-group input, .admin-input-group select {
-      width: 100%;
-      padding: 10px 14px;
-      border: 2px solid #e1e1e1;
-      border-radius: 10px;
-      font-size: 0.9rem;
-      outline: none;
-      transition: 0.3s;
-      background: #f9f9f9;
-    }
-    .admin-input-group input:focus, .admin-input-group select:focus {
-      border-color: var(--primary);
-      background: #fff;
-      box-shadow: 0 0 0 3px rgba(108,92,231,0.1);
-    }
-    .admin-btn {
-      width: 100%;
-      padding: 12px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      font-weight: 700;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .admin-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(108,92,231,0.3);
-    }
-    .admin-btn:active {
-      transform: scale(0.98);
-    }
   </style>
 </head>
 <body>
@@ -293,40 +231,6 @@
         <div class="stat-box"><h4 id="u-earn">0.00</h4><p>Earned</p></div>
         <div class="stat-box"><h4 id="u-ref">0</h4><p>Referrals</p></div>
       </div>
-    </div>
-
-    <!-- ================= ADMIN PANEL ================= -->
-    <div id="adminPanel">
-      <h3><i class="fas fa-crown"></i> Admin Panel</h3>
-      <div class="admin-input-group">
-        <label>💰 Referral Bonus</label>
-        <input type="number" id="adminRefBonus" placeholder="Enter referral bonus amount">
-      </div>
-      <div class="admin-input-group">
-        <label>🎯 Ad Reward</label>
-        <input type="number" id="adminAdReward" placeholder="Enter ad reward amount" step="0.5">
-      </div>
-      <div class="admin-input-group">
-        <label>🎁 Daily Bonus Amount</label>
-        <input type="number" id="adminDailyBonus" placeholder="Enter daily bonus amount">
-      </div>
-      <div class="admin-input-group">
-        <label>📅 Daily Ad Limit</label>
-        <input type="number" id="adminAdLimit" placeholder="Enter daily ad limit">
-      </div>
-      <div class="admin-input-group">
-        <label>💳 Payment Methods (comma separated)</label>
-        <input type="text" id="adminPaymentMethods" placeholder="bKash,Nagad,Rocket">
-      </div>
-      <div class="admin-input-group">
-        <label>💰 Minimum Withdraw</label>
-        <input type="number" id="adminMinWithdraw" placeholder="Enter minimum withdraw amount">
-      </div>
-      <div class="admin-input-group">
-        <label>💱 Currency Symbol</label>
-        <input type="text" id="adminCurrency" placeholder="TK" maxlength="5">
-      </div>
-      <button class="admin-btn" onclick="updateAdminConfig()"><i class="fas fa-save"></i> Update Configuration</button>
     </div>
 
     <!-- ================= TAB 1: HOME ================= -->
@@ -380,14 +284,6 @@
         <button class="btn-main" onclick="requestWithdraw()"><i class="fas fa-paper-plane"></i> Request Withdraw</button>
         <div style="font-size: 0.8rem; color: #ff4757; text-align: center; margin-top: 15px; font-weight: 700;" id="wd-notice">Minimum withdraw: ...</div>
       </div>
-
-      <!-- Withdraw History -->
-      <div class="premium-card" style="margin-top:20px;">
-        <div class="card-title"><i class="fas fa-history" style="color:#f39c12;"></i> Withdraw History</div>
-        <div id="historyList">
-          <p style="text-align:center; color:#999; padding:20px 0;">Loading history...</p>
-        </div>
-      </div>
     </div>
 
   </div>
@@ -402,7 +298,7 @@
 
   <script>
     // ===================================================
-    // ✅ FIREBASE CONFIG
+    // ✅ REPLACED WITH YOUR GIVEN FIREBASE CONFIG
     // ===================================================
     const firebaseConfig = {
       apiKey: "AIzaSyC_WvNxSQQ58TcJhDcBw5NUrAZjOQe1T2g",
@@ -418,34 +314,10 @@
     const tg = window.Telegram.WebApp;
     if(tg){ try{ tg.ready(); tg.expand(); }catch(e){} }
 
-    // ===================================================
-    // ✅ BOT CONFIGURATION (Your Provided Info)
-    // ===================================================
-    const BOT_USERNAME = "NexEarn2_Bot";
-    const BOT_TOKEN = "8072034659:AAE_I05sswA8gBYVOSHtjGEf1LE6i6aq0T8";
-    const ADMIN_ID = "6624254778";
-
     let appState = { user: { balance:0, totalEarned:0, referrals:0, dailyAds:{}, taskHistory:{} }, config: { adSlots:[], webTasks:{} } };
     let isBooted = false;
     let tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : {id: '123456', first_name: 'Guest User', photo_url: 'https://via.placeholder.com/100'};
 
-    // ===================================================
-    // ✅ GLOBAL ERROR HANDLING
-    // ===================================================
-    window.onerror = function(msg, url, line, col, error) {
-      toast('Something went wrong! Please try again.');
-      console.error('Error:', msg, error);
-      return false;
-    };
-
-    window.addEventListener('unhandledrejection', function(e) {
-      toast('Error occurred. Please refresh.');
-      console.error('Promise rejection:', e.reason);
-    });
-
-    // ===================================================
-    // ✅ TOAST FUNCTION
-    // ===================================================
     function toast(msg) {
       const t = document.getElementById('toast');
       t.innerText = msg; t.classList.add('show');
@@ -453,119 +325,15 @@
     }
     function todayStr() { return new Date().toISOString().slice(0, 10); }
 
-    // ===================================================
-    // ✅ RATE LIMITING
-    // ===================================================
-    const rateLimit = {
-      lastClick: {},
-      cooldown: 5000 // 5 seconds
-    };
-
-    // ===================================================
-    // ✅ NOTIFICATION SYSTEM
-    // ===================================================
-    async function sendNotification(userId, message) {
-      if(!BOT_TOKEN) {
-        console.log('Bot token not configured');
-        return;
-      }
-      try {
-        const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: userId,
-            text: message,
-            parse_mode: 'HTML'
-          })
-        });
-        return await response.json();
-      } catch(e) {
-        console.error('Notification error:', e);
-      }
-    }
-
-    // ===================================================
-    // ✅ SWITCH TAB
-    // ===================================================
     function switchTab(tabId, el) {
       document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       document.getElementById('page-' + tabId).classList.add('active');
       el.classList.add('active');
       if(tabId === 'leaderboard') loadLeaderboard();
-      if(tabId === 'withdraw') loadWithdrawHistory();
       if(tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
     }
 
-    // ===================================================
-    // ✅ ADMIN CHECK
-    // ===================================================
-    async function isAdmin() {
-      try {
-        // Check if current user is admin
-        const snap = await db.ref('admins/' + tgUser.id).once('value');
-        if(snap.exists()) return true;
-        // Fallback: check if user ID matches the provided admin ID
-        if(String(tgUser.id) === ADMIN_ID) {
-          // Add to admin list if not already there
-          await db.ref('admins/' + tgUser.id).set(true);
-          return true;
-        }
-        return false;
-      } catch(e) {
-        return String(tgUser.id) === ADMIN_ID;
-      }
-    }
-
-    async function checkAdmin() {
-      if(await isAdmin()) {
-        document.getElementById('adminPanel').style.display = 'block';
-        // Load current config values into admin form
-        const config = appState.config;
-        document.getElementById('adminRefBonus').value = config.refBonus || 5;
-        document.getElementById('adminAdReward').value = config.adReward || 0.5;
-        document.getElementById('adminDailyBonus').value = config.dailyBonusAmount || 20;
-        document.getElementById('adminAdLimit').value = config.dailyAdLimit || 10;
-        document.getElementById('adminPaymentMethods').value = (config.paymentMethods || ['bKash','Nagad','Rocket']).join(',');
-        document.getElementById('adminMinWithdraw').value = config.minWithdraw || 10;
-        document.getElementById('adminCurrency').value = config.currencySymbol || 'TK';
-      }
-    }
-
-    // ===================================================
-    // ✅ ADMIN CONFIG UPDATE
-    // ===================================================
-    async function updateAdminConfig() {
-      try {
-        const updates = {
-          refBonus: Number(document.getElementById('adminRefBonus').value) || 5,
-          adReward: Number(document.getElementById('adminAdReward').value) || 0.5,
-          dailyBonusAmount: Number(document.getElementById('adminDailyBonus').value) || 20,
-          dailyAdLimit: Number(document.getElementById('adminAdLimit').value) || 10,
-          minWithdraw: Number(document.getElementById('adminMinWithdraw').value) || 10,
-          currencySymbol: document.getElementById('adminCurrency').value || 'TK',
-          botUsername: BOT_USERNAME,
-          botToken: BOT_TOKEN
-        };
-        
-        const methods = document.getElementById('adminPaymentMethods').value.split(',').map(m => m.trim()).filter(m => m);
-        if(methods.length) updates.paymentMethods = methods;
-
-        await db.ref('config').update(updates);
-        toast('✅ Configuration Updated Successfully!');
-        
-        // Send notification to admin
-        await sendNotification(ADMIN_ID, '✅ <b>Config Updated!</b>\n\nNew settings have been applied.');
-      } catch(e) {
-        toast('❌ Error updating config');
-        console.error(e);
-      }
-    }
-
-    // ===================================================
-    // ✅ PRELOAD ADS
-    // ===================================================
     function preloadAds() {
       const slots = appState.config.adSlots || [];
       slots.forEach(slot => {
@@ -581,9 +349,6 @@
       });
     }
 
-    // ===================================================
-    // ✅ UPDATE UI ELEMENTS
-    // ===================================================
     function updateTextElements() {
       const sym = appState.config.currencySymbol || "TK";
       document.getElementById('u-bal').innerText = (appState.user.balance || 0).toFixed(2);
@@ -606,9 +371,6 @@
       }
     }
 
-    // ===================================================
-    // ✅ RENDER ADS
-    // ===================================================
     function renderAds() {
       const el = document.getElementById('ad-area'); el.innerHTML = '';
       const slots = appState.config.adSlots || [];
@@ -636,23 +398,9 @@
       }
     }
 
-    // ===================================================
-    // ✅ WATCH AD
-    // ===================================================
     let slotLocks = {};
     async function watchAd(i) {
-      if(slotLocks[i]) return;
-      
-      // Rate Limit Check
-      const key = tgUser.id + '_' + i;
-      const now = Date.now();
-      if(rateLimit.lastClick[key] && (now - rateLimit.lastClick[key] < rateLimit.cooldown)) {
-        toast('Please wait a few seconds before watching another ad.');
-        return;
-      }
-      rateLimit.lastClick[key] = now;
-      
-      slotLocks[i] = true;
+      if(slotLocks[i]) return; slotLocks[i] = true;
       const slot = appState.config.adSlots[i];
       try {
         toast('Loading Ad...');
@@ -689,9 +437,6 @@
       } finally { slotLocks[i] = false; }
     }
 
-    // ===================================================
-    // ✅ RENDER TASKS
-    // ===================================================
     function renderTasks() {
       const el = document.getElementById('task-area'); el.innerHTML = '';
       const tasks = appState.config.webTasks || {};
@@ -733,9 +478,6 @@
       toast('Claimed Successfully!');
     }
 
-    // ===================================================
-    // ✅ BONUS SYSTEM
-    // ===================================================
     function showBonus(){ 
       if(appState.user.dailyBonusDate === todayStr()) {
         toast("আজকের বোনাস আগেই নেওয়া হয়েছে!"); return;
@@ -806,21 +548,15 @@
       }
     }
 
-    // ===================================================
-    // ✅ WITHDRAW SYSTEM
-    // ===================================================
     async function requestWithdraw() {
       const method = document.getElementById('wd-method').value;
-      const account = document.getElementById('wd-account').value.trim();
+      const account = document.getElementById('wd-account').value;
       const amount = Number(document.getElementById('wd-amount').value);
       const minWd = Number(appState.config.minWithdraw || 10);
 
-      // Validation
-      if(!method) return toast('Please select a payment method.');
-      if(!account || account.length < 3) return toast('Please enter a valid account number.');
-      if(isNaN(amount) || amount <= 0) return toast('Please enter a valid amount.');
-      if(amount < minWd) return toast(`Minimum withdraw is ${minWd} TK.`);
-      if(amount > appState.user.balance) return toast('Insufficient balance.');
+      if(!method || !account || !amount) return toast('Fill all fields');
+      if(amount < minWd) return toast(`Minimum is ${minWd}`);
+      if(amount > appState.user.balance) return toast('Insufficient balance');
 
       try {
         const wdId = 'WD' + Date.now();
@@ -837,112 +573,117 @@
         
         document.getElementById('wd-account').value = ''; document.getElementById('wd-amount').value = '';
         toast('Withdraw Request Sent Successfully!');
-
-        // Send notifications
-        await sendNotification(tgUser.id, 
-          `✅ <b>Withdraw Request Submitted!</b>\n\n` +
-          `💰 Amount: ${amount} TK\n` +
-          `🏦 Method: ${method}\n` +
-          `📅 Date: ${new Date().toLocaleDateString('bn-BD')}\n\n` +
-          `⏳ Please wait for admin approval.`
-        );
-        
-        await sendNotification(ADMIN_ID,
-          `💰 <b>New Withdraw Request</b>\n\n` +
-          `👤 User: ${appState.user.name}\n` +
-          `🆔 ID: ${tgUser.id}\n` +
-          `💵 Amount: ${amount} TK\n` +
-          `🏦 Method: ${method}\n` +
-          `📧 Account: ${account}\n` +
-          `📅 Date: ${new Date().toLocaleDateString('bn-BD')}`
-        );
-
       } catch(e) { toast('Error Processing Request'); }
     }
 
-    // ===================================================
-    // ✅ WITHDRAW HISTORY
-    // ===================================================
-    async function loadWithdrawHistory() {
-      try {
-        const snap = await db.ref('withdrawals')
-          .orderByChild('userId')
-          .equalTo(tgUser.id)
-          .once('value');
-        
-        let html = '';
-        let count = 0;
-        snap.forEach(child => {
-          const w = child.val();
-          count++;
-          const statusColor = w.status === 'pending' ? '#f39c12' : w.status === 'approved' ? '#2ecc71' : '#e74c3c';
-          const statusText = w.status === 'pending' ? '⏳ Pending' : w.status === 'approved' ? '✅ Approved' : '❌ Rejected';
-          html += `
-            <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #eee; align-items:center;">
-              <div>
-                <span style="font-weight:700; font-size:1.1rem;">${w.amount} TK</span>
-                <div style="font-size:0.75rem; color:#999;">${new Date(w.timestamp).toLocaleDateString('bn-BD')}</div>
-              </div>
-              <span style="color:${statusColor}; font-weight:600; padding:4px 12px; border-radius:20px; background:${statusColor}20; text-transform:capitalize;">${statusText}</span>
-            </div>
-          `;
-        });
-        
-        document.getElementById('historyList').innerHTML = html || '<p style="text-align:center; color:#999; padding:20px 0;">No withdraw history found.</p>';
-      } catch(e) {
-        document.getElementById('historyList').innerHTML = '<p style="text-align:center; color:#e74c3c;">Error loading history</p>';
-      }
-    }
-
-    // ===================================================
-    // ✅ REFERRAL SYSTEM
-    // ===================================================
     function getRefLink() { 
-      return `https://t.me/${BOT_USERNAME}/app?startapp=${tgUser.id}`; 
+      // Link should be your telegram bot username + /app (shortname) 
+      return `https://t.me/${appState.config.botUsername||"bot"}/app?startapp=${appState.user.id}`; 
     }
     
-    function copyLink() { 
-      navigator.clipboard.writeText(getRefLink()); 
-      toast('Link Copied!'); 
-    }
-    
+    function copyLink() { navigator.clipboard.writeText(getRefLink()); toast('Link Copied!'); }
     function shareLink() {
-      const url = `https://t.me/share/url?url=${encodeURIComponent(getRefLink())}&text=Join%20Now!%20and%20earn%20money!`;
+      const url = `https://t.me/share/url?url=${encodeURIComponent(getRefLink())}&text=Join%20Now!`;
       if(tg && tg.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank');
     }
-    
-    function openTutorial() { 
-      if(appState.config.tutorialLink) window.open(appState.config.tutorialLink, '_blank'); 
-      else toast('No tutorial available'); 
-    }
-    
-    function openSupport() { 
-      if(appState.config.supportLink) window.open(appState.config.supportLink, '_blank');
-      else {
-        const supportUrl = `https://t.me/${BOT_USERNAME}`;
-        if(tg && tg.openTelegramLink) tg.openTelegramLink(supportUrl); 
-        else window.open(supportUrl, '_blank');
-      }
-    }
+    function openTutorial() { if(appState.config.tutorialLink) window.open(appState.config.tutorialLink, '_blank'); else toast('No tutorial available'); }
+    function openSupport() { if(appState.config.supportLink) window.open(appState.config.supportLink, '_blank'); }
 
-    // ===================================================
-    // ✅ LOADER MANAGEMENT
-    // ===================================================
-    function setLoading(isLoading) {
-      const loader = document.getElementById('loader');
-      const app = document.getElementById('app');
-      if(isLoading) {
-        loader.style.display = 'flex';
-        app.style.display = 'none';
-      } else {
-        loader.style.display = 'none';
-        app.style.display = 'block';
-      }
-    }
+    // ==========================================
+    // ✅ FIXED REFERRAL AND INITIALIZATION LOGIC 
+    // ==========================================
+    window.onload = () => {
+      document.getElementById('u-name').innerText = tgUser.first_name;
+      document.getElementById('u-id').innerText = 'ID: ' + tgUser.id;
+      if(tgUser.photo_url) document.getElementById('u-img').src = tgUser.photo_url;
 
-    // ===================================================
-    // ✅ LEADERBOARD
-    // ===================================================
+      // 1. Always Listen to Admin Config
+      db.ref('config').on('value', snap => {
+        if(snap.exists()) {
+          appState.config = snap.val();
+          preloadAds();
+          if(isBooted) { updateTextElements(); renderAds(); renderTasks(); }
+        }
+      });
+
+      // 2. Initialize User Carefully to Ensure Referrals Count 100%
+      const userRef = db.ref('users/' + tgUser.id);
+      userRef.once('value').then(async snap => {
+        const today = todayStr();
+
+        if(!snap.exists()) {
+          // --- It's a brand new user! ---
+          appState.user = { 
+            id: tgUser.id, 
+            name: tgUser.first_name, 
+            photo: tgUser.photo_url||'', 
+            balance: 0, 
+            totalEarned: 0, 
+            referrals: 0, 
+            dailyAds: {}, 
+            taskHistory: {}, 
+            lastActive: today, 
+            dailyBonusDate: '' 
+          };
+          
+          // Save new user immediately
+          await userRef.set(appState.user);
+
+          // --- Process The Referral Link System ---
+          let refBy = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) ? tg.initDataUnsafe.start_param : null;
+          
+          if(!refBy) { // Fallback if testing outside telegram natively
+             const urlParams = new URLSearchParams(window.location.search);
+             refBy = urlParams.get('tgWebAppStartParam') || urlParams.get('startapp');
+          }
+
+          if(refBy && String(refBy) !== String(tgUser.id)) {
+             // We get the actual ref bonus directly from the live config
+             let cSnap = await db.ref('config').once('value');
+             let rBonus = (cSnap.exists() && cSnap.val().refBonus) ? Number(cSnap.val().refBonus) : 5;
+
+             let refSnap = await db.ref('users/' + refBy).once('value');
+             if(refSnap.exists()){
+                let r = refSnap.val();
+                
+                // ADD the bonus to the referring person's account
+                await db.ref('users/' + refBy).update({
+                   referrals: (r.referrals || 0) + 1,
+                   balance: (r.balance || 0) + rBonus,
+                   totalEarned: (r.totalEarned || 0) + rBonus
+                });
+             }
+          }
+        }
+
+        // 3. Start Live Listener AFTER Initialization
+        userRef.on('value', async liveSnap => {
+          if(liveSnap.exists()) {
+            appState.user = liveSnap.val();
+            if(!appState.user.dailyAds) appState.user.dailyAds = {};
+            if(!appState.user.taskHistory) appState.user.taskHistory = {};
+
+            if(appState.user.lastActive !== today) {
+              await userRef.update({ dailyAds: {}, lastActive: today });
+              appState.user.dailyAds = {};
+            }
+
+            updateTextElements();
+            renderAds();
+            renderTasks();
+
+            if(!isBooted) {
+              isBooted = true;
+              document.getElementById('loader').style.display='none';
+              document.getElementById('app').style.display='block';
+              if(appState.user.dailyBonusDate !== today) showBonus();
+            }
+          }
+        });
+      });
+    };
+
+    // ✅ FIXED LEADERBOARD (Top 10, Safe Images, Fixed CSS Gaps)
     async function loadLeaderboard() {
       const sym = appState.config.currencySymbol || "TK";
       const snap = await db.ref('users').orderByChild('balance').limitToLast(10).once('value');
@@ -989,127 +730,8 @@
       });
       
       document.getElementById('podium-area').innerHTML = p2 + p1 + p3;
-      document.getElementById('leader-list-area').innerHTML = listHtml || '<p style="text-align:center; color:#999; padding:20px;">No users yet.</p>';
+      document.getElementById('leader-list-area').innerHTML = listHtml;
     }
-
-    // ===================================================
-    // ✅ INITIALIZATION
-    // ===================================================
-    window.onload = () => {
-      setLoading(true);
-      
-      document.getElementById('u-name').innerText = tgUser.first_name;
-      document.getElementById('u-id').innerText = 'ID: ' + tgUser.id;
-      if(tgUser.photo_url) document.getElementById('u-img').src = tgUser.photo_url;
-
-      // 1. Always Listen to Admin Config
-      db.ref('config').on('value', snap => {
-        if(snap.exists()) {
-          appState.config = snap.val();
-          // Ensure bot info is in config
-          if(!appState.config.botUsername) appState.config.botUsername = BOT_USERNAME;
-          if(!appState.config.botToken) appState.config.botToken = BOT_TOKEN;
-          preloadAds();
-          if(isBooted) { updateTextElements(); renderAds(); renderTasks(); }
-        } else {
-          // Create default config if not exists
-          const defaultConfig = {
-            refBonus: 5,
-            adReward: 0.5,
-            dailyBonusAmount: 20,
-            dailyAdLimit: 10,
-            minWithdraw: 10,
-            currencySymbol: 'TK',
-            botUsername: BOT_USERNAME,
-            botToken: BOT_TOKEN,
-            paymentMethods: ['bKash', 'Nagad', 'Rocket'],
-            adSlots: [],
-            webTasks: {}
-          };
-          db.ref('config').set(defaultConfig);
-        }
-      });
-
-      // 2. Initialize User
-      const userRef = db.ref('users/' + tgUser.id);
-      userRef.once('value').then(async snap => {
-        const today = todayStr();
-
-        if(!snap.exists()) {
-          // --- New User ---
-          appState.user = { 
-            id: tgUser.id, 
-            name: tgUser.first_name, 
-            photo: tgUser.photo_url||'', 
-            balance: 0, 
-            totalEarned: 0, 
-            referrals: 0, 
-            dailyAds: {}, 
-            taskHistory: {}, 
-            lastActive: today, 
-            dailyBonusDate: '' 
-          };
-          
-          await userRef.set(appState.user);
-
-          // --- Process Referral ---
-          let refBy = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) ? tg.initDataUnsafe.start_param : null;
-          
-          if(!refBy) {
-             const urlParams = new URLSearchParams(window.location.search);
-             refBy = urlParams.get('tgWebAppStartParam') || urlParams.get('startapp');
-          }
-
-          if(refBy && String(refBy) !== String(tgUser.id)) {
-             let cSnap = await db.ref('config').once('value');
-             let rBonus = (cSnap.exists() && cSnap.val().refBonus) ? Number(cSnap.val().refBonus) : 5;
-
-             let refSnap = await db.ref('users/' + refBy).once('value');
-             if(refSnap.exists()){
-                let r = refSnap.val();
-                await db.ref('users/' + refBy).update({
-                   referrals: (r.referrals || 0) + 1,
-                   balance: (r.balance || 0) + rBonus,
-                   totalEarned: (r.totalEarned || 0) + rBonus
-                });
-                
-                // Notify referrer
-                await sendNotification(refBy, 
-                  `🎉 <b>New Referral!</b>\n\n` +
-                  `👤 ${tgUser.first_name} joined using your referral link.\n` +
-                  `💰 You earned ${rBonus} TK as bonus!`
-                );
-             }
-          }
-        }
-
-        // 3. Start Live Listener
-        userRef.on('value', async liveSnap => {
-          if(liveSnap.exists()) {
-            appState.user = liveSnap.val();
-            if(!appState.user.dailyAds) appState.user.dailyAds = {};
-            if(!appState.user.taskHistory) appState.user.taskHistory = {};
-
-            if(appState.user.lastActive !== today) {
-              await userRef.update({ dailyAds: {}, lastActive: today });
-              appState.user.dailyAds = {};
-            }
-
-            updateTextElements();
-            renderAds();
-            renderTasks();
-
-            if(!isBooted) {
-              isBooted = true;
-              setLoading(false);
-              await checkAdmin();
-              if(appState.user.dailyBonusDate !== today) showBonus();
-            }
-          }
-        });
-      });
-    };
-
   </script>
 </body>
 </html>
