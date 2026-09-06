@@ -463,6 +463,31 @@
     <div id="page-withdraw" class="page-section">
       <div class="premium-card">
         <div class="card-title"><i class="fas fa-wallet" style="color:var(--primary);"></i> Withdraw Funds</div>
+        
+        <!-- Withdraw Info Box -->
+        <div id="withdrawInfo" style="background:var(--bg); padding:14px; border-radius:12px; margin-bottom:15px; border:1px solid var(--border);">
+          <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:0.9rem;">
+            <span style="color:var(--text-light);">📋 Withdraw Level</span>
+            <span style="font-weight:700; color:var(--primary);" id="wdLevel">Level 1</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:0.9rem;">
+            <span style="color:var(--text-light);">👥 Required Referrals</span>
+            <span style="font-weight:700; color:var(--warning);" id="wdRequiredRefs">5</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:0.9rem;">
+            <span style="color:var(--text-light);">💳 Withdraw Fee</span>
+            <span style="font-weight:700; color:var(--danger);" id="wdFee">5%</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:0.9rem;">
+            <span style="color:var(--text-light);">⏱️ Processing Time</span>
+            <span style="font-weight:700; color:var(--success);" id="wdTime">24-48 Hours</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:0.9rem;">
+            <span style="color:var(--text-light);">💵 Amount Range</span>
+            <span style="font-weight:700; color:var(--primary);" id="wdRange">10 - 500 TK</span>
+          </div>
+        </div>
+
         <div class="input-group"><select id="wd-method"><option value="">Loading Methods...</option></select></div>
         <div class="input-group"><input type="text" id="wd-account" placeholder="Account Number"></div>
         <div class="input-group"><input type="number" id="wd-amount" placeholder="Amount"></div>
@@ -515,7 +540,20 @@
     const ADMIN_ID = "6624254778";
     const SUPPORT_LINK = "https://t.me/NexEarn2Support";
 
-    let appState = { user: { balance:0, totalEarned:0, referrals:0, dailyAds:{}, taskHistory:{} }, config: { adSlots:[], webTasks:{} } };
+    // ===================================================
+    // ✅ WITHDRAW CONFIG
+    // ===================================================
+    const WITHDRAW_CONFIG = {
+      levels: [
+        { level: 1, requiredRefs: 5, fee: 5, minAmount: 10, maxAmount: 100, time: "24-48 Hours" },
+        { level: 2, requiredRefs: 7, fee: 4, minAmount: 10, maxAmount: 200, time: "24-48 Hours" },
+        { level: 3, requiredRefs: 7, fee: 3, minAmount: 10, maxAmount: 300, time: "12-24 Hours" },
+        { level: 4, requiredRefs: 7, fee: 2, minAmount: 10, maxAmount: 400, time: "12-24 Hours" },
+        { level: 5, requiredRefs: 7, fee: 1, minAmount: 10, maxAmount: 500, time: "6-12 Hours" }
+      ]
+    };
+
+    let appState = { user: { balance:0, totalEarned:0, referrals:0, dailyAds:{}, taskHistory:{}, withdrawCount:0 }, config: { adSlots:[], webTasks:{} } };
     let isBooted = false;
     let tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : {id: '123456', first_name: 'Guest User', photo_url: 'https://via.placeholder.com/100'};
 
@@ -581,8 +619,51 @@
       document.getElementById('page-' + tabId).classList.add('active');
       el.classList.add('active');
       if(tabId === 'leaderboard') loadLeaderboard();
-      if(tabId === 'withdraw') loadWithdrawHistory();
+      if(tabId === 'withdraw') { loadWithdrawHistory(); updateWithdrawInfo(); }
       if(tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }
+
+    // ===================================================
+    // ✅ GET WITHDRAW LEVEL
+    // ===================================================
+    function getWithdrawLevel() {
+      const count = appState.user.withdrawCount || 0;
+      if (count === 0) return WITHDRAW_CONFIG.levels[0];
+      // Level 1: first withdraw (5 refs required)
+      if (count === 1) return WITHDRAW_CONFIG.levels[0];
+      // Level 2+: if user has already withdrawn at least once
+      // Check if user has 7+ referrals, then they unlock all levels
+      const refs = appState.user.referrals || 0;
+      if (refs >= 7) {
+        // Max level based on withdraw count
+        const maxLevel = Math.min(count, WITHDRAW_CONFIG.levels.length - 1);
+        return WITHDRAW_CONFIG.levels[maxLevel];
+      }
+      // If less than 7 refs, they stay at level 1
+      return WITHDRAW_CONFIG.levels[0];
+    }
+
+    function updateWithdrawInfo() {
+      const level = getWithdrawLevel();
+      const refs = appState.user.referrals || 0;
+      const count = appState.user.withdrawCount || 0;
+      
+      document.getElementById('wdLevel').textContent = `Level ${level.level}`;
+      document.getElementById('wdRequiredRefs').textContent = level.requiredRefs;
+      document.getElementById('wdFee').textContent = level.fee + '%';
+      document.getElementById('wdTime').textContent = level.time;
+      document.getElementById('wdRange').textContent = `${level.minAmount} - ${level.maxAmount} TK`;
+      
+      // Show if user is eligible
+      const canWithdraw = refs >= level.requiredRefs;
+      const notice = document.getElementById('wd-notice');
+      if (!canWithdraw) {
+        notice.textContent = `⚠️ Need ${level.requiredRefs - refs} more referrals for Level ${level.level}`;
+        notice.style.color = '#ff4757';
+      } else {
+        notice.textContent = `✅ Eligible for withdraw (Level ${level.level})`;
+        notice.style.color = '#00b894';
+      }
     }
 
     // ===================================================
@@ -596,7 +677,6 @@
         document.getElementById('maintenanceOverlay').classList.add('active');
         document.getElementById('maintenanceMsg').textContent = appState.config.maintenance.message || 'We\'re updating our system.';
         
-        // Real-time countdown
         if (appState.config.maintenance.estimatedMinutes) {
           const minutes = parseInt(appState.config.maintenance.estimatedMinutes) || 30;
           maintenanceEndTime = Date.now() + (minutes * 60 * 1000);
@@ -622,7 +702,6 @@
       if (diff <= 0) {
         clearInterval(maintenanceTimer);
         maintenanceTimer = null;
-        // Re-check maintenance status
         db.ref('config/maintenance').once('value').then(snap => {
           if (snap.exists() && !snap.val().active) {
             document.getElementById('maintenanceOverlay').classList.remove('active');
@@ -677,7 +756,6 @@
       document.getElementById('ref-link-text').innerText = getRefLink();
       document.getElementById('ref-bonus-txt').innerText = (appState.config.refBonus || 5) + " " + sym;
       document.getElementById('bonusAmt').innerText = appState.config.dailyBonusAmount || 20;
-      document.getElementById('wd-notice').innerText = appState.config.withdrawNotice || `Minimum withdraw: ${appState.config.minWithdraw||10} ${sym}`;
 
       const wdSel = document.getElementById('wd-method'); 
       let currentVal = wdSel.value;
@@ -687,6 +765,8 @@
           wdSel.innerHTML += `<option value="${m}" ${currentVal===m?'selected':''}>${m}</option>`;
         });
       }
+      
+      updateWithdrawInfo();
     }
 
     // ===================================================
@@ -882,20 +962,34 @@
     }
 
     // ===================================================
-    // ✅ WITHDRAW SYSTEM (IMPROVED WITH BETTER UI)
+    // ✅ WITHDRAW SYSTEM WITH LEVELS
     // ===================================================
     async function requestWithdraw() {
       if (!isOnline) { toast('No internet connection!'); return; }
+      
       const method = document.getElementById('wd-method').value;
       const account = document.getElementById('wd-account').value.trim();
       const amount = Number(document.getElementById('wd-amount').value);
-      const minWd = Number(appState.config.minWithdraw || 10);
-
+      
+      const level = getWithdrawLevel();
+      const refs = appState.user.referrals || 0;
+      
+      // Check eligibility
+      if (refs < level.requiredRefs) {
+        toast(`❌ Need ${level.requiredRefs} referrals for Level ${level.level} withdrawal!`);
+        return;
+      }
+      
       if(!method) return toast('Please select a payment method.');
       if(!account || account.length < 3) return toast('Please enter a valid account number.');
       if(isNaN(amount) || amount <= 0) return toast('Please enter a valid amount.');
-      if(amount < minWd) return toast(`Minimum withdraw is ${minWd} TK.`);
+      if(amount < level.minAmount) return toast(`Minimum withdraw is ${level.minAmount} TK.`);
+      if(amount > level.maxAmount) return toast(`Maximum withdraw is ${level.maxAmount} TK for Level ${level.level}.`);
       if(amount > appState.user.balance) return toast('Insufficient balance.');
+
+      // Calculate fee
+      const feeAmount = (amount * level.fee) / 100;
+      const netAmount = amount - feeAmount;
 
       try {
         const wdId = 'WD' + Date.now();
@@ -904,21 +998,34 @@
           userName: appState.user.name || 'User', 
           method: method, 
           account: account, 
-          amount: amount, 
+          amount: amount,
+          fee: feeAmount,
+          netAmount: netAmount,
+          level: level.level,
+          requiredRefs: level.requiredRefs,
           status: 'pending', 
           timestamp: Date.now() 
         });
-        await db.ref('users/' + appState.user.id).update({ balance: appState.user.balance - amount });
+        
+        // Update user balance and withdraw count
+        const newCount = (appState.user.withdrawCount || 0) + 1;
+        await db.ref('users/' + appState.user.id).update({ 
+          balance: appState.user.balance - amount,
+          withdrawCount: newCount
+        });
         
         document.getElementById('wd-account').value = ''; document.getElementById('wd-amount').value = '';
-        toast('Withdraw Request Sent Successfully!');
+        toast(`✅ Withdraw Request Sent! Fee: ${feeAmount.toFixed(2)} TK`);
 
         await sendNotification(tgUser.id, 
           `✅ <b>Withdraw Request Submitted!</b>\n\n` +
           `💰 Amount: ${amount} TK\n` +
+          `💳 Fee: ${feeAmount.toFixed(2)} TK (${level.fee}%)\n` +
+          `💵 Net: ${netAmount.toFixed(2)} TK\n` +
+          `📊 Level: ${level.level}\n` +
           `🏦 Method: ${method}\n` +
           `📅 Date: ${new Date().toLocaleDateString('bn-BD')}\n\n` +
-          `⏳ Please wait for admin approval.`
+          `⏳ Processing time: ${level.time}`
         );
         
         await sendNotification(ADMIN_ID,
@@ -926,11 +1033,15 @@
           `👤 User: ${appState.user.name}\n` +
           `🆔 ID: ${tgUser.id}\n` +
           `💵 Amount: ${amount} TK\n` +
+          `💳 Fee: ${feeAmount.toFixed(2)} TK (${level.fee}%)\n` +
+          `💸 Net: ${netAmount.toFixed(2)} TK\n` +
+          `📊 Level: ${level.level}\n` +
           `🏦 Method: ${method}\n` +
           `📧 Account: ${account}\n` +
           `📅 Date: ${new Date().toLocaleDateString('bn-BD')}`
         );
 
+        updateWithdrawInfo();
       } catch(e) { toast('Error Processing Request'); }
     }
 
@@ -952,11 +1063,12 @@
           count++;
           const statusColor = w.status === 'pending' ? '#f39c12' : w.status === 'approved' ? '#2ecc71' : '#e74c3c';
           const statusText = w.status === 'pending' ? '⏳ Pending' : w.status === 'approved' ? '✅ Approved' : '❌ Rejected';
+          const feeText = w.fee ? `(Fee: ${w.fee.toFixed(2)})` : '';
           html += `
             <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #eee; align-items:center;">
               <div>
-                <span style="font-weight:700; font-size:1.1rem;">${w.amount} TK</span>
-                <div style="font-size:0.75rem; color:#999;">${new Date(w.timestamp).toLocaleDateString('bn-BD')}</div>
+                <span style="font-weight:700; font-size:1.1rem;">${w.amount} TK ${feeText}</span>
+                <div style="font-size:0.75rem; color:#999;">Level ${w.level || 1} | ${new Date(w.timestamp).toLocaleDateString('bn-BD')}</div>
               </div>
               <span style="color:${statusColor}; font-weight:600; padding:4px 12px; border-radius:20px; background:${statusColor}20; text-transform:capitalize;">${statusText}</span>
             </div>
@@ -970,7 +1082,7 @@
     }
 
     // ===================================================
-    // ✅ REFERRAL SYSTEM (IMPROVED)
+    // ✅ REFERRAL SYSTEM
     // ===================================================
     function getRefLink() { 
       return `https://t.me/${BOT_USERNAME}/app?startapp=${tgUser.id}`; 
@@ -1226,7 +1338,6 @@
           if (appState.config.maintenance && appState.config.maintenance.active) {
             document.getElementById('maintenanceOverlay').classList.add('active');
             document.getElementById('maintenanceMsg').textContent = appState.config.maintenance.message || 'We\'re updating our system.';
-            // Set countdown
             if (appState.config.maintenance.estimatedMinutes) {
               const mins = parseInt(appState.config.maintenance.estimatedMinutes) || 30;
               maintenanceEndTime = Date.now() + (mins * 60 * 1000);
@@ -1286,7 +1397,8 @@
             dailyBonusDate: '',
             channelVerified: false,
             isBanned: false,
-            banReason: ''
+            banReason: '',
+            withdrawCount: 0
           };
           await userRef.set(appState.user);
 
@@ -1323,6 +1435,7 @@
             appState.user = liveSnap.val();
             if(!appState.user.dailyAds) appState.user.dailyAds = {};
             if(!appState.user.taskHistory) appState.user.taskHistory = {};
+            if(appState.user.withdrawCount === undefined) appState.user.withdrawCount = 0;
 
             // Check ban status
             if (appState.user.isBanned) {
@@ -1346,19 +1459,16 @@
             if(!isBooted) {
               isBooted = true;
               
-              // Check maintenance first
               if (checkMaintenance()) {
                 setLoading(false);
                 return;
               }
               
-              // Check ban
               if (checkBan()) {
                 setLoading(false);
                 return;
               }
               
-              // Check if channel verification is needed
               const isVerified = appState.user.channelVerified || false;
               
               if (!isVerified) {
