@@ -882,8 +882,10 @@
       isAdWatching = true;
       adWatchStartTime = Date.now();
       
+      // Show a toast to inform user
       toast(`⏳ Watching ad... Please watch for ${MIN_AD_WATCH_TIME} seconds!`);
       
+      // Call the actual ad watch function
       watchAd(i);
     }
 
@@ -912,9 +914,12 @@
         }
 
         if(success) {
+          // Calculate how long the user watched
           const watchTime = (Date.now() - adWatchStartTime) / 1000;
           
+          // Check if user watched for minimum required time
           if (watchTime < MIN_AD_WATCH_TIME) {
+            // User didn't watch long enough - show error
             isAdWatching = false;
             slotLocks[i] = false;
             showAdError(
@@ -924,6 +929,7 @@
             return;
           }
           
+          // User watched enough - give reward
           const r = Number(appState.config.adReward || 0.5);
           let newBal = (appState.user.balance || 0) + r;
           let newEarn = (appState.user.totalEarned || 0) + r;
@@ -935,6 +941,7 @@
         }
       } catch(e) { 
         if (e.message === "Ad Closed") {
+          // Check if user at least watched some time
           const watchTime = (Date.now() - adWatchStartTime) / 1000;
           if (watchTime < MIN_AD_WATCH_TIME) {
             showAdError(
@@ -1191,7 +1198,7 @@
     }
 
     // ===================================================
-    // ✅ REFERRAL SYSTEM - FIXED
+    // ✅ REFERRAL SYSTEM
     // ===================================================
     function getRefLink() { 
       return `https://t.me/${BOT_USERNAME}/app?startapp=${tgUser.id}`; 
@@ -1219,76 +1226,6 @@
         if(tg && tg.openTelegramLink) tg.openTelegramLink(supportUrl); 
         else window.open(supportUrl, '_blank');
       }
-    }
-
-    // ===================================================
-    // ✅ PROCESS REFERRAL - FIXED
-    // ===================================================
-    async function processReferral() {
-        if (!db || !tg || !tg.initDataUnsafe) return;
-        
-        const user = tg.initDataUnsafe.user;
-        if (!user || !user.id) return;
-        
-        // Start param from Telegram
-        let refBy = tg.initDataUnsafe.start_param || null;
-        
-        // Fallback: URL search params
-        if (!refBy) {
-            const urlParams = new URLSearchParams(window.location.search);
-            refBy = urlParams.get('tgWebAppStartParam') || urlParams.get('startapp') || null;
-        }
-        
-        // If referral ID exists and it's not the user themselves
-        if (refBy && String(refBy) !== String(user.id)) {
-            try {
-                // Check if user already has a referrer (prevent duplicate)
-                const existingRef = await db.ref('users/' + user.id + '/referred_by').once('value');
-                if (existingRef.exists()) {
-                    console.log('✅ User already has a referrer:', existingRef.val());
-                    return;
-                }
-                
-                // Get referral bonus from config
-                const cSnap = await db.ref('config/refBonus').once('value');
-                let rBonus = cSnap.exists() ? Number(cSnap.val()) : 5;
-                
-                // Check if referrer exists
-                const refSnap = await db.ref('users/' + refBy).once('value');
-                if (refSnap.exists()) {
-                    const refData = refSnap.val();
-                    
-                    // Check if referrer is not the same user (anti-self referral)
-                    if (String(refBy) === String(user.id)) {
-                        console.log('⚠️ Self-referral blocked');
-                        return;
-                    }
-                    
-                    // Update referrer's account
-                    await db.ref('users/' + refBy).update({
-                        referrals: (refData.referrals || 0) + 1,
-                        balance: (refData.balance || 0) + rBonus,
-                        totalEarned: (refData.totalEarned || 0) + rBonus
-                    });
-                    
-                    // Save referred_by for the new user
-                    await db.ref('users/' + user.id + '/referred_by').set(refBy);
-                    
-                    // Send notification to referrer
-                    await sendNotification(refBy, 
-                        `🎉 <b>New Referral!</b>\n\n` +
-                        `👤 ${user.first_name || 'Someone'} joined using your referral link.\n` +
-                        `💰 You earned ${rBonus} TK as bonus!`
-                    );
-                    
-                    console.log('✅ Referral processed! Referrer:', refBy, 'Bonus:', rBonus);
-                } else {
-                    console.log('⚠️ Referrer not found:', refBy);
-                }
-            } catch (e) {
-                console.error('❌ Referral processing error:', e);
-            }
-        }
     }
 
     // ===================================================
@@ -1597,12 +1534,31 @@
             withdrawCount: 0
           };
           await userRef.set(appState.user);
-          
-          // ✅ PROCESS REFERRAL - FIXED
-          await processReferral();
-          
-        } else {
-          appState.user = snap.val();
+
+          let refBy = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) ? tg.initDataUnsafe.start_param : null;
+          if(!refBy) {
+             const urlParams = new URLSearchParams(window.location.search);
+             refBy = urlParams.get('tgWebAppStartParam') || urlParams.get('startapp');
+          }
+
+          if(refBy && String(refBy) !== String(tgUser.id)) {
+             let cSnap = await db.ref('config').once('value');
+             let rBonus = (cSnap.exists() && cSnap.val().refBonus) ? Number(cSnap.val().refBonus) : 5;
+             let refSnap = await db.ref('users/' + refBy).once('value');
+             if(refSnap.exists()){
+                let r = refSnap.val();
+                await db.ref('users/' + refBy).update({
+                   referrals: (r.referrals || 0) + 1,
+                   balance: (r.balance || 0) + rBonus,
+                   totalEarned: (r.totalEarned || 0) + rBonus
+                });
+                await sendNotification(refBy, 
+                  `🎉 <b>New Referral!</b>\n\n` +
+                  `👤 ${tgUser.first_name} joined using your referral link.\n` +
+                  `💰 You earned ${rBonus} TK as bonus!`
+                );
+             }
+          }
         }
 
         userRef.on('value', async liveSnap => {
