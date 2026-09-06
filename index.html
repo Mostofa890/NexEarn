@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   
+  <!-- Firebase v9 compat (modular) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -296,15 +297,17 @@
   </div>
 
   <script>
-    // ✅ Firebase Setup
+    // ===================================================
+    // ✅ REPLACED WITH YOUR GIVEN FIREBASE CONFIG
+    // ===================================================
     const firebaseConfig = {
-      apiKey: "",
-      authDomain: ".firebaseapp.com",
-      databaseURL: "https://viral-video--de.com",
-      projectId: "viral--82929",
-      storageBucket: "viral--82929..app",
-      messagingSenderId: "",
-      appId: "1::web:"
+      apiKey: "AIzaSyC_WvNxSQQ58TcJhDcBw5NUrAZjOQe1T2g",
+      authDomain: "cat-coins-34d4c.firebaseapp.com",
+      databaseURL: "https://cat-coins-34d4c-default-rtdb.firebaseio.com",
+      projectId: "cat-coins-34d4c",
+      storageBucket: "cat-coins-34d4c.appspot.com",
+      messagingSenderId: "616291442045",
+      appId: "1:616291442045:android:9de76c46bfdc5edec60014"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
