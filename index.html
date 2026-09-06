@@ -725,10 +725,8 @@
       document.getElementById('resetCountdown').textContent = 
         `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
       
-      // যদি টাইমার শেষ হয়
       if (diff <= 0) {
         document.getElementById('resetCountdown').textContent = '🔄 Resetting...';
-        // রিসেট ট্রিগার
         resetDailyAds();
       }
     }
@@ -783,7 +781,7 @@
     const MIN_AD_WATCH_TIME = 10;
 
     // ===================================================
-    // ✅ LOADER MANAGEMENT
+    // ✅ LOADER MANAGEMENT - FIXED
     // ===================================================
     function setLoading(isLoading) {
       const loader = document.getElementById('loader');
@@ -799,7 +797,7 @@
             app.style.display = 'block';
             toast('⏳ Loading took too long. Please refresh if data missing.');
           }
-        }, 10000);
+        }, 15000);
       } else {
         loader.style.display = 'none';
         app.style.display = 'block';
@@ -1175,7 +1173,6 @@
           </div>`;
       }
 
-      // Check if all ads watched (4 slots * limit)
       const totalSlots = slots.filter(s => s && s.network && s.network !== 'none').length || 4;
       const totalLimit = totalSlots * limit;
       if (totalWatched >= totalLimit) {
@@ -1243,7 +1240,7 @@
           
           await db.ref('users/' + appState.user.id).update({ balance: newBal, totalEarned: newEarn, dailyAds: newAds });
           toast('✅ Success! +' + r + ' TK earned!');
-          renderAds(); // Re-render to update progress
+          renderAds();
         }
       } catch(e) { 
         if (e.message === "Ad Closed") {
@@ -1785,7 +1782,7 @@ Join now: ${getRefLink()}`;
     }
 
     // ===================================================
-    // ✅ INITIALIZATION
+    // ✅ INITIALIZATION - FIXED
     // ===================================================
     window.onload = () => {
       setLoading(true);
@@ -1795,7 +1792,42 @@ Join now: ${getRefLink()}`;
       document.getElementById('u-id').innerText = 'ID: ' + tgUser.id;
       if(tgUser.photo_url) document.getElementById('u-img').src = tgUser.photo_url;
 
-      // 1. Config Listener
+      // 1. Config Listener - with timeout fallback
+      let configLoaded = false;
+      const configTimeout = setTimeout(() => {
+        if (!configLoaded && !appState.config) {
+          console.warn('⚠️ Config load timeout, using default...');
+          appState.config = {
+            refBonus: 5,
+            adReward: 0.5,
+            dailyBonusAmount: 20,
+            dailyAdLimit: 10,
+            minWithdraw: 10,
+            currencySymbol: 'TK',
+            botUsername: BOT_USERNAME,
+            botToken: BOT_TOKEN,
+            paymentMethods: ['bKash', 'Nagad', 'Rocket'],
+            adSlots: [],
+            webTasks: {},
+            adResetHour: 0,
+            channelLinks: [
+              { label: 'NexEarn Channel', chatId: 'nexearn2' },
+              { label: 'NexEarn Adda', chatId: 'nexearn2_adda' }
+            ],
+            maintenance: { active: false, message: '', estimatedMinutes: 30 },
+            withdrawLevels: [
+              { requiredRefs: 5, fee: 5, minAmount: 10, maxAmount: 100, time: "24-48 Hours" },
+              { requiredRefs: 7, fee: 4, minAmount: 10, maxAmount: 200, time: "24-48 Hours" },
+              { requiredRefs: 7, fee: 3, minAmount: 10, maxAmount: 300, time: "12-24 Hours" },
+              { requiredRefs: 7, fee: 2, minAmount: 10, maxAmount: 400, time: "12-24 Hours" },
+              { requiredRefs: 7, fee: 1, minAmount: 10, maxAmount: 500, time: "6-12 Hours" }
+            ]
+          };
+          configLoaded = true;
+          proceedWithApp();
+        }
+      }, 5000);
+
       db.ref('config').on('value', snap => {
         try {
           if(snap.exists()) {
@@ -1830,141 +1862,136 @@ Join now: ${getRefLink()}`;
             db.ref('config').set(defaultConfig);
             appState.config = defaultConfig;
           }
-          
-          if (appState.config.channelLinks) channelLinks = appState.config.channelLinks;
-          
-          if (appState.config.withdrawLevels && Array.isArray(appState.config.withdrawLevels) && appState.config.withdrawLevels.length > 0) {
-            withdrawLevels = appState.config.withdrawLevels;
-          }
-          
-          if (appState.config.maintenance && appState.config.maintenance.active) {
-            document.getElementById('maintenanceOverlay').classList.add('active');
-            document.getElementById('maintenanceMsg').textContent = appState.config.maintenance.message || 'We\'re updating our system.';
-            if (appState.config.maintenance.estimatedMinutes) {
-              const mins = parseInt(appState.config.maintenance.estimatedMinutes) || 30;
-              maintenanceEndTime = Date.now() + (mins * 60 * 1000);
-              updateMaintenanceTimer();
-              if (maintenanceTimer) clearInterval(maintenanceTimer);
-              maintenanceTimer = setInterval(updateMaintenanceTimer, 1000);
-            }
-          } else {
-            document.getElementById('maintenanceOverlay').classList.remove('active');
-            if (maintenanceTimer) { clearInterval(maintenanceTimer); maintenanceTimer = null; }
-          }
-          
-          preloadAds();
-          if(isBooted) { updateTextElements(); renderAds(); renderTasks(); }
+          configLoaded = true;
+          clearTimeout(configTimeout);
+          proceedWithApp();
         } catch(e) {
           console.error('Config error:', e);
-          toast('Error loading config. Please refresh.');
+          configLoaded = true;
+          clearTimeout(configTimeout);
+          toast('Error loading config. Using defaults.');
+          proceedWithApp();
         }
       });
 
-      // 2. User Initialization
-      const userRef = db.ref('users/' + tgUser.id);
-      userRef.once('value').then(async snap => {
-        try {
-          const today = todayStr();
+      function proceedWithApp() {
+        if (isBooted) return;
+        
+        if (appState.config.channelLinks) channelLinks = appState.config.channelLinks;
+        if (appState.config.withdrawLevels && Array.isArray(appState.config.withdrawLevels) && appState.config.withdrawLevels.length > 0) {
+          withdrawLevels = appState.config.withdrawLevels;
+        }
+        
+        preloadAds();
+        
+        // 2. User Initialization
+        const userRef = db.ref('users/' + tgUser.id);
+        userRef.once('value').then(async snap => {
+          try {
+            const today = todayStr();
 
-          if(!snap.exists()) {
-            appState.user = { 
-              id: tgUser.id, 
-              name: tgUser.first_name, 
-              photo: tgUser.photo_url||'', 
-              balance: 0, 
-              totalEarned: 0, 
-              referrals: 0, 
-              dailyAds: {}, 
-              taskHistory: {}, 
-              lastActive: today, 
-              dailyBonusDate: '',
-              channelVerified: false,
-              isBanned: false,
-              banReason: '',
-              withdrawCount: 0,
-              referralHistory: []
-            };
-            await userRef.set(appState.user);
-            await processReferral();
-          } else {
-            appState.user = snap.val();
-          }
+            if(!snap.exists()) {
+              appState.user = { 
+                id: tgUser.id, 
+                name: tgUser.first_name, 
+                photo: tgUser.photo_url||'', 
+                balance: 0, 
+                totalEarned: 0, 
+                referrals: 0, 
+                dailyAds: {}, 
+                taskHistory: {}, 
+                lastActive: today, 
+                dailyBonusDate: '',
+                channelVerified: false,
+                isBanned: false,
+                banReason: '',
+                withdrawCount: 0,
+                referralHistory: []
+              };
+              await userRef.set(appState.user);
+              await processReferral();
+            } else {
+              appState.user = snap.val();
+            }
 
-          userRef.on('value', async liveSnap => {
-            if(liveSnap.exists()) {
-              appState.user = liveSnap.val();
-              if(!appState.user.dailyAds) appState.user.dailyAds = {};
-              if(!appState.user.taskHistory) appState.user.taskHistory = {};
-              if(!appState.user.referralHistory) appState.user.referralHistory = [];
-              if(appState.user.withdrawCount === undefined) appState.user.withdrawCount = 0;
+            // Start live listener
+            userRef.on('value', async liveSnap => {
+              if(liveSnap.exists()) {
+                appState.user = liveSnap.val();
+                if(!appState.user.dailyAds) appState.user.dailyAds = {};
+                if(!appState.user.taskHistory) appState.user.taskHistory = {};
+                if(!appState.user.referralHistory) appState.user.referralHistory = [];
+                if(appState.user.withdrawCount === undefined) appState.user.withdrawCount = 0;
 
-              if (appState.user.isBanned) {
-                document.getElementById('bannedOverlay').classList.add('active');
-                document.getElementById('banReason').textContent = appState.user.banReason || 'Your account has been suspended.';
-                document.getElementById('app').style.display = 'none';
-                return;
-              } else {
-                document.getElementById('bannedOverlay').classList.remove('active');
-              }
-
-              if(appState.user.lastActive !== today) {
-                await userRef.update({ dailyAds: {}, lastActive: today });
-                appState.user.dailyAds = {};
-              }
-
-              updateTextElements();
-              renderAds();
-              renderTasks();
-
-              if(!isBooted) {
-                isBooted = true;
-                clearTimeout(loadingTimeout);
-                
-                if (checkMaintenance()) {
-                  setLoading(false);
+                if (appState.user.isBanned) {
+                  document.getElementById('bannedOverlay').classList.add('active');
+                  document.getElementById('banReason').textContent = appState.user.banReason || 'Your account has been suspended.';
+                  document.getElementById('app').style.display = 'none';
                   return;
-                }
-                
-                if (checkBan()) {
-                  setLoading(false);
-                  return;
-                }
-                
-                const isVerified = appState.user.channelVerified || false;
-                
-                if (!isVerified) {
-                  document.getElementById('joinModal').classList.add('active');
-                  renderChannelButtons();
                 } else {
-                  channelVerified = true;
-                  if (isOnline) {
+                  document.getElementById('bannedOverlay').classList.remove('active');
+                }
+
+                const today = todayStr();
+                if(appState.user.lastActive !== today) {
+                  await userRef.update({ dailyAds: {}, lastActive: today });
+                  appState.user.dailyAds = {};
+                }
+
+                updateTextElements();
+                renderAds();
+                renderTasks();
+
+                if(!isBooted) {
+                  isBooted = true;
+                  clearTimeout(loadingTimeout);
+                  
+                  if (checkMaintenance()) {
                     setLoading(false);
-                    if(appState.user.dailyBonusDate !== today) showBonus();
-                    loadReferralHistory();
-                    loadReferralLeaderboard();
-                    updateReferralUI();
-                    startAdResetTimer();
+                    return;
+                  }
+                  
+                  if (checkBan()) {
+                    setLoading(false);
+                    return;
+                  }
+                  
+                  const isVerified = appState.user.channelVerified || false;
+                  
+                  if (!isVerified) {
+                    document.getElementById('joinModal').classList.add('active');
+                    renderChannelButtons();
                   } else {
-                    document.getElementById('offlineOverlay').classList.add('active');
+                    channelVerified = true;
+                    if (isOnline) {
+                      setLoading(false);
+                      if(appState.user.dailyBonusDate !== today) showBonus();
+                      loadReferralHistory();
+                      loadReferralLeaderboard();
+                      updateReferralUI();
+                      startAdResetTimer();
+                    } else {
+                      document.getElementById('offlineOverlay').classList.add('active');
+                    }
                   }
                 }
               }
-            }
-          });
-        } catch(e) {
-          console.error('User init error:', e);
+            });
+          } catch(e) {
+            console.error('User init error:', e);
+            isBooted = true;
+            clearTimeout(loadingTimeout);
+            setLoading(false);
+            toast('Error loading user data. Please refresh.');
+          }
+        }).catch(e => {
+          console.error('User fetch error:', e);
           isBooted = true;
           clearTimeout(loadingTimeout);
           setLoading(false);
-          toast('Error loading user data. Please refresh.');
-        }
-      }).catch(e => {
-        console.error('User fetch error:', e);
-        isBooted = true;
-        clearTimeout(loadingTimeout);
-        setLoading(false);
-        toast('Network error. Please check your connection.');
-      });
+          toast('Network error. Please check your connection.');
+        });
+      }
     };
 
   </script>
