@@ -14,7 +14,7 @@
 
   <style>
     /* ✅ ORIGINAL 3D PREMIUM DESIGN */
-    :root{--primary:#6C5CE7;--secondary:#A29BFE;--bg:#F0F3F8;--surface:#FFF;--text:#2D3436;--danger:#ff4757;--success:#00b894;}
+    :root{--primary:#6C5CE7;--secondary:#A29BFE;--bg:#F0F3F8;--surface:#FFF;--text:#2D3436;--danger:#ff4757;--success:#00b894;--warning:#f39c12;}
     *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
     body{background:var(--bg);color:var(--text);padding-bottom:90px;-webkit-tap-highlight-color:transparent;}
     #app{max-width:480px;margin:0 auto;min-height:100vh;position:relative;display:none; transition:filter .25s ease;}
@@ -234,6 +234,7 @@
         transition: var(--transition);
         font-family: inherit;
         margin-bottom: 10px;
+        text-decoration: none;
     }
     #joinModal .channel-btn:hover { border-color: var(--primary); background: rgba(108,92,231,0.05); }
     #joinModal .channel-btn i { color: var(--primary); font-size: 20px; }
@@ -250,6 +251,85 @@
     .verify-status.error { color: var(--danger); }
     .verify-status.loading { color: var(--warning); animation: pulseText 1s ease-in-out infinite; }
     @keyframes pulseText { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+
+    /* Maintenance Overlay */
+    #maintenanceOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 99998;
+        background: rgba(0,0,0,0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: white;
+        text-align: center;
+        padding: 30px;
+    }
+    #maintenanceOverlay.active { display: flex; }
+    #maintenanceOverlay .icon { font-size: 64px; color: var(--warning); margin-bottom: 16px; animation: spin 3s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #maintenanceOverlay h2 { font-size: 28px; font-weight: 800; }
+    #maintenanceOverlay p { color: rgba(255,255,255,0.7); max-width: 400px; margin: 8px 0 16px; }
+    #maintenanceOverlay .time { color: var(--warning); font-weight: 600; }
+
+    /* Banned Overlay */
+    #bannedOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 99998;
+        background: rgba(0,0,0,0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: white;
+        text-align: center;
+        padding: 30px;
+    }
+    #bannedOverlay.active { display: flex; }
+    #bannedOverlay .icon { font-size: 72px; color: var(--danger); margin-bottom: 16px; }
+    #bannedOverlay h2 { font-size: 28px; font-weight: 800; }
+    #bannedOverlay p { color: rgba(255,255,255,0.7); max-width: 400px; margin: 8px 0 20px; }
+
+    /* Offline Overlay */
+    #offlineOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 99997;
+        background: rgba(0,0,0,0.8);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: white;
+        text-align: center;
+        padding: 30px;
+    }
+    #offlineOverlay.active { display: flex; }
+    #offlineOverlay .icon { font-size: 64px; color: var(--warning); margin-bottom: 16px; animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+    #offlineOverlay h2 { font-size: 24px; font-weight: 800; }
+    #offlineOverlay p { color: rgba(255,255,255,0.7); max-width: 300px; margin: 8px 0; }
+
+    /* Offline indicator on balance card */
+    .offline-indicator {
+        display: none;
+        background: rgba(243,156,18,0.2);
+        color: var(--warning);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        margin-left: 10px;
+    }
+    .offline-indicator.show { display: inline-block; }
   </style>
 </head>
 <body>
@@ -266,6 +346,32 @@
   </div>
 
   <div id="toast" class="toast">Alert</div>
+
+  <!-- ✅ Maintenance Overlay -->
+  <div id="maintenanceOverlay">
+    <div class="icon"><i class="fas fa-tools"></i></div>
+    <h2>🔧 Under Maintenance</h2>
+    <p id="maintenanceMsg">We're currently updating our system. Please check back later.</p>
+    <div class="time" id="maintenanceTime">⏳ Estimated time: 30 minutes</div>
+  </div>
+
+  <!-- ✅ Banned Overlay -->
+  <div id="bannedOverlay">
+    <div class="icon"><i class="fas fa-ban"></i></div>
+    <h2>🚫 Account Banned</h2>
+    <p id="banReason">Your account has been suspended due to violation of our terms of service.</p>
+    <button class="btn-main" onclick="openSupport()" style="max-width:280px; margin:0 auto; background: linear-gradient(135deg, #6C5CE7, #A29BFE);">
+      <i class="fas fa-headset"></i> Contact Support
+    </button>
+  </div>
+
+  <!-- ✅ Offline Overlay -->
+  <div id="offlineOverlay">
+    <div class="icon"><i class="fas fa-wifi-slash"></i></div>
+    <h2>No Internet Connection</h2>
+    <p>Please check your internet connection and try again.</p>
+    <p style="font-size:0.8rem; opacity:0.5; margin-top:10px;">⏳ Waiting for network...</p>
+  </div>
 
   <!-- ✅ Join Channel Modal -->
   <div id="joinModal">
@@ -304,7 +410,7 @@
       </div>
     </div>
     <div class="balance-card">
-      <div class="bal-title">Total Balance</div>
+      <div class="bal-title">Total Balance <span class="offline-indicator" id="offlineIndicator"><i class="fas fa-wifi-slash"></i> Offline</span></div>
       <div class="bal-amt"><span id="u-bal">0.00</span> <span class="currency">টাকা</span></div>
       <div class="stats">
         <div class="stat-box"><h4 id="u-earn">0.00</h4><p>Earned</p></div>
@@ -407,6 +513,7 @@
     const BOT_USERNAME = "NexEarn2_Bot";
     const BOT_TOKEN = "8072034659:AAE_I05sswA8gBYVOSHtjGEf1LE6i6aq0T8";
     const ADMIN_ID = "6624254778";
+    const SUPPORT_LINK = "https://t.me/NexEarn2Support";
 
     let appState = { user: { balance:0, totalEarned:0, referrals:0, dailyAds:{}, taskHistory:{} }, config: { adSlots:[], webTasks:{} } };
     let isBooted = false;
@@ -420,6 +527,12 @@
     let verifyInterval = null;
 
     // ===================================================
+    // ✅ NETWORK STATE
+    // ===================================================
+    let isOnline = navigator.onLine;
+    let networkListeners = [];
+
+    // ===================================================
     // ✅ TOAST FUNCTION
     // ===================================================
     function toast(msg) {
@@ -430,9 +543,45 @@
     function todayStr() { return new Date().toISOString().slice(0, 10); }
 
     // ===================================================
+    // ✅ NETWORK MANAGEMENT
+    // ===================================================
+    function updateNetworkStatus() {
+      isOnline = navigator.onLine;
+      const offlineOverlay = document.getElementById('offlineOverlay');
+      const indicator = document.getElementById('offlineIndicator');
+      
+      if (!isOnline) {
+        offlineOverlay.classList.add('active');
+        indicator.classList.add('show');
+        document.getElementById('app').style.display = 'none';
+      } else {
+        offlineOverlay.classList.remove('active');
+        indicator.classList.remove('show');
+        if (isBooted && !document.getElementById('joinModal').classList.contains('active')) {
+          document.getElementById('app').style.display = 'block';
+        }
+        // Retry Firebase connection if needed
+        if (isBooted && !document.getElementById('joinModal').classList.contains('active')) {
+          loadLeaderboard();
+        }
+      }
+    }
+
+    // Network event listeners
+    window.addEventListener('online', () => {
+      updateNetworkStatus();
+      toast('🔄 Internet reconnected!');
+    });
+    window.addEventListener('offline', () => {
+      updateNetworkStatus();
+      toast('⚠️ No internet connection!');
+    });
+
+    // ===================================================
     // ✅ SWITCH TAB
     // ===================================================
     function switchTab(tabId, el) {
+      if (!isOnline) { toast('No internet connection!'); return; }
       document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       document.getElementById('page-' + tabId).classList.add('active');
@@ -440,6 +589,37 @@
       if(tabId === 'leaderboard') loadLeaderboard();
       if(tabId === 'withdraw') loadWithdrawHistory();
       if(tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }
+
+    // ===================================================
+    // ✅ MAINTENANCE CHECK
+    // ===================================================
+    function checkMaintenance() {
+      if (appState.config && appState.config.maintenance && appState.config.maintenance.active) {
+        document.getElementById('maintenanceOverlay').classList.add('active');
+        document.getElementById('maintenanceMsg').textContent = appState.config.maintenance.message || 'We\'re updating our system.';
+        document.getElementById('maintenanceTime').textContent = '⏳ ' + (appState.config.maintenance.estimatedTime || '30 minutes');
+        document.getElementById('app').style.display = 'none';
+        return true;
+      } else {
+        document.getElementById('maintenanceOverlay').classList.remove('active');
+        return false;
+      }
+    }
+
+    // ===================================================
+    // ✅ BAN CHECK
+    // ===================================================
+    function checkBan() {
+      if (appState.user && appState.user.isBanned) {
+        document.getElementById('bannedOverlay').classList.add('active');
+        document.getElementById('banReason').textContent = appState.user.banReason || 'Your account has been suspended.';
+        document.getElementById('app').style.display = 'none';
+        return true;
+      } else {
+        document.getElementById('bannedOverlay').classList.remove('active');
+        return false;
+      }
     }
 
     // ===================================================
@@ -520,6 +700,7 @@
     // ===================================================
     let slotLocks = {};
     async function watchAd(i) {
+      if (!isOnline) { toast('No internet connection!'); return; }
       if(slotLocks[i]) return;
       slotLocks[i] = true;
       const slot = appState.config.adSlots[i];
@@ -584,6 +765,7 @@
     }
 
     function runTask(id) {
+      if (!isOnline) { toast('No internet connection!'); return; }
       const t = appState.config.webTasks[id];
       if(tg && tg.openLink) tg.openLink(t.url); else window.open(t.url, '_blank');
       const btn = document.getElementById('btn-'+id);
@@ -595,6 +777,7 @@
     }
 
     async function claimTask(id, t) {
+      if (!isOnline) { toast('No internet connection!'); return; }
       const newBal = (appState.user.balance || 0) + Number(t.reward); 
       const newEarn = (appState.user.totalEarned || 0) + Number(t.reward);
       let th = appState.user.taskHistory || {}; th[id] = true;
@@ -606,6 +789,7 @@
     // ✅ BONUS SYSTEM
     // ===================================================
     function showBonus(){ 
+      if (!isOnline) { toast('No internet connection!'); return; }
       if(appState.user.dailyBonusDate === todayStr()) {
         toast("আজকের বোনাস আগেই নেওয়া হয়েছে!"); return;
       }
@@ -619,6 +803,7 @@
     }
 
     async function claimDailyBonus() {
+      if (!isOnline) { toast('No internet connection!'); return; }
       const btn = document.getElementById('btnClaimBonus'); 
       const btnCancel = document.getElementById('btnCancelBonus');
       const subText = document.getElementById('bonusSubText');
@@ -676,6 +861,7 @@
     // ✅ WITHDRAW SYSTEM
     // ===================================================
     async function requestWithdraw() {
+      if (!isOnline) { toast('No internet connection!'); return; }
       const method = document.getElementById('wd-method').value;
       const account = document.getElementById('wd-account').value.trim();
       const amount = Number(document.getElementById('wd-amount').value);
@@ -728,6 +914,7 @@
     // ✅ WITHDRAW HISTORY
     // ===================================================
     async function loadWithdrawHistory() {
+      if (!isOnline) { document.getElementById('historyList').innerHTML = '<p style="text-align:center; color:#999; padding:20px 0;">No internet connection.</p>'; return; }
       try {
         const snap = await db.ref('withdrawals')
           .orderByChild('userId')
@@ -783,7 +970,7 @@
     function openSupport() { 
       if(appState.config.supportLink) window.open(appState.config.supportLink, '_blank');
       else {
-        const supportUrl = `https://t.me/${BOT_USERNAME}`;
+        const supportUrl = SUPPORT_LINK;
         if(tg && tg.openTelegramLink) tg.openTelegramLink(supportUrl); 
         else window.open(supportUrl, '_blank');
       }
@@ -826,6 +1013,7 @@
     // ✅ LEADERBOARD
     // ===================================================
     async function loadLeaderboard() {
+      if (!isOnline) { return; }
       const sym = appState.config.currencySymbol || "TK";
       const snap = await db.ref('users').orderByChild('balance').limitToLast(10).once('value');
       let users = []; 
@@ -901,27 +1089,26 @@
       ];
 
       links.forEach(link => {
-        const btn = document.createElement('button');
+        const btn = document.createElement('a');
         btn.className = 'channel-btn';
         btn.dataset.chatId = link.chatId;
+        btn.href = `https://t.me/${link.chatId}`;
+        btn.target = '_blank';
         btn.innerHTML = `<i class="fa-brands fa-telegram"></i> ${link.label}`;
-        btn.onclick = () => {
+        btn.onclick = (e) => {
+          e.preventDefault();
           openLink(`https://t.me/${link.chatId}`);
-          checkAndUpdateStatus();
+          setTimeout(checkAndUpdateStatus, 2000);
         };
         container.appendChild(btn);
       });
 
-      // Status display
       const statusEl = document.getElementById('verifyStatus');
       statusEl.textContent = '⏳ Checking channel membership...';
       statusEl.className = 'verify-status loading';
 
-      // Auto-check every 3 seconds
       if (verifyInterval) clearInterval(verifyInterval);
       verifyInterval = setInterval(checkAndUpdateStatus, 3000);
-      
-      // Initial check after 1 second
       setTimeout(checkAndUpdateStatus, 1500);
     }
 
@@ -958,11 +1145,9 @@
         if (verifyInterval) clearInterval(verifyInterval);
         verifyInterval = null;
         
-        // Mark as verified and proceed
         channelVerified = true;
         await db.ref('users/' + tgUser.id + '/channelVerified').set(true);
         
-        // Close modal and show app after 1 second
         setTimeout(() => {
           document.getElementById('joinModal').classList.remove('active');
           showAppAfterVerify();
@@ -975,9 +1160,23 @@
     }
 
     function showAppAfterVerify() {
+      if (!isOnline) {
+        document.getElementById('offlineOverlay').classList.add('active');
+        return;
+      }
+      if (checkMaintenance()) return;
+      if (checkBan()) return;
       document.getElementById('app').style.display = 'block';
       setLoading(false);
       if(appState.user.dailyBonusDate !== todayStr()) showBonus();
+    }
+
+    // ===================================================
+    // ✅ OPEN LINK FUNCTION
+    // ===================================================
+    function openLink(url) {
+      if (tg && tg.openLink) tg.openLink(url);
+      else window.open(url, '_blank');
     }
 
     // ===================================================
@@ -985,6 +1184,7 @@
     // ===================================================
     window.onload = () => {
       setLoading(true);
+      updateNetworkStatus();
       
       document.getElementById('u-name').innerText = tgUser.first_name;
       document.getElementById('u-id').innerText = 'ID: ' + tgUser.id;
@@ -997,6 +1197,16 @@
           if(!appState.config.botUsername) appState.config.botUsername = BOT_USERNAME;
           if(!appState.config.botToken) appState.config.botToken = BOT_TOKEN;
           if(appState.config.channelLinks) channelLinks = appState.config.channelLinks;
+          
+          // Check maintenance
+          if (appState.config.maintenance && appState.config.maintenance.active) {
+            document.getElementById('maintenanceOverlay').classList.add('active');
+            document.getElementById('maintenanceMsg').textContent = appState.config.maintenance.message || 'We\'re updating our system.';
+            document.getElementById('maintenanceTime').textContent = '⏳ ' + (appState.config.maintenance.estimatedTime || '30 minutes');
+          } else {
+            document.getElementById('maintenanceOverlay').classList.remove('active');
+          }
+          
           preloadAds();
           if(isBooted) { updateTextElements(); renderAds(); renderTasks(); }
         } else {
@@ -1017,7 +1227,8 @@
               { label: 'NexEarn Adda', chatId: 'nexearn2_adda' },
               { label: 'NexEarn Official', chatId: 'nexearn2_official' },
               { label: 'NexEarn Payment', chatId: 'nexearn2_payment' }
-            ]
+            ],
+            maintenance: { active: false, message: '', estimatedTime: '' }
           };
           db.ref('config').set(defaultConfig);
           channelLinks = defaultConfig.channelLinks;
@@ -1041,7 +1252,9 @@
             taskHistory: {}, 
             lastActive: today, 
             dailyBonusDate: '',
-            channelVerified: false
+            channelVerified: false,
+            isBanned: false,
+            banReason: ''
           };
           await userRef.set(appState.user);
 
@@ -1079,6 +1292,16 @@
             if(!appState.user.dailyAds) appState.user.dailyAds = {};
             if(!appState.user.taskHistory) appState.user.taskHistory = {};
 
+            // Check ban status
+            if (appState.user.isBanned) {
+              document.getElementById('bannedOverlay').classList.add('active');
+              document.getElementById('banReason').textContent = appState.user.banReason || 'Your account has been suspended.';
+              document.getElementById('app').style.display = 'none';
+              return;
+            } else {
+              document.getElementById('bannedOverlay').classList.remove('active');
+            }
+
             if(appState.user.lastActive !== today) {
               await userRef.update({ dailyAds: {}, lastActive: today });
               appState.user.dailyAds = {};
@@ -1091,19 +1314,33 @@
             if(!isBooted) {
               isBooted = true;
               
+              // Check maintenance first
+              if (checkMaintenance()) {
+                setLoading(false);
+                return;
+              }
+              
+              // Check ban
+              if (checkBan()) {
+                setLoading(false);
+                return;
+              }
+              
               // Check if channel verification is needed
               const isVerified = appState.user.channelVerified || false;
               
               if (!isVerified) {
-                // Show channel verification modal
                 document.getElementById('joinModal').classList.add('active');
                 renderChannelButtons();
-                // App will be shown after verification
               } else {
                 channelVerified = true;
-                document.getElementById('app').style.display = 'block';
-                setLoading(false);
-                if(appState.user.dailyBonusDate !== today) showBonus();
+                if (isOnline) {
+                  document.getElementById('app').style.display = 'block';
+                  setLoading(false);
+                  if(appState.user.dailyBonusDate !== today) showBonus();
+                } else {
+                  document.getElementById('offlineOverlay').classList.add('active');
+                }
               }
             }
           }
