@@ -14,7 +14,7 @@
 
   <style>
     /* ✅ ORIGINAL 3D PREMIUM DESIGN */
-    :root{--primary:#6C5CE7;--secondary:#A29BFE;--bg:#F0F3F8;--surface:#FFF;--text:#2D3436;--danger:#ff4757;--success:#00b894;--warning:#f39c12;}
+    :root{--primary:#6C5CE7;--secondary:#A29BFE;--bg:#F0F3F8;--surface:#FFF;--text:#2D3436;--danger:#ff4757;--success:#00b894;--warning:#f39c12;--gold:#FFD700;--silver:#C0C0C0;--bronze:#CD7F32;}
     *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
     body{background:var(--bg);color:var(--text);padding-bottom:90px;-webkit-tap-highlight-color:transparent;}
     #app{max-width:480px;margin:0 auto;min-height:100vh;position:relative;display:none; transition:filter .25s ease;}
@@ -359,6 +359,51 @@
     #adErrorPopup .box .icon { font-size: 48px; color: var(--danger); margin-bottom: 12px; }
     #adErrorPopup .box h3 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
     #adErrorPopup .box p { font-size: 14px; color: var(--text-light); line-height: 1.6; margin-bottom: 16px; }
+
+    /* Referral Level Badge */
+    .ref-level-badge {
+        display: inline-block;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        margin-top: 4px;
+    }
+    .ref-level-badge.beginner { background: rgba(108,92,231,0.15); color: var(--primary); }
+    .ref-level-badge.bronze { background: rgba(205,127,50,0.2); color: var(--bronze); }
+    .ref-level-badge.silver { background: rgba(192,192,192,0.25); color: #7a7a7a; }
+    .ref-level-badge.gold { background: rgba(255,215,0,0.25); color: #b8860b; }
+    .ref-level-badge.platinum { background: linear-gradient(135deg, rgba(108,92,231,0.2), rgba(162,155,254,0.2)); color: var(--primary); }
+
+    /* Referral History Item */
+    .ref-history-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+    }
+    .ref-history-item:last-child { border-bottom: none; }
+    .ref-history-item .name { font-weight: 600; font-size: 0.9rem; }
+    .ref-history-item .date { font-size: 0.7rem; color: var(--text-light); }
+    .ref-history-item .bonus { font-weight: 700; color: var(--success); font-size: 0.85rem; }
+
+    /* Referral Leaderboard */
+    .ref-leader-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        background: var(--bg);
+        border-radius: 12px;
+        margin-bottom: 8px;
+        border: 1px solid var(--border);
+    }
+    .ref-leader-item .rank { font-weight: 900; font-size: 1.1rem; color: var(--primary); width: 30px; text-align: center; }
+    .ref-leader-item .info { flex: 1; }
+    .ref-leader-item .info .name { font-weight: 600; font-size: 0.9rem; }
+    .ref-leader-item .info .refs { font-size: 0.75rem; color: var(--text-light); }
+    .ref-leader-item .badge { font-size: 1.2rem; }
   </style>
 </head>
 <body>
@@ -473,17 +518,48 @@
       <div id="task-area" class="task-list"></div>
     </div>
 
-    <!-- ================= TAB 2: REFERRAL ================= -->
+    <!-- ================= TAB 2: REFERRAL (UPDATED) ================= -->
     <div id="page-referral" class="page-section">
+      <!-- Referral Stats -->
       <div class="premium-card">
-        <div class="card-title"><i class="fas fa-link" style="color:#0984e3;"></i> Your Referral Link</div>
-        <p style="font-size:0.85rem; color:#555; margin-bottom:12px; font-weight:600;">এই লিংকটি শেয়ার করুন। বন্ধুরা যোগ দিলে আপনি <b id="ref-bonus-txt" style="color:var(--primary);">...</b> পাবেন।</p>
+        <div class="card-title"><i class="fas fa-users" style="color:#0984e3;"></i> Referral Program</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+          <div style="background:var(--bg); padding:12px; border-radius:12px; text-align:center;">
+            <div style="font-size:1.5rem; font-weight:800; color:var(--primary);" id="refTotalCount">0</div>
+            <div style="font-size:0.7rem; color:var(--text-light);">Total Referrals</div>
+          </div>
+          <div style="background:var(--bg); padding:12px; border-radius:12px; text-align:center;">
+            <div style="font-size:1.5rem; font-weight:800; color:var(--success);" id="refTotalBonus">0 TK</div>
+            <div style="font-size:0.7rem; color:var(--text-light);">Referral Bonus</div>
+          </div>
+        </div>
+        <div style="text-align:center; margin-bottom:12px;">
+          <span class="ref-level-badge beginner" id="refLevelBadge">⭐ BEGINNER</span>
+        </div>
         <div class="ref-link-box" id="ref-link-text">Loading...</div>
-        <div class="flex-btns">
+        <div class="flex-btns" style="margin-top:10px;">
           <button class="btn-blue" onclick="shareLink()"><i class="fab fa-telegram-plane"></i> শেয়ার করুন</button>
           <button class="btn-dark" onclick="copyLink()"><i class="fas fa-copy"></i></button>
         </div>
       </div>
+
+      <!-- Referral History -->
+      <div class="premium-card">
+        <div class="card-title"><i class="fas fa-history" style="color:#f39c12;"></i> Referral History</div>
+        <div id="refHistoryList">
+          <p style="text-align:center; color:#999; padding:10px 0;">No referrals yet.</p>
+        </div>
+      </div>
+
+      <!-- Referral Leaderboard -->
+      <div class="premium-card">
+        <div class="card-title"><i class="fas fa-trophy" style="color:var(--gold);"></i> Top Referrers</div>
+        <div id="refLeaderList">
+          <p style="text-align:center; color:#999; padding:10px 0;">Loading...</p>
+        </div>
+      </div>
+
+      <!-- Tutorial -->
       <div class="premium-card">
         <div class="card-title"><i class="fas fa-video" style="color:#ff4757;"></i> টিউটোরিয়াল</div>
         <p style="font-size:0.85rem; color:#555;">কাজ বুঝতে ভিডিওটি দেখে নিন।</p>
@@ -503,7 +579,6 @@
       <div class="premium-card">
         <div class="card-title"><i class="fas fa-wallet" style="color:var(--primary);"></i> Withdraw Funds</div>
         
-        <!-- Withdraw Info Box - Dynamically loaded from admin config -->
         <div id="withdrawInfo" style="background:var(--bg); padding:14px; border-radius:12px; margin-bottom:15px; border:1px solid var(--border);">
           <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:0.9rem;">
             <span style="color:var(--text-light);">📋 Withdraw Level</span>
@@ -534,7 +609,6 @@
         <div style="font-size: 0.8rem; text-align: center; margin-top: 15px; font-weight: 700;" id="wd-notice">Minimum withdraw: ...</div>
       </div>
 
-      <!-- Withdraw History -->
       <div class="premium-card" style="margin-top:20px;">
         <div class="card-title"><i class="fas fa-history" style="color:#f39c12;"></i> Withdraw History</div>
         <div id="historyList">
@@ -580,11 +654,30 @@
     const SUPPORT_LINK = "https://t.me/NexEarn2Support";
 
     // ===================================================
-    // ✅ WITHDRAW CONFIG - Loaded from admin config
+    // ✅ REFERRAL LEVELS
+    // ===================================================
+    const REFERRAL_LEVELS = {
+      BEGINNER: { min: 0, label: '⭐ BEGINNER', class: 'beginner', icon: '🌟' },
+      BRONZE: { min: 5, label: '🥉 BRONZE', class: 'bronze', icon: '🥉' },
+      SILVER: { min: 15, label: '🥈 SILVER', class: 'silver', icon: '🥈' },
+      GOLD: { min: 30, label: '🥇 GOLD', class: 'gold', icon: '🥇' },
+      PLATINUM: { min: 50, label: '👑 PLATINUM', class: 'platinum', icon: '👑' }
+    };
+
+    function getReferralLevel(refs) {
+      if (refs >= 50) return REFERRAL_LEVELS.PLATINUM;
+      if (refs >= 30) return REFERRAL_LEVELS.GOLD;
+      if (refs >= 15) return REFERRAL_LEVELS.SILVER;
+      if (refs >= 5) return REFERRAL_LEVELS.BRONZE;
+      return REFERRAL_LEVELS.BEGINNER;
+    }
+
+    // ===================================================
+    // ✅ WITHDRAW CONFIG
     // ===================================================
     let withdrawLevels = [];
 
-    let appState = { user: { balance:0, totalEarned:0, referrals:0, dailyAds:{}, taskHistory:{}, withdrawCount:0 }, config: { adSlots:[], webTasks:{} } };
+    let appState = { user: { balance:0, totalEarned:0, referrals:0, dailyAds:{}, taskHistory:{}, withdrawCount:0, referralHistory:[] }, config: { adSlots:[], webTasks:{} } };
     let isBooted = false;
     let tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : {id: '123456', first_name: 'Guest User', photo_url: 'https://via.placeholder.com/100'};
 
@@ -605,7 +698,7 @@
     // ===================================================
     let isAdWatching = false;
     let adWatchStartTime = 0;
-    const MIN_AD_WATCH_TIME = 10; // 10 seconds minimum
+    const MIN_AD_WATCH_TIME = 10;
 
     // ===================================================
     // ✅ TOAST FUNCTION
@@ -671,11 +764,110 @@
       el.classList.add('active');
       if(tabId === 'leaderboard') loadLeaderboard();
       if(tabId === 'withdraw') { loadWithdrawHistory(); updateWithdrawInfo(); }
+      if(tabId === 'referral') { loadReferralHistory(); loadReferralLeaderboard(); updateReferralUI(); }
       if(tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
     }
 
     // ===================================================
-    // ✅ GET WITHDRAW LEVEL FROM ADMIN CONFIG
+    // ✅ UPDATE REFERRAL UI
+    // ===================================================
+    function updateReferralUI() {
+      const refs = appState.user.referrals || 0;
+      const bonus = (refs || 0) * (appState.config.refBonus || 5);
+      const level = getReferralLevel(refs);
+      
+      document.getElementById('refTotalCount').textContent = refs;
+      document.getElementById('refTotalBonus').textContent = bonus + ' TK';
+      
+      const badge = document.getElementById('refLevelBadge');
+      badge.textContent = level.icon + ' ' + level.label;
+      badge.className = 'ref-level-badge ' + level.class;
+    }
+
+    // ===================================================
+    // ✅ REFERRAL HISTORY
+    // ===================================================
+    async function loadReferralHistory() {
+      if (!isOnline) { return; }
+      try {
+        const snap = await db.ref('users/' + tgUser.id + '/referralHistory').once('value');
+        const container = document.getElementById('refHistoryList');
+        
+        if (!snap.exists()) {
+          container.innerHTML = '<p style="text-align:center; color:#999; padding:10px 0;">No referrals yet.</p>';
+          return;
+        }
+        
+        let html = '';
+        let count = 0;
+        snap.forEach(child => {
+          const data = child.val();
+          count++;
+          html += `
+            <div class="ref-history-item">
+              <div>
+                <div class="name">${data.name || 'User'}</div>
+                <div class="date">${new Date(data.timestamp).toLocaleDateString('bn-BD')}</div>
+              </div>
+              <div class="bonus">+${data.bonus || 5} TK</div>
+            </div>
+          `;
+        });
+        
+        container.innerHTML = html || '<p style="text-align:center; color:#999; padding:10px 0;">No referrals yet.</p>';
+      } catch(e) {
+        console.error('Error loading referral history:', e);
+      }
+    }
+
+    // ===================================================
+    // ✅ REFERRAL LEADERBOARD
+    // ===================================================
+    async function loadReferralLeaderboard() {
+      if (!isOnline) { return; }
+      try {
+        const snap = await db.ref('users').orderByChild('referrals').limitToLast(10).once('value');
+        const container = document.getElementById('refLeaderList');
+        
+        let users = [];
+        snap.forEach(child => {
+          const u = child.val();
+          if (u.referrals > 0) {
+            users.push({ id: child.key, name: u.name || 'User', referrals: u.referrals || 0 });
+          }
+        });
+        
+        users.sort((a, b) => b.referrals - a.referrals);
+        
+        if (users.length === 0) {
+          container.innerHTML = '<p style="text-align:center; color:#999; padding:10px 0;">No referrers yet.</p>';
+          return;
+        }
+        
+        let html = '';
+        const medals = ['🥇', '🥈', '🥉'];
+        users.forEach((u, i) => {
+          const medal = i < 3 ? medals[i] : `#${i+1}`;
+          html += `
+            <div class="ref-leader-item">
+              <div class="rank">${medal}</div>
+              <div class="info">
+                <div class="name">${u.name}</div>
+                <div class="refs">👥 ${u.referrals} referrals</div>
+              </div>
+              <div class="badge">${getReferralLevel(u.referrals).icon}</div>
+            </div>
+          `;
+        });
+        
+        container.innerHTML = html;
+      } catch(e) {
+        console.error('Error loading referral leaderboard:', e);
+      }
+    }
+
+    // ===================================================
+    // ✅ GET WITHDRAW LEVEL
     // ===================================================
     function getWithdrawLevel() {
       if (!withdrawLevels || withdrawLevels.length === 0) {
@@ -728,7 +920,7 @@
     }
 
     // ===================================================
-    // ✅ MAINTENANCE CHECK WITH REAL-TIME COUNTDOWN
+    // ✅ MAINTENANCE CHECK
     // ===================================================
     let maintenanceTimer = null;
     let maintenanceEndTime = null;
@@ -840,6 +1032,7 @@
       }
       
       updateWithdrawInfo();
+      updateReferralUI();
     }
 
     // ===================================================
@@ -873,7 +1066,7 @@
     }
 
     // ===================================================
-    // ✅ AD WATCH SYSTEM WITH MINIMUM VIEW TIME
+    // ✅ AD WATCH SYSTEM
     // ===================================================
     function startAdWatch(i) {
       if (!isOnline) { toast('No internet connection!'); return; }
@@ -882,10 +1075,8 @@
       isAdWatching = true;
       adWatchStartTime = Date.now();
       
-      // Show a toast to inform user
       toast(`⏳ Watching ad... Please watch for ${MIN_AD_WATCH_TIME} seconds!`);
       
-      // Call the actual ad watch function
       watchAd(i);
     }
 
@@ -914,12 +1105,9 @@
         }
 
         if(success) {
-          // Calculate how long the user watched
           const watchTime = (Date.now() - adWatchStartTime) / 1000;
           
-          // Check if user watched for minimum required time
           if (watchTime < MIN_AD_WATCH_TIME) {
-            // User didn't watch long enough - show error
             isAdWatching = false;
             slotLocks[i] = false;
             showAdError(
@@ -929,7 +1117,6 @@
             return;
           }
           
-          // User watched enough - give reward
           const r = Number(appState.config.adReward || 0.5);
           let newBal = (appState.user.balance || 0) + r;
           let newEarn = (appState.user.totalEarned || 0) + r;
@@ -941,7 +1128,6 @@
         }
       } catch(e) { 
         if (e.message === "Ad Closed") {
-          // Check if user at least watched some time
           const watchTime = (Date.now() - adWatchStartTime) / 1000;
           if (watchTime < MIN_AD_WATCH_TIME) {
             showAdError(
@@ -1081,7 +1267,7 @@
     }
 
     // ===================================================
-    // ✅ WITHDRAW SYSTEM WITH LEVELS FROM ADMIN CONFIG
+    // ✅ WITHDRAW SYSTEM
     // ===================================================
     async function requestWithdraw() {
       if (!isOnline) { toast('No internet connection!'); return; }
@@ -1198,7 +1384,7 @@
     }
 
     // ===================================================
-    // ✅ REFERRAL SYSTEM
+    // ✅ REFERRAL SYSTEM - COMPLETE FIX
     // ===================================================
     function getRefLink() { 
       return `https://t.me/${BOT_USERNAME}/app?startapp=${tgUser.id}`; 
@@ -1210,7 +1396,14 @@
     }
     
     function shareLink() {
-      const url = `https://t.me/share/url?url=${encodeURIComponent(getRefLink())}&text=Join%20Now!%20and%20earn%20money!`;
+      const message = `💰 Earn money with me! Join NexEarn and start earning by watching ads.
+      
+🎁 Get ${appState.config.refBonus || 5} TK as joining bonus!
+👥 Refer & earn more!
+
+Join now: ${getRefLink()}`;
+      
+      const url = `https://t.me/share/url?url=${encodeURIComponent(getRefLink())}&text=${encodeURIComponent(message)}`;
       if(tg && tg.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank');
     }
     
@@ -1226,6 +1419,84 @@
         if(tg && tg.openTelegramLink) tg.openTelegramLink(supportUrl); 
         else window.open(supportUrl, '_blank');
       }
+    }
+
+    // ===================================================
+    // ✅ PROCESS REFERRAL - COMPLETE FIX
+    // ===================================================
+    async function processReferral() {
+        if (!db || !tg || !tg.initDataUnsafe) return;
+        
+        const user = tg.initDataUnsafe.user;
+        if (!user || !user.id) return;
+        
+        // Start param from Telegram
+        let refBy = tg.initDataUnsafe.start_param || null;
+        
+        // Fallback: URL search params
+        if (!refBy) {
+            const urlParams = new URLSearchParams(window.location.search);
+            refBy = urlParams.get('tgWebAppStartParam') || urlParams.get('startapp') || null;
+        }
+        
+        // If referral ID exists and it's not the user themselves
+        if (refBy && String(refBy) !== String(user.id)) {
+            try {
+                // Check if user already has a referrer (prevent duplicate)
+                const existingRef = await db.ref('users/' + user.id + '/referred_by').once('value');
+                if (existingRef.exists()) {
+                    console.log('✅ User already has a referrer:', existingRef.val());
+                    return;
+                }
+                
+                // Get referral bonus from config
+                const cSnap = await db.ref('config/refBonus').once('value');
+                let rBonus = cSnap.exists() ? Number(cSnap.val()) : 5;
+                
+                // Check if referrer exists
+                const refSnap = await db.ref('users/' + refBy).once('value');
+                if (refSnap.exists()) {
+                    const refData = refSnap.val();
+                    
+                    // Check if referrer is not the same user (anti-self referral)
+                    if (String(refBy) === String(user.id)) {
+                        console.log('⚠️ Self-referral blocked');
+                        return;
+                    }
+                    
+                    // Update referrer's account
+                    await db.ref('users/' + refBy).update({
+                        referrals: (refData.referrals || 0) + 1,
+                        balance: (refData.balance || 0) + rBonus,
+                        totalEarned: (refData.totalEarned || 0) + rBonus
+                    });
+                    
+                    // Save referred_by for the new user
+                    await db.ref('users/' + user.id + '/referred_by').set(refBy);
+                    
+                    // Add to referral history
+                    await db.ref('users/' + refBy + '/referralHistory').push({
+                        userId: user.id,
+                        name: user.first_name || 'User',
+                        timestamp: Date.now(),
+                        bonus: rBonus
+                    });
+                    
+                    // Send notification to referrer
+                    await sendNotification(refBy, 
+                        `🎉 <b>New Referral!</b>\n\n` +
+                        `👤 ${user.first_name || 'Someone'} joined using your referral link.\n` +
+                        `💰 You earned ${rBonus} TK as bonus!`
+                    );
+                    
+                    console.log('✅ Referral processed! Referrer:', refBy, 'Bonus:', rBonus);
+                } else {
+                    console.log('⚠️ Referrer not found:', refBy);
+                }
+            } catch (e) {
+                console.error('❌ Referral processing error:', e);
+            }
+        }
     }
 
     // ===================================================
@@ -1315,7 +1586,7 @@
     }
 
     // ===================================================
-    // ✅ CHANNEL VERIFICATION SYSTEM (AUTO)
+    // ✅ CHANNEL VERIFICATION SYSTEM
     // ===================================================
     async function checkChannelMembership(userId, chatId) {
       try {
@@ -1531,34 +1802,16 @@
             channelVerified: false,
             isBanned: false,
             banReason: '',
-            withdrawCount: 0
+            withdrawCount: 0,
+            referralHistory: []
           };
           await userRef.set(appState.user);
-
-          let refBy = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) ? tg.initDataUnsafe.start_param : null;
-          if(!refBy) {
-             const urlParams = new URLSearchParams(window.location.search);
-             refBy = urlParams.get('tgWebAppStartParam') || urlParams.get('startapp');
-          }
-
-          if(refBy && String(refBy) !== String(tgUser.id)) {
-             let cSnap = await db.ref('config').once('value');
-             let rBonus = (cSnap.exists() && cSnap.val().refBonus) ? Number(cSnap.val().refBonus) : 5;
-             let refSnap = await db.ref('users/' + refBy).once('value');
-             if(refSnap.exists()){
-                let r = refSnap.val();
-                await db.ref('users/' + refBy).update({
-                   referrals: (r.referrals || 0) + 1,
-                   balance: (r.balance || 0) + rBonus,
-                   totalEarned: (r.totalEarned || 0) + rBonus
-                });
-                await sendNotification(refBy, 
-                  `🎉 <b>New Referral!</b>\n\n` +
-                  `👤 ${tgUser.first_name} joined using your referral link.\n` +
-                  `💰 You earned ${rBonus} TK as bonus!`
-                );
-             }
-          }
+          
+          // ✅ PROCESS REFERRAL
+          await processReferral();
+          
+        } else {
+          appState.user = snap.val();
         }
 
         userRef.on('value', async liveSnap => {
@@ -1566,6 +1819,7 @@
             appState.user = liveSnap.val();
             if(!appState.user.dailyAds) appState.user.dailyAds = {};
             if(!appState.user.taskHistory) appState.user.taskHistory = {};
+            if(!appState.user.referralHistory) appState.user.referralHistory = [];
             if(appState.user.withdrawCount === undefined) appState.user.withdrawCount = 0;
 
             if (appState.user.isBanned) {
@@ -1610,6 +1864,11 @@
                   document.getElementById('app').style.display = 'block';
                   setLoading(false);
                   if(appState.user.dailyBonusDate !== today) showBonus();
+                  
+                  // Load referral data
+                  loadReferralHistory();
+                  loadReferralLeaderboard();
+                  updateReferralUI();
                 } else {
                   document.getElementById('offlineOverlay').classList.add('active');
                 }
