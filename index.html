@@ -530,7 +530,6 @@
     // ✅ NETWORK STATE
     // ===================================================
     let isOnline = navigator.onLine;
-    let networkListeners = [];
 
     // ===================================================
     // ✅ TOAST FUNCTION
@@ -560,14 +559,9 @@
         if (isBooted && !document.getElementById('joinModal').classList.contains('active')) {
           document.getElementById('app').style.display = 'block';
         }
-        // Retry Firebase connection if needed
-        if (isBooted && !document.getElementById('joinModal').classList.contains('active')) {
-          loadLeaderboard();
-        }
       }
     }
 
-    // Network event listeners
     window.addEventListener('online', () => {
       updateNetworkStatus();
       toast('🔄 Internet reconnected!');
@@ -592,18 +586,48 @@
     }
 
     // ===================================================
-    // ✅ MAINTENANCE CHECK
+    // ✅ MAINTENANCE CHECK WITH REAL-TIME COUNTDOWN
     // ===================================================
+    let maintenanceTimer = null;
+    let maintenanceEndTime = null;
+
     function checkMaintenance() {
       if (appState.config && appState.config.maintenance && appState.config.maintenance.active) {
         document.getElementById('maintenanceOverlay').classList.add('active');
         document.getElementById('maintenanceMsg').textContent = appState.config.maintenance.message || 'We\'re updating our system.';
-        document.getElementById('maintenanceTime').textContent = '⏳ ' + (appState.config.maintenance.estimatedTime || '30 minutes');
+        
+        // Real-time countdown
+        if (appState.config.maintenance.estimatedMinutes) {
+          const minutes = parseInt(appState.config.maintenance.estimatedMinutes) || 30;
+          maintenanceEndTime = Date.now() + (minutes * 60 * 1000);
+          updateMaintenanceTimer();
+          if (maintenanceTimer) clearInterval(maintenanceTimer);
+          maintenanceTimer = setInterval(updateMaintenanceTimer, 1000);
+        }
         document.getElementById('app').style.display = 'none';
         return true;
       } else {
         document.getElementById('maintenanceOverlay').classList.remove('active');
+        if (maintenanceTimer) { clearInterval(maintenanceTimer); maintenanceTimer = null; }
         return false;
+      }
+    }
+
+    function updateMaintenanceTimer() {
+      if (!maintenanceEndTime) return;
+      const diff = Math.max(0, Math.floor((maintenanceEndTime - Date.now()) / 1000));
+      const mins = Math.floor(diff / 60);
+      const secs = diff % 60;
+      document.getElementById('maintenanceTime').textContent = `⏳ ${mins}m ${secs}s remaining`;
+      if (diff <= 0) {
+        clearInterval(maintenanceTimer);
+        maintenanceTimer = null;
+        // Re-check maintenance status
+        db.ref('config/maintenance').once('value').then(snap => {
+          if (snap.exists() && !snap.val().active) {
+            document.getElementById('maintenanceOverlay').classList.remove('active');
+          }
+        });
       }
     }
 
@@ -858,7 +882,7 @@
     }
 
     // ===================================================
-    // ✅ WITHDRAW SYSTEM
+    // ✅ WITHDRAW SYSTEM (IMPROVED WITH BETTER UI)
     // ===================================================
     async function requestWithdraw() {
       if (!isOnline) { toast('No internet connection!'); return; }
@@ -946,7 +970,7 @@
     }
 
     // ===================================================
-    // ✅ REFERRAL SYSTEM
+    // ✅ REFERRAL SYSTEM (IMPROVED)
     // ===================================================
     function getRefLink() { 
       return `https://t.me/${BOT_USERNAME}/app?startapp=${tgUser.id}`; 
@@ -1202,9 +1226,17 @@
           if (appState.config.maintenance && appState.config.maintenance.active) {
             document.getElementById('maintenanceOverlay').classList.add('active');
             document.getElementById('maintenanceMsg').textContent = appState.config.maintenance.message || 'We\'re updating our system.';
-            document.getElementById('maintenanceTime').textContent = '⏳ ' + (appState.config.maintenance.estimatedTime || '30 minutes');
+            // Set countdown
+            if (appState.config.maintenance.estimatedMinutes) {
+              const mins = parseInt(appState.config.maintenance.estimatedMinutes) || 30;
+              maintenanceEndTime = Date.now() + (mins * 60 * 1000);
+              updateMaintenanceTimer();
+              if (maintenanceTimer) clearInterval(maintenanceTimer);
+              maintenanceTimer = setInterval(updateMaintenanceTimer, 1000);
+            }
           } else {
             document.getElementById('maintenanceOverlay').classList.remove('active');
+            if (maintenanceTimer) { clearInterval(maintenanceTimer); maintenanceTimer = null; }
           }
           
           preloadAds();
@@ -1228,7 +1260,7 @@
               { label: 'NexEarn Official', chatId: 'nexearn2_official' },
               { label: 'NexEarn Payment', chatId: 'nexearn2_payment' }
             ],
-            maintenance: { active: false, message: '', estimatedTime: '' }
+            maintenance: { active: false, message: '', estimatedMinutes: 30 }
           };
           db.ref('config').set(defaultConfig);
           channelLinks = defaultConfig.channelLinks;
