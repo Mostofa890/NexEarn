@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -183,68 +182,6 @@
     .bonus-btn:disabled{opacity:0.7;cursor:not-allowed;}
     .bonus-claim{background:linear-gradient(135deg,#6C5CE7,#A29BFE);color:#fff;}
     .bonus-close{background:rgba(255,255,255,.08);color:#e5e7eb;border:1px solid rgba(255,255,255,.12);}
-
-    /* Admin Panel Styles */
-    #adminPanel {
-      display: none;
-      background: #fff;
-      margin: 20px;
-      padding: 20px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      border: 2px solid var(--primary);
-    }
-    #adminPanel h3 {
-      color: var(--primary);
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .admin-input-group {
-      margin-bottom: 12px;
-    }
-    .admin-input-group label {
-      display: block;
-      font-weight: 600;
-      font-size: 0.85rem;
-      margin-bottom: 5px;
-      color: #555;
-    }
-    .admin-input-group input, .admin-input-group select {
-      width: 100%;
-      padding: 10px 14px;
-      border: 2px solid #e1e1e1;
-      border-radius: 10px;
-      font-size: 0.9rem;
-      outline: none;
-      transition: 0.3s;
-      background: #f9f9f9;
-    }
-    .admin-input-group input:focus, .admin-input-group select:focus {
-      border-color: var(--primary);
-      background: #fff;
-      box-shadow: 0 0 0 3px rgba(108,92,231,0.1);
-    }
-    .admin-btn {
-      width: 100%;
-      padding: 12px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      font-weight: 700;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .admin-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(108,92,231,0.3);
-    }
-    .admin-btn:active {
-      transform: scale(0.98);
-    }
   </style>
 </head>
 <body>
@@ -294,40 +231,6 @@
         <div class="stat-box"><h4 id="u-earn">0.00</h4><p>Earned</p></div>
         <div class="stat-box"><h4 id="u-ref">0</h4><p>Referrals</p></div>
       </div>
-    </div>
-
-    <!-- ================= ADMIN PANEL ================= -->
-    <div id="adminPanel">
-      <h3><i class="fas fa-crown"></i> Admin Panel</h3>
-      <div class="admin-input-group">
-        <label>💰 Referral Bonus</label>
-        <input type="number" id="adminRefBonus" placeholder="Enter referral bonus amount">
-      </div>
-      <div class="admin-input-group">
-        <label>🎯 Ad Reward</label>
-        <input type="number" id="adminAdReward" placeholder="Enter ad reward amount" step="0.5">
-      </div>
-      <div class="admin-input-group">
-        <label>🎁 Daily Bonus Amount</label>
-        <input type="number" id="adminDailyBonus" placeholder="Enter daily bonus amount">
-      </div>
-      <div class="admin-input-group">
-        <label>📅 Daily Ad Limit</label>
-        <input type="number" id="adminAdLimit" placeholder="Enter daily ad limit">
-      </div>
-      <div class="admin-input-group">
-        <label>💳 Payment Methods (comma separated)</label>
-        <input type="text" id="adminPaymentMethods" placeholder="bKash,Nagad,Rocket">
-      </div>
-      <div class="admin-input-group">
-        <label>💰 Minimum Withdraw</label>
-        <input type="number" id="adminMinWithdraw" placeholder="Enter minimum withdraw amount">
-      </div>
-      <div class="admin-input-group">
-        <label>💱 Currency Symbol</label>
-        <input type="text" id="adminCurrency" placeholder="TK" maxlength="5">
-      </div>
-      <button class="admin-btn" onclick="updateAdminConfig()"><i class="fas fa-save"></i> Update Configuration</button>
     </div>
 
     <!-- ================= TAB 1: HOME ================= -->
@@ -497,71 +400,6 @@
       if(tabId === 'leaderboard') loadLeaderboard();
       if(tabId === 'withdraw') loadWithdrawHistory();
       if(tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-    }
-
-    // ===================================================
-    // ✅ ADMIN CHECK
-    // ===================================================
-    async function isAdmin() {
-      try {
-        // Check if current user is admin
-        const snap = await db.ref('admins/' + tgUser.id).once('value');
-        if(snap.exists()) return true;
-        // Fallback: check if user ID matches the provided admin ID
-        if(String(tgUser.id) === ADMIN_ID) {
-          // Add to admin list if not already there
-          await db.ref('admins/' + tgUser.id).set(true);
-          return true;
-        }
-        return false;
-      } catch(e) {
-        return String(tgUser.id) === ADMIN_ID;
-      }
-    }
-
-    async function checkAdmin() {
-      if(await isAdmin()) {
-        document.getElementById('adminPanel').style.display = 'block';
-        // Load current config values into admin form
-        const config = appState.config;
-        document.getElementById('adminRefBonus').value = config.refBonus || 5;
-        document.getElementById('adminAdReward').value = config.adReward || 0.5;
-        document.getElementById('adminDailyBonus').value = config.dailyBonusAmount || 20;
-        document.getElementById('adminAdLimit').value = config.dailyAdLimit || 10;
-        document.getElementById('adminPaymentMethods').value = (config.paymentMethods || ['bKash','Nagad','Rocket']).join(',');
-        document.getElementById('adminMinWithdraw').value = config.minWithdraw || 10;
-        document.getElementById('adminCurrency').value = config.currencySymbol || 'TK';
-      }
-    }
-
-    // ===================================================
-    // ✅ ADMIN CONFIG UPDATE
-    // ===================================================
-    async function updateAdminConfig() {
-      try {
-        const updates = {
-          refBonus: Number(document.getElementById('adminRefBonus').value) || 5,
-          adReward: Number(document.getElementById('adminAdReward').value) || 0.5,
-          dailyBonusAmount: Number(document.getElementById('adminDailyBonus').value) || 20,
-          dailyAdLimit: Number(document.getElementById('adminAdLimit').value) || 10,
-          minWithdraw: Number(document.getElementById('adminMinWithdraw').value) || 10,
-          currencySymbol: document.getElementById('adminCurrency').value || 'TK',
-          botUsername: BOT_USERNAME,
-          botToken: BOT_TOKEN
-        };
-        
-        const methods = document.getElementById('adminPaymentMethods').value.split(',').map(m => m.trim()).filter(m => m);
-        if(methods.length) updates.paymentMethods = methods;
-
-        await db.ref('config').update(updates);
-        toast('✅ Configuration Updated Successfully!');
-        
-        // Send notification to admin
-        await sendNotification(ADMIN_ID, '✅ <b>Config Updated!</b>\n\nNew settings have been applied.');
-      } catch(e) {
-        toast('❌ Error updating config');
-        console.error(e);
-      }
     }
 
     // ===================================================
@@ -1103,7 +941,6 @@
             if(!isBooted) {
               isBooted = true;
               setLoading(false);
-              await checkAdmin();
               if(appState.user.dailyBonusDate !== today) showBonus();
             }
           }
@@ -1114,4 +951,3 @@
   </script>
 </body>
 </html>
-```
