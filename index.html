@@ -330,6 +330,35 @@
         margin-left: 10px;
     }
     .offline-indicator.show { display: inline-block; }
+
+    /* Ad Error Popup */
+    #adErrorPopup {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 7000;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    #adErrorPopup.active { display: flex; }
+    #adErrorPopup .box {
+        background: var(--surface);
+        max-width: 360px;
+        width: 100%;
+        padding: 28px 24px;
+        border-radius: 20px;
+        text-align: center;
+        border: 1px solid var(--border);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        animation: pop 0.3s ease-out;
+    }
+    #adErrorPopup .box .icon { font-size: 48px; color: var(--danger); margin-bottom: 12px; }
+    #adErrorPopup .box h3 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    #adErrorPopup .box p { font-size: 14px; color: var(--text-light); line-height: 1.6; margin-bottom: 16px; }
   </style>
 </head>
 <body>
@@ -346,6 +375,16 @@
   </div>
 
   <div id="toast" class="toast">Alert</div>
+
+  <!-- ✅ Ad Error Popup -->
+  <div id="adErrorPopup">
+    <div class="box">
+      <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
+      <h3 id="adErrorTitle">⚠️ Ad Not Watched!</h3>
+      <p id="adErrorMsg">You must watch the ad for at least 10 seconds before clicking! Please watch the full ad to earn rewards.</p>
+      <button class="btn-main" onclick="closeAdError()" style="max-width:200px; margin:0 auto; padding:12px; font-size:0.9rem;">I Understand</button>
+    </div>
+  </div>
 
   <!-- ✅ Maintenance Overlay -->
   <div id="maintenanceOverlay">
@@ -562,6 +601,13 @@
     let isOnline = navigator.onLine;
 
     // ===================================================
+    // ✅ AD WATCH STATE
+    // ===================================================
+    let isAdWatching = false;
+    let adWatchStartTime = 0;
+    const MIN_AD_WATCH_TIME = 10; // 10 seconds minimum
+
+    // ===================================================
     // ✅ TOAST FUNCTION
     // ===================================================
     function toast(msg) {
@@ -570,6 +616,19 @@
       setTimeout(() => t.classList.remove('show'), 3000);
     }
     function todayStr() { return new Date().toISOString().slice(0, 10); }
+
+    // ===================================================
+    // ✅ AD ERROR POPUP
+    // ===================================================
+    function showAdError(title, msg) {
+      document.getElementById('adErrorTitle').textContent = title || '⚠️ Ad Not Watched!';
+      document.getElementById('adErrorMsg').textContent = msg || 'You must watch the ad for at least 10 seconds before clicking!';
+      document.getElementById('adErrorPopup').classList.add('active');
+    }
+
+    function closeAdError() {
+      document.getElementById('adErrorPopup').classList.remove('active');
+    }
 
     // ===================================================
     // ✅ NETWORK MANAGEMENT
@@ -620,14 +679,12 @@
     // ===================================================
     function getWithdrawLevel() {
       if (!withdrawLevels || withdrawLevels.length === 0) {
-        // Default levels if not configured
         return { level: 1, requiredRefs: 5, fee: 5, minAmount: 10, maxAmount: 100, time: "24-48 Hours" };
       }
       
       const count = appState.user.withdrawCount || 0;
       const refs = appState.user.referrals || 0;
       
-      // Find the highest level the user qualifies for
       let eligibleLevel = withdrawLevels[0];
       for (let i = 0; i < withdrawLevels.length; i++) {
         const level = withdrawLevels[i];
@@ -638,12 +695,9 @@
         }
       }
       
-      // If user has withdrawn before, they can progress to next levels
       if (count > 0) {
-        // Find the level based on withdraw count
         const levelIndex = Math.min(count, withdrawLevels.length - 1);
         const levelByCount = withdrawLevels[levelIndex];
-        // Use the higher of the two (eligible level or level by count)
         const eligibleIndex = withdrawLevels.indexOf(eligibleLevel);
         const finalIndex = Math.max(eligibleIndex, levelIndex);
         return withdrawLevels[Math.min(finalIndex, withdrawLevels.length - 1)];
@@ -662,7 +716,6 @@
       document.getElementById('wdTime').textContent = level.time || "24-48 Hours";
       document.getElementById('wdRange').textContent = `${level.minAmount || 10} - ${level.maxAmount || 100} TK`;
       
-      // Show if user is eligible
       const canWithdraw = refs >= (level.requiredRefs || 5);
       const notice = document.getElementById('wd-notice');
       if (!canWithdraw) {
@@ -774,11 +827,9 @@
         });
       }
       
-      // Load withdraw levels from config
       if (appState.config.withdrawLevels && Array.isArray(appState.config.withdrawLevels) && appState.config.withdrawLevels.length > 0) {
         withdrawLevels = appState.config.withdrawLevels;
       } else {
-        // Default levels
         withdrawLevels = [
           { level: 1, requiredRefs: 5, fee: 5, minAmount: 10, maxAmount: 100, time: "24-48 Hours" },
           { level: 2, requiredRefs: 7, fee: 4, minAmount: 10, maxAmount: 200, time: "24-48 Hours" },
@@ -811,7 +862,7 @@
         const icon = (i===0?'fa-play':i===1?'fa-circle-play':i===2?'fa-bolt':'fa-gem');
 
         el.innerHTML += `
-          <div class="ad-card ${extraClass} ${cardClass}" onclick="${(!configured||max)?'':'watchAd('+i+')'}">
+          <div class="ad-card ${extraClass} ${cardClass}" onclick="${(!configured||max)?'':'startAdWatch('+i+')'}">
             <div class="ad-inner">
               <i class="fas ${icon}"></i> <h4>Ad Slot ${i+1}</h4>
               <div class="reward-pill"><i class="fas fa-coins"></i> +${reward} ${sym}</div>
@@ -822,11 +873,23 @@
     }
 
     // ===================================================
-    // ✅ WATCH AD
+    // ✅ AD WATCH SYSTEM WITH MINIMUM VIEW TIME
     // ===================================================
-    let slotLocks = {};
-    async function watchAd(i) {
+    function startAdWatch(i) {
       if (!isOnline) { toast('No internet connection!'); return; }
+      if (isAdWatching) { toast('Please wait for current ad to finish!'); return; }
+      
+      isAdWatching = true;
+      adWatchStartTime = Date.now();
+      
+      // Show a toast to inform user
+      toast(`⏳ Watching ad... Please watch for ${MIN_AD_WATCH_TIME} seconds!`);
+      
+      // Call the actual ad watch function
+      watchAd(i);
+    }
+
+    async function watchAd(i) {
       if(slotLocks[i]) return;
       slotLocks[i] = true;
       const slot = appState.config.adSlots[i];
@@ -851,6 +914,22 @@
         }
 
         if(success) {
+          // Calculate how long the user watched
+          const watchTime = (Date.now() - adWatchStartTime) / 1000;
+          
+          // Check if user watched for minimum required time
+          if (watchTime < MIN_AD_WATCH_TIME) {
+            // User didn't watch long enough - show error
+            isAdWatching = false;
+            slotLocks[i] = false;
+            showAdError(
+              '⚠️ Ad Not Watched!',
+              `You only watched for ${Math.round(watchTime)} seconds. You must watch for at least ${MIN_AD_WATCH_TIME} seconds to earn the reward!`
+            );
+            return;
+          }
+          
+          // User watched enough - give reward
           const r = Number(appState.config.adReward || 0.5);
           let newBal = (appState.user.balance || 0) + r;
           let newEarn = (appState.user.totalEarned || 0) + r;
@@ -858,12 +937,30 @@
           newAds[i] = (newAds[i] || 0) + 1;
           
           await db.ref('users/' + appState.user.id).update({ balance: newBal, totalEarned: newEarn, dailyAds: newAds });
-          toast('Success! +'+r);
+          toast('✅ Success! +' + r + ' TK earned!');
         }
       } catch(e) { 
-        toast(e.message === "Ad Closed" ? "Ad Closed!" : 'Failed/Ad Blocked'); 
-      } finally { slotLocks[i] = false; }
+        if (e.message === "Ad Closed") {
+          // Check if user at least watched some time
+          const watchTime = (Date.now() - adWatchStartTime) / 1000;
+          if (watchTime < MIN_AD_WATCH_TIME) {
+            showAdError(
+              '⚠️ Ad Skipped!',
+              `You closed the ad after ${Math.round(watchTime)} seconds. You must watch at least ${MIN_AD_WATCH_TIME} seconds to earn the reward!`
+            );
+          } else {
+            toast('Ad Closed! Try again.');
+          }
+        } else {
+          toast('Failed/Ad Blocked');
+        }
+      } finally { 
+        slotLocks[i] = false;
+        isAdWatching = false;
+      }
     }
+
+    let slotLocks = {};
 
     // ===================================================
     // ✅ RENDER TASKS
@@ -996,7 +1093,6 @@
       const level = getWithdrawLevel();
       const refs = appState.user.referrals || 0;
       
-      // Check eligibility
       if (refs < (level.requiredRefs || 5)) {
         toast(`❌ Need ${(level.requiredRefs || 5)} referrals for Level ${level.level || 1} withdrawal!`);
         return;
@@ -1009,7 +1105,6 @@
       if(amount > (level.maxAmount || 100)) return toast(`Maximum withdraw is ${level.maxAmount || 100} TK for Level ${level.level || 1}.`);
       if(amount > appState.user.balance) return toast('Insufficient balance.');
 
-      // Calculate fee
       const feeAmount = (amount * (level.fee || 5)) / 100;
       const netAmount = amount - feeAmount;
 
@@ -1029,7 +1124,6 @@
           timestamp: Date.now() 
         });
         
-        // Update user balance and withdraw count
         const newCount = (appState.user.withdrawCount || 0) + 1;
         await db.ref('users/' + appState.user.id).update({ 
           balance: appState.user.balance - amount,
@@ -1348,7 +1442,6 @@
       document.getElementById('u-id').innerText = 'ID: ' + tgUser.id;
       if(tgUser.photo_url) document.getElementById('u-img').src = tgUser.photo_url;
 
-      // 1. Always Listen to Admin Config
       db.ref('config').on('value', snap => {
         if(snap.exists()) {
           appState.config = snap.val();
@@ -1356,11 +1449,9 @@
           if(!appState.config.botToken) appState.config.botToken = BOT_TOKEN;
           if(appState.config.channelLinks) channelLinks = appState.config.channelLinks;
           
-          // Load withdraw levels from admin config
           if (appState.config.withdrawLevels && Array.isArray(appState.config.withdrawLevels) && appState.config.withdrawLevels.length > 0) {
             withdrawLevels = appState.config.withdrawLevels;
           } else {
-            // Default levels
             withdrawLevels = [
               { level: 1, requiredRefs: 5, fee: 5, minAmount: 10, maxAmount: 100, time: "24-48 Hours" },
               { level: 2, requiredRefs: 7, fee: 4, minAmount: 10, maxAmount: 200, time: "24-48 Hours" },
@@ -1370,7 +1461,6 @@
             ];
           }
           
-          // Check maintenance
           if (appState.config.maintenance && appState.config.maintenance.active) {
             document.getElementById('maintenanceOverlay').classList.add('active');
             document.getElementById('maintenanceMsg').textContent = appState.config.maintenance.message || 'We\'re updating our system.';
@@ -1422,7 +1512,6 @@
         }
       });
 
-      // 2. Initialize User
       const userRef = db.ref('users/' + tgUser.id);
       userRef.once('value').then(async snap => {
         const today = todayStr();
@@ -1446,7 +1535,6 @@
           };
           await userRef.set(appState.user);
 
-          // Process Referral
           let refBy = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) ? tg.initDataUnsafe.start_param : null;
           if(!refBy) {
              const urlParams = new URLSearchParams(window.location.search);
@@ -1473,7 +1561,6 @@
           }
         }
 
-        // 3. Start Live Listener
         userRef.on('value', async liveSnap => {
           if(liveSnap.exists()) {
             appState.user = liveSnap.val();
@@ -1481,7 +1568,6 @@
             if(!appState.user.taskHistory) appState.user.taskHistory = {};
             if(appState.user.withdrawCount === undefined) appState.user.withdrawCount = 0;
 
-            // Check ban status
             if (appState.user.isBanned) {
               document.getElementById('bannedOverlay').classList.add('active');
               document.getElementById('banReason').textContent = appState.user.banReason || 'Your account has been suspended.';
