@@ -16,6 +16,7 @@
     </script>
 
     <style>
+        /* ==== same styles as before (unchanged) ==== */
         :root {
             --primary: #6C5CE7;
             --secondary: #A29BFE;
@@ -73,7 +74,6 @@
             }
         }
 
-        /* LOADER - Enhanced with retry */
         .loader-overlay {
             position: fixed;
             inset: 0;
@@ -263,7 +263,6 @@
             }
         }
 
-        /* Loader Retry Button */
         .loader-retry-btn {
             margin-top: 16px;
             padding: 10px 28px;
@@ -290,7 +289,7 @@
             display: inline-flex;
         }
 
-        /* ====== REST OF STYLES (same as original, compact) ====== */
+        /* ====== REST OF STYLES (compact, same as before) ====== */
         .header {
             background: linear-gradient(180deg, #4b3ee0, #6C5CE7);
             padding: 55px 25px 80px;
@@ -704,7 +703,6 @@
             transform: scale(0.98);
         }
 
-        /* Leaderboard */
         .leaderboard-title {
             text-align: center;
             font-weight: 900;
@@ -934,7 +932,6 @@
             top: 50px;
         }
 
-        /* Bonus Modal */
         .bonus-overlay {
             position: fixed;
             inset: 0;
@@ -1054,7 +1051,6 @@
             border: 1px solid rgba(255, 255, 255, .12);
         }
 
-        /* Join Modal */
         #joinModal {
             display: none;
             position: fixed;
@@ -1164,7 +1160,6 @@
             }
         }
 
-        /* Maintenance / Banned / Offline */
         #maintenanceOverlay,
         #bannedOverlay,
         #offlineOverlay {
@@ -1401,25 +1396,11 @@
             color: var(--text-light);
             font-weight: 600;
         }
-
-        /* Loading spinner inside app */
-        .app-loader-spinner {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-light);
-        }
-        .app-loader-spinner i {
-            font-size: 2rem;
-            color: var(--primary);
-            animation: spin 1s linear infinite;
-            display: block;
-            margin-bottom: 12px;
-        }
     </style>
 </head>
 <body>
 
-    <!-- ✅ PREMIUM LOADER -->
+    <!-- ✅ LOADER -->
     <div id="loader" class="loader-overlay">
         <div class="loader-bg-orb orb1"></div>
         <div class="loader-bg-orb orb2"></div>
@@ -1434,7 +1415,7 @@
             <div class="loader-title" id="loaderTitle">Loading...</div>
             <div class="loader-sub" id="loaderSub">আপনার ডেটা প্রস্তুত হচ্ছে… একটু অপেক্ষা করুন</div>
             <div class="loader-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-            <button class="loader-retry-btn" id="loaderRetryBtn" onclick="retryLoad()">
+            <button class="loader-retry-btn" id="loaderRetryBtn" onclick="retryBoot()">
                 <i class="fas fa-redo"></i> পুনরায় চেষ্টা করুন
             </button>
         </div>
@@ -1685,8 +1666,8 @@
         let slotLocks = {};
         let maintenanceTimer = null;
         let maintenanceEndTime = null;
-        let loadingRetryCount = 0;
-        const MAX_LOADING_RETRIES = 2;
+        let bootAttempts = 0;
+        const MAX_BOOT_ATTEMPTS = 3;
 
         // Telegram user
         let tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ?
@@ -1759,16 +1740,16 @@
                 retryBtn.classList.remove('show');
                 if (subMsg) sub.innerText = subMsg;
                 if (loaderTimeout) clearTimeout(loaderTimeout);
-                // Safety: force show app after 12s even if everything fails
+                // Force hide loader after 15s if not booted (safety)
                 loaderTimeout = setTimeout(() => {
                     if (!isBooted) {
-                        console.warn('⚠️ Loader timeout — forcing app show with fallback data');
+                        console.warn('⚠️ Loader force timeout — showing app with fallback');
                         document.getElementById('loaderTitle').innerText = '⏳ Still loading...';
                         document.getElementById('loaderSub').innerText =
                             'ইন্টারনেট ধীরগতির হতে পারে। নিচের বাটনে ক্লিক করুন।';
                         retryBtn.classList.add('show');
                     }
-                }, 10000);
+                }, 15000);
             } else {
                 loader.style.display = 'none';
                 app.style.display = 'block';
@@ -1778,16 +1759,17 @@
             }
         }
 
-        function retryLoad() {
-            loadingRetryCount++;
-            if (loadingRetryCount > MAX_LOADING_RETRIES) {
+        function retryBoot() {
+            bootAttempts++;
+            if (bootAttempts > MAX_BOOT_ATTEMPTS) {
                 toast('⚠️ একাধিকবার চেষ্টা করেও লোড হচ্ছে না। পরে আবার চেষ্টা করুন।');
                 return;
             }
-            document.getElementById('loaderSub').innerText = `পুনরায় চেষ্টা করছি (${loadingRetryCount}/${MAX_LOADING_RETRIES})...`;
+            document.getElementById('loaderSub').innerText = `পুনরায় চেষ্টা করছি (${bootAttempts}/${MAX_BOOT_ATTEMPTS})...`;
             document.getElementById('loaderRetryBtn').classList.remove('show');
-            // Re-run initialization
-            initApp(true);
+            // Reset boot flag and restart
+            isBooted = false;
+            bootApp();
         }
 
         // ============================================================
@@ -1937,7 +1919,6 @@
             document.getElementById('ref-link-text').innerText = getRefLink();
             document.getElementById('bonusAmt').innerText = appState.config.dailyBonusAmount || 20;
 
-            // Payment methods
             const wdSel = document.getElementById('wd-method');
             let currentVal = wdSel.value;
             wdSel.innerHTML = '<option value="">Select Method</option>';
@@ -1947,7 +1928,6 @@
                 });
             }
 
-            // Withdraw levels
             if (appState.config.withdrawLevels && Array.isArray(appState.config.withdrawLevels) && appState.config
                 .withdrawLevels.length > 0) {
                 withdrawLevels = appState.config.withdrawLevels;
@@ -2604,156 +2584,125 @@
         }
 
         // ============================================================
-        //  INIT APP (with retry support)
+        //  MAIN BOOT SEQUENCE (simplified & robust)
         // ============================================================
-        let initInProgress = false;
+        let bootInProgress = false;
 
-        function initApp(isRetry) {
-            if (initInProgress) return;
-            initInProgress = true;
-            if (isRetry) {
-                document.getElementById('loaderTitle').innerText = '🔄 Retrying...';
-            }
+        async function bootApp() {
+            if (bootInProgress) return;
+            bootInProgress = true;
+            setLoading(true, 'ডেটা লোড হচ্ছে...');
 
-            // Update user info
-            document.getElementById('u-name').innerText = tgUser.first_name || 'Guest';
-            document.getElementById('u-id').innerText = 'ID: ' + (tgUser.id || '...');
-            if (tgUser.photo_url) document.getElementById('u-img').src = tgUser.photo_url;
-
-            // 1. Load config with timeout
-            let configLoaded = false;
-            const configTimeout = setTimeout(() => {
-                if (!configLoaded) {
-                    console.warn('⚠️ Config timeout — using defaults');
-                    configLoaded = true;
-                    appState.config = getDefaultConfig();
-                    if (!isRetry) document.getElementById('loaderSub').innerText = 'কনফিগ লোড হচ্ছে... ডিফল্ট ব্যবহার করা হচ্ছে।';
-                    proceedWithUser();
+            try {
+                // 1. Load config with timeout
+                const configPromise = db.ref('config').once('value');
+                const configTimeout = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Config timeout')), 4000)
+                );
+                let configSnap;
+                try {
+                    configSnap = await Promise.race([configPromise, configTimeout]);
+                } catch (e) {
+                    console.warn('Config load timeout, using default.');
+                    configSnap = null;
                 }
-            }, 4000);
 
-            db.ref('config').once('value').then(snap => {
-                clearTimeout(configTimeout);
-                configLoaded = true;
-                if (snap.exists()) {
-                    appState.config = snap.val();
+                if (configSnap && configSnap.exists()) {
+                    appState.config = configSnap.val();
                 } else {
                     appState.config = getDefaultConfig();
-                    db.ref('config').set(getDefaultConfig());
+                    // try to set default config in db if not exists
+                    if (!configSnap || !configSnap.exists()) {
+                        await db.ref('config').set(getDefaultConfig()).catch(() => {});
+                    }
                 }
-                if (!isRetry) document.getElementById('loaderSub').innerText = 'কনফিগ লোড হয়েছে, ইউজার ডেটা আনা হচ্ছে...';
-                proceedWithUser();
-            }).catch(err => {
-                clearTimeout(configTimeout);
-                configLoaded = true;
-                console.warn('⚠️ Config load error:', err);
-                appState.config = getDefaultConfig();
-                if (!isRetry) document.getElementById('loaderSub').innerText = 'কনফিগ লোডে সমস্যা, ডিফল্ট ব্যবহার করা হচ্ছে।';
-                proceedWithUser();
-            });
 
-            function proceedWithUser() {
+                // Set channel links and withdraw levels
                 if (appState.config.channelLinks) channelLinks = appState.config.channelLinks;
                 if (appState.config.withdrawLevels && Array.isArray(appState.config.withdrawLevels) && appState.config
                     .withdrawLevels.length > 0) {
                     withdrawLevels = appState.config.withdrawLevels;
                 }
+
                 preloadAds();
 
                 // 2. Load user data with timeout
-                let userLoaded = false;
-                const userTimeout = setTimeout(() => {
-                    if (!userLoaded) {
-                        console.warn('⚠️ User data timeout — using fallback');
-                        userLoaded = true;
-                        appState.user = createFallbackUser();
-                        if (!isRetry) document.getElementById('loaderSub').innerText =
-                        'ইউজার ডেটা লোডে সমস্যা, ফ্যালব্যাক ব্যবহার করা হচ্ছে।';
-                        finishInit();
-                    }
-                }, 5000);
-
                 const userRef = db.ref('users/' + tgUser.id);
-                userRef.once('value').then(async snap => {
-                    clearTimeout(userTimeout);
-                    userLoaded = true;
-                    try {
-                        if (!snap.exists()) {
-                            appState.user = createFallbackUser();
-                            await userRef.set(appState.user);
-                            await processReferral();
-                        } else {
-                            appState.user = snap.val();
-                            if (!appState.user.dailyAds) appState.user.dailyAds = {};
-                            if (!appState.user.taskHistory) appState.user.taskHistory = {};
-                            if (!appState.user.referralHistory) appState.user.referralHistory = [];
-                            if (appState.user.withdrawCount === undefined) appState.user.withdrawCount = 0;
-                            // Daily reset
-                            if (appState.user.lastActive !== todayStr()) {
-                                await userRef.update({ dailyAds: {}, lastActive: todayStr() });
-                                appState.user.dailyAds = {};
-                            }
-                        }
-                        // Setup live listener
-                        userRef.on('value', liveSnap => {
-                            if (liveSnap.exists()) {
-                                const liveData = liveSnap.val();
-                                appState.user = liveData;
-                                if (!appState.user.dailyAds) appState.user.dailyAds = {};
-                                if (!appState.user.taskHistory) appState.user.taskHistory = {};
-                                if (!appState.user.referralHistory) appState.user.referralHistory = [];
-                                if (appState.user.withdrawCount === undefined) appState.user.withdrawCount = 0;
-                                if (appState.user.isBanned) {
-                                    document.getElementById('bannedOverlay').classList.add('active');
-                                    document.getElementById('banReason').textContent = appState.user
-                                        .banReason || 'Suspended.';
-                                    document.getElementById('app').style.display = 'none';
-                                    return;
-                                } else {
-                                    document.getElementById('bannedOverlay').classList.remove('active');
-                                }
-                                if (appState.user.lastActive !== todayStr()) {
-                                    userRef.update({ dailyAds: {}, lastActive: todayStr() });
-                                    appState.user.dailyAds = {};
-                                }
-                                updateTextElements();
-                                renderAds();
-                                renderTasks();
-                                if (!isBooted) {
-                                    isBooted = true;
-                                    finishInit();
-                                }
-                            }
-                        });
-                        finishInit();
-                    } catch (e) {
-                        console.error('User init error:', e);
-                        if (!isBooted) {
-                            appState.user = createFallbackUser();
-                            isBooted = true;
-                            finishInit();
-                        }
+                const userPromise = userRef.once('value');
+                const userTimeout = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('User timeout')), 5000)
+                );
+                let userSnap;
+                try {
+                    userSnap = await Promise.race([userPromise, userTimeout]);
+                } catch (e) {
+                    console.warn('User load timeout, using fallback.');
+                    userSnap = null;
+                }
+
+                if (userSnap && userSnap.exists()) {
+                    appState.user = userSnap.val();
+                    // Ensure fields exist
+                    if (!appState.user.dailyAds) appState.user.dailyAds = {};
+                    if (!appState.user.taskHistory) appState.user.taskHistory = {};
+                    if (!appState.user.referralHistory) appState.user.referralHistory = [];
+                    if (appState.user.withdrawCount === undefined) appState.user.withdrawCount = 0;
+                    // Daily reset
+                    if (appState.user.lastActive !== todayStr()) {
+                        await userRef.update({ dailyAds: {}, lastActive: todayStr() });
+                        appState.user.dailyAds = {};
                     }
-                }).catch(err => {
-                    clearTimeout(userTimeout);
-                    userLoaded = true;
-                    console.error('User fetch error:', err);
+                    // process referral only once
+                    await processReferral();
+                } else {
                     appState.user = createFallbackUser();
-                    if (!isBooted) {
-                        isBooted = true;
-                        finishInit();
+                    await userRef.set(appState.user);
+                    await processReferral();
+                }
+
+                // 3. Set up live listener
+                userRef.on('value', liveSnap => {
+                    if (liveSnap.exists()) {
+                        const liveData = liveSnap.val();
+                        appState.user = liveData;
+                        if (!appState.user.dailyAds) appState.user.dailyAds = {};
+                        if (!appState.user.taskHistory) appState.user.taskHistory = {};
+                        if (!appState.user.referralHistory) appState.user.referralHistory = [];
+                        if (appState.user.withdrawCount === undefined) appState.user.withdrawCount = 0;
+                        if (appState.user.isBanned) {
+                            document.getElementById('bannedOverlay').classList.add('active');
+                            document.getElementById('banReason').textContent = appState.user.banReason ||
+                                'Suspended.';
+                            document.getElementById('app').style.display = 'none';
+                            return;
+                        } else {
+                            document.getElementById('bannedOverlay').classList.remove('active');
+                        }
+                        if (appState.user.lastActive !== todayStr()) {
+                            userRef.update({ dailyAds: {}, lastActive: todayStr() });
+                            appState.user.dailyAds = {};
+                        }
+                        updateTextElements();
+                        renderAds();
+                        renderTasks();
+                        if (!isBooted) {
+                            isBooted = true;
+                            finishBoot();
+                        }
                     }
                 });
-            }
 
-            function finishInit() {
-                initInProgress = false;
+                // 4. Initial render
                 updateTextElements();
                 renderAds();
                 renderTasks();
 
-                if (checkMaintenance()) { setLoading(false); return; }
-                if (checkBan()) { setLoading(false); return; }
+                // 5. Check maintenance/ban and decide channel verification
+                if (checkMaintenance() || checkBan()) {
+                    setLoading(false);
+                    bootInProgress = false;
+                    return;
+                }
 
                 const isVerified = appState.user.channelVerified || false;
                 if (!isVerified) {
@@ -2774,7 +2723,28 @@
                         setLoading(false);
                     }
                 }
+                isBooted = true;
+                bootInProgress = false;
+
+            } catch (err) {
+                console.error('Boot error:', err);
+                // Fallback: show app with whatever we have
+                setLoading(false);
+                toast('⚠️ লোডিংয়ে সমস্যা হয়েছে। পুনরায় চেষ্টা করুন।');
+                document.getElementById('loaderRetryBtn').classList.add('show');
+                bootInProgress = false;
             }
+        }
+
+        function finishBoot() {
+            // Called when live listener triggers and isBooted becomes true
+            // Ensure app is visible if not already
+            if (!document.getElementById('app').style.display || document.getElementById('app').style.display === 'none') {
+                document.getElementById('app').style.display = 'block';
+            }
+            setLoading(false);
+            if (appState.user.dailyBonusDate !== todayStr()) showBonus();
+            startAdResetTimer();
         }
 
         function getDefaultConfig() {
@@ -2827,9 +2797,12 @@
         // ============================================================
         window.onload = function() {
             updateNetworkStatus();
-            setLoading(true, 'ডেটা লোড হচ্ছে...');
-            // Small delay to let DOM settle
-            setTimeout(() => { initApp(false); }, 300);
+            // Show user info immediately
+            document.getElementById('u-name').innerText = tgUser.first_name || 'Guest';
+            document.getElementById('u-id').innerText = 'ID: ' + (tgUser.id || '...');
+            if (tgUser.photo_url) document.getElementById('u-img').src = tgUser.photo_url;
+
+            bootApp();
         };
     </script>
 </body>
