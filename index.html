@@ -1338,8 +1338,8 @@
         }
 
         /* ==========================================================
-               🎯 AD TIMER OVERLAY — FULLSCREEN WITH PROGRESS
-               ========================================================== */
+           🎯 AD TIMER OVERLAY — FULLSCREEN WITH PROGRESS (15s base)
+           ========================================================== */
         #adTimerOverlay {
             display: none;
             position: fixed;
@@ -1639,8 +1639,8 @@
     <div id="adErrorPopup">
         <div class="box">
             <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
-            <h3 id="adErrorTitle">⚠️ Ad Not Watched!</h3>
-            <p id="adErrorMsg">You must watch the ad for at least 10 seconds before clicking! Please watch the full ad to earn rewards.</p>
+            <h3 id="adErrorTitle">⚠️ Ad Not Completed!</h3>
+            <p id="adErrorMsg">You must watch the full ad to earn the reward. Please do not close the ad early!</p>
             <button class="btn-main" onclick="closeAdError()" style="max-width:200px; margin:0 auto; padding:12px; font-size:0.9rem;">I Understand</button>
         </div>
     </div>
@@ -1700,7 +1700,7 @@
     </div>
 
     <!-- ==========================================================
-    🎯 AD TIMER OVERLAY — Fullscreen with progress & network adapt
+    🎯 AD TIMER OVERLAY — 15s base with network adaptation
     ========================================================== -->
     <div id="adTimerOverlay">
         <div class="timer-card">
@@ -1730,7 +1730,7 @@
                     <circle class="timer-circle-progress" id="timerCircle" cx="70" cy="70" r="60" />
                 </svg>
                 <div class="timer-number">
-                    <span class="big" id="timerCountdown">30</span>
+                    <span class="big" id="timerCountdown">15</span>
                     <span class="label">seconds</span>
                 </div>
             </div>
@@ -1750,8 +1750,8 @@
 
             <!-- Extra info -->
             <div class="timer-extra">
-                <span><i class="fas fa-clock"></i> <span id="timerExtraTime">30s</span></span>
-                <span><i class="fas fa-wifi"></i> <span id="timerExtraAdapt">Adaptive</span></span>
+                <span><i class="fas fa-clock"></i> <span id="timerExtraTime">15s</span></span>
+                <span><i class="fas fa-wifi"></i> <span id="timerExtraAdapt">Standard</span></span>
             </div>
 
             <!-- Actions -->
@@ -1893,7 +1893,7 @@
     </div>
 
     <!-- ==========================================================
-    JAVASCRIPT — Full app logic + Ad Timer with network adaptation
+    JAVASCRIPT — Full app logic + 15s Ad Timer with network adaptation
     ========================================================== -->
     <script>
         // ==========================================================
@@ -1941,18 +1941,23 @@
         let maintenanceEndTime = null;
 
         // ==========================================================
-        // 🔥 AD TIMER STATE
+        // 🔥 AD TIMER STATE — 15s base
         // ==========================================================
         let adTimerState = {
             running: false,
-            totalSeconds: 30, // will be adjusted by network
-            remaining: 30,
+            totalSeconds: 15, // base 15s, adjusted by network
+            remaining: 15,
             timerId: null,
-            adSlotIndex: null, // which ad slot we're watching
+            adSlotIndex: null,
             isAdaptive: false,
             networkType: '4g',
-            paused: false
+            paused: false,
+            wasCancelled: false // track if user cancelled
         };
+
+        // Minimum watch time required to earn reward (matches the timer duration)
+        // We'll set this dynamically based on the timer duration
+        let MIN_AD_WATCH_TIME = 15;
 
         // ==========================================================
         // TOAST
@@ -1970,8 +1975,8 @@
         // AD ERROR POPUP
         // ==========================================================
         function showAdError(title, msg) {
-            document.getElementById('adErrorTitle').textContent = title || '⚠️ Ad Not Watched!';
-            document.getElementById('adErrorMsg').textContent = msg || 'You must watch the ad for at least 10 seconds before clicking!';
+            document.getElementById('adErrorTitle').textContent = title || '⚠️ Ad Not Completed!';
+            document.getElementById('adErrorMsg').textContent = msg || 'You must watch the full ad to earn the reward. Please do not close the ad early!';
             document.getElementById('adErrorPopup').classList.add('active');
         }
 
@@ -1980,37 +1985,39 @@
         }
 
         // ==========================================================
-        // NETWORK DETECTION — returns adjusted time & label
+        // NETWORK DETECTION — 15s base with adjustments
         // ==========================================================
         function getNetworkAdjustedTime() {
             const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
             if (!conn) {
-                return { seconds: 30, label: 'Unknown', type: 'good', speed: '4G' };
+                return { seconds: 15, label: 'Unknown', type: 'good', speed: '4G' };
             }
 
             const type = conn.effectiveType || '4g';
             const downlink = conn.downlink || 10;
             const rtt = conn.rtt || 100;
 
-            let seconds = 30;
+            let seconds = 15;
             let label = 'Good';
             let statusType = 'good';
             let speedLabel = type.toUpperCase();
 
-            // If slow network (2G/3G) or high latency / low downlink
+            // Slow network: add 5 seconds (20s total)
             if (type === 'slow-2g' || type === '2g' || type === '3g' || downlink < 1.5 || rtt > 400) {
-                seconds = 35; // add 5 seconds
+                seconds = 20;
                 label = 'Slow — +5s';
                 statusType = 'slow';
-            } else if (downlink < 3 || rtt > 200) {
-                seconds = 33; // add 3 seconds
+            }
+            // Fair network: add 3 seconds (18s total)
+            else if (downlink < 3 || rtt > 200) {
+                seconds = 18;
                 label = 'Fair — +3s';
                 statusType = 'slow';
             }
 
-            // If very poor, add even more
+            // Very poor: add 10 seconds (25s total)
             if (type === 'slow-2g' || downlink < 0.5) {
-                seconds = 40;
+                seconds = 25;
                 label = 'Poor — +10s';
                 statusType = 'poor';
             }
@@ -2025,19 +2032,25 @@
             if (!isOnline) { toast('No internet connection!'); return; }
             if (isAdWatching) { toast('Please wait for current ad to finish!'); return; }
 
+            // Reset cancellation flag
+            adTimerState.wasCancelled = false;
+
             // Get network-adjusted time
             const net = getNetworkAdjustedTime();
             adTimerState.totalSeconds = net.seconds;
             adTimerState.remaining = net.seconds;
             adTimerState.adSlotIndex = slotIndex;
-            adTimerState.isAdaptive = (net.seconds !== 30);
+            adTimerState.isAdaptive = (net.seconds !== 15);
             adTimerState.networkType = net.speed;
+
+            // Set minimum watch time to match the timer duration
+            MIN_AD_WATCH_TIME = net.seconds;
 
             // Update UI
             document.getElementById('timerCountdown').textContent = net.seconds;
             document.getElementById('timerExtraTime').textContent = net.seconds + 's';
-            document.getElementById('timerExtraAdapt').textContent = net.seconds === 30 ? 'Standard' : 'Adaptive +' + (net.seconds -
-                30) + 's';
+            document.getElementById('timerExtraAdapt').textContent = net.seconds === 15 ? 'Standard' : 'Adaptive +' + (net
+                .seconds - 15) + 's';
 
             // Network status
             const dot = document.getElementById('netDot');
@@ -2116,9 +2129,16 @@
                 adTimerState.timerId = null;
             }
             adTimerState.running = false;
+            adTimerState.wasCancelled = true;
+
             document.getElementById('adTimerOverlay').classList.remove('active');
             document.getElementById('app').classList.remove('blurred');
-            toast('⏹️ Ad cancelled.');
+
+            // Show error - user cancelled, no reward
+            showAdError(
+                '⏹️ Ad Cancelled!',
+                'You cancelled the ad before it finished. Please watch the full ad to earn the reward.'
+            );
         }
 
         // ==========================================================
@@ -2128,6 +2148,11 @@
             // Close timer overlay
             document.getElementById('adTimerOverlay').classList.remove('active');
             document.getElementById('app').classList.remove('blurred');
+
+            // If cancelled, don't proceed
+            if (adTimerState.wasCancelled) {
+                return;
+            }
 
             // Now call the actual ad watching function
             await watchAd(slotIndex);
@@ -2146,6 +2171,13 @@
             slotLocks[i] = true;
             isAdWatching = true;
 
+            // If user cancelled during timer, don't proceed
+            if (adTimerState.wasCancelled) {
+                slotLocks[i] = false;
+                isAdWatching = false;
+                return;
+            }
+
             const slot = appState.config.adSlots && appState.config.adSlots[i] ?
                 appState.config.adSlots[i] :
                 null;
@@ -2157,6 +2189,9 @@
                 if (!slot || !slot.network || slot.network === 'none') {
                     throw new Error('Ad not configured');
                 }
+
+                // Record start time to check if user watched full ad
+                const adStartTime = Date.now();
 
                 if (slot.network === 'monetag') {
                     if (typeof window['show_' + slot.id] === 'function') {
@@ -2182,29 +2217,58 @@
                     throw new Error('Unknown ad network');
                 }
 
-                if (success) {
-                    const r = Number(appState.config.adReward || 0.5);
-                    let newBal = (appState.user.balance || 0) + r;
-                    let newEarn = (appState.user.totalEarned || 0) + r;
-                    let newAds = appState.user.dailyAds || {};
-                    newAds[i] = (newAds[i] || 0) + 1;
+                // Check if user watched for at least the minimum required time
+                const watchDuration = (Date.now() - adStartTime) / 1000;
+                const requiredTime = MIN_AD_WATCH_TIME || 15;
 
-                    await db.ref('users/' + appState.user.id).update({
-                        balance: newBal,
-                        totalEarned: newEarn,
-                        dailyAds: newAds
-                    });
-                    toast('✅ Success! +' + r + ' TK earned!');
+                if (!success) {
+                    throw new Error('Ad not completed');
                 }
+
+                // If ad was closed too early, don't give reward
+                if (watchDuration < requiredTime * 0.6) {
+                    // User closed ad very early
+                    showAdError(
+                        '⚠️ Ad Skipped Too Early!',
+                        `You only watched for ${Math.round(watchDuration)} seconds. You must watch at least ${Math.round(requiredTime * 0.6)} seconds to earn the reward!`
+                    );
+                    slotLocks[i] = false;
+                    isAdWatching = false;
+                    return;
+                }
+
+                // Reward the user
+                const r = Number(appState.config.adReward || 0.5);
+                let newBal = (appState.user.balance || 0) + r;
+                let newEarn = (appState.user.totalEarned || 0) + r;
+                let newAds = appState.user.dailyAds || {};
+                newAds[i] = (newAds[i] || 0) + 1;
+
+                await db.ref('users/' + appState.user.id).update({
+                    balance: newBal,
+                    totalEarned: newEarn,
+                    dailyAds: newAds
+                });
+                toast('✅ Success! +' + r + ' TK earned!');
+
             } catch (e) {
-                if (e.message === 'Ad Closed') {
-                    toast('Ad closed early. Try again.');
+                // Ad was closed or failed
+                if (e.message === 'Ad Closed' || e.message === 'Ad not completed') {
+                    showAdError(
+                        '⚠️ Ad Not Completed!',
+                        'You closed the ad before it finished. Please watch the full ad to earn the reward.'
+                    );
                 } else {
-                    toast('Failed / Ad Blocked');
+                    showAdError(
+                        '⚠️ Ad Error',
+                        e.message || 'There was an error loading the ad. Please try again.'
+                    );
                 }
             } finally {
                 slotLocks[i] = false;
                 isAdWatching = false;
+                // Reset cancellation flag
+                adTimerState.wasCancelled = false;
             }
         }
 
@@ -2215,8 +2279,6 @@
             const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
             if (conn) {
                 conn.addEventListener('change', () => {
-                    // If timer is running, we could dynamically adjust, but we keep it simple:
-                    // we already set the time at start. We'll just update the display.
                     if (adTimerState.running) {
                         const net = getNetworkAdjustedTime();
                         document.getElementById('netSpeed').textContent = net.speed;
@@ -2375,7 +2437,7 @@
         }
 
         // ==========================================================
-        // RENDER ADS
+        // RENDER ADS — with 15s badge
         // ==========================================================
         function renderAds() {
             const el = document.getElementById('ad-area');
@@ -2397,9 +2459,10 @@
                 const clickAttr = (!configured || max) ? '' :
                     `onclick="startAdWatch(${i})"`;
 
+                // Show "15s" badge (will be updated dynamically via network)
                 el.innerHTML += `
                     <div class="ad-card ${extraClass} ${cardClass}" ${clickAttr} style="${!configured||max?'':'cursor:pointer;'}">
-                        ${configured && !max ? `<div class="ad-badge-timer"><i class="fas fa-hourglass-start"></i> 30s</div>` : ''}
+                        ${configured && !max ? `<div class="ad-badge-timer"><i class="fas fa-hourglass-start"></i> 15s</div>` : ''}
                         <div class="ad-inner">
                             <i class="fas ${icon}"></i> <h4>Ad Slot ${i+1}</h4>
                             <div class="reward-pill"><i class="fas fa-coins"></i> +${reward} ${sym}</div>
