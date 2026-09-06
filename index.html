@@ -14,7 +14,7 @@
 
   <style>
     /* ✅ ORIGINAL 3D PREMIUM DESIGN */
-    :root{--primary:#6C5CE7;--secondary:#A29BFE;--bg:#F0F3F8;--surface:#FFF;--text:#2D3436;--danger:#ff4757;--success:#00b894;}
+    :root{--primary:#6C5CE7;--secondary:#A29BFE;--bg:#F0F3F8;--surface:#FFF;--text:#2D3436;--danger:#ff4757;--success:#00b894;--warning:#f39c12;--gold:#FFD700;--silver:#C0C0C0;--bronze:#CD7F32;}
     *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
     body{background:var(--bg);color:var(--text);padding-bottom:90px;-webkit-tap-highlight-color:transparent;}
     #app{max-width:480px;margin:0 auto;min-height:100vh;position:relative;display:none; transition:filter .25s ease;}
@@ -182,6 +182,252 @@
     .bonus-btn:disabled{opacity:0.7;cursor:not-allowed;}
     .bonus-claim{background:linear-gradient(135deg,#6C5CE7,#A29BFE);color:#fff;}
     .bonus-close{background:rgba(255,255,255,.08);color:#e5e7eb;border:1px solid rgba(255,255,255,.12);}
+
+    /* Join Channel Modal Styles */
+    #joinModal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    #joinModal.active { display: flex; }
+    #joinModal .box {
+        background: var(--surface);
+        max-width: 400px;
+        width: 100%;
+        padding: 32px 24px;
+        border-radius: 24px;
+        text-align: center;
+        border: 1px solid rgba(108,92,231,0.1);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        animation: pop 0.3s ease-out;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    @keyframes pop {
+        from { opacity: 0; transform: scale(0.95) translateY(20px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    #joinModal .box .icon { font-size: 56px; color: var(--primary); margin-bottom: 12px; }
+    #joinModal .box h2 { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+    #joinModal .box p { font-size: 14px; color: var(--text-light); line-height: 1.6; margin-bottom: 20px; }
+    #joinModal .channel-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        padding: 14px;
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        background: var(--bg);
+        color: var(--text);
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        font-family: inherit;
+        margin-bottom: 10px;
+        text-decoration: none;
+    }
+    #joinModal .channel-btn:hover { border-color: var(--primary); background: rgba(108,92,231,0.05); }
+    #joinModal .channel-btn i { color: var(--primary); font-size: 20px; }
+    #joinModal .channel-btn.joined { border-color: var(--success); background: rgba(16,185,129,0.05); }
+    #joinModal .channel-btn.joined i { color: var(--success); }
+    #joinModal .channel-btn.joined::after { content: ' ✅'; color: var(--success); }
+    .verify-status {
+        margin-top: 12px;
+        font-size: 13px;
+        font-weight: 600;
+        min-height: 24px;
+    }
+    .verify-status.success { color: var(--success); }
+    .verify-status.error { color: var(--danger); }
+    .verify-status.loading { color: var(--warning); animation: pulseText 1s ease-in-out infinite; }
+    @keyframes pulseText { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+
+    /* Maintenance Overlay */
+    #maintenanceOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 99998;
+        background: rgba(0,0,0,0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: white;
+        text-align: center;
+        padding: 30px;
+    }
+    #maintenanceOverlay.active { display: flex; }
+    #maintenanceOverlay .icon { font-size: 64px; color: var(--warning); margin-bottom: 16px; animation: spin 3s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #maintenanceOverlay h2 { font-size: 28px; font-weight: 800; }
+    #maintenanceOverlay p { color: rgba(255,255,255,0.7); max-width: 400px; margin: 8px 0 16px; }
+    #maintenanceOverlay .time { color: var(--warning); font-weight: 600; }
+
+    /* Banned Overlay */
+    #bannedOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 99998;
+        background: rgba(0,0,0,0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: white;
+        text-align: center;
+        padding: 30px;
+    }
+    #bannedOverlay.active { display: flex; }
+    #bannedOverlay .icon { font-size: 72px; color: var(--danger); margin-bottom: 16px; }
+    #bannedOverlay h2 { font-size: 28px; font-weight: 800; }
+    #bannedOverlay p { color: rgba(255,255,255,0.7); max-width: 400px; margin: 8px 0 20px; }
+
+    /* Offline Overlay */
+    #offlineOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 99997;
+        background: rgba(0,0,0,0.8);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: white;
+        text-align: center;
+        padding: 30px;
+    }
+    #offlineOverlay.active { display: flex; }
+    #offlineOverlay .icon { font-size: 64px; color: var(--warning); margin-bottom: 16px; animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+    #offlineOverlay h2 { font-size: 24px; font-weight: 800; }
+    #offlineOverlay p { color: rgba(255,255,255,0.7); max-width: 300px; margin: 8px 0; }
+
+    /* Offline indicator on balance card */
+    .offline-indicator {
+        display: none;
+        background: rgba(243,156,18,0.2);
+        color: var(--warning);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        margin-left: 10px;
+    }
+    .offline-indicator.show { display: inline-block; }
+
+    /* Ad Error Popup */
+    #adErrorPopup {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 7000;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    #adErrorPopup.active { display: flex; }
+    #adErrorPopup .box {
+        background: var(--surface);
+        max-width: 360px;
+        width: 100%;
+        padding: 28px 24px;
+        border-radius: 20px;
+        text-align: center;
+        border: 1px solid var(--border);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        animation: pop 0.3s ease-out;
+    }
+    #adErrorPopup .box .icon { font-size: 48px; color: var(--danger); margin-bottom: 12px; }
+    #adErrorPopup .box h3 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    #adErrorPopup .box p { font-size: 14px; color: var(--text-light); line-height: 1.6; margin-bottom: 16px; }
+
+    /* Referral Level Badge */
+    .ref-level-badge {
+        display: inline-block;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        margin-top: 4px;
+    }
+    .ref-level-badge.beginner { background: rgba(108,92,231,0.15); color: var(--primary); }
+    .ref-level-badge.bronze { background: rgba(205,127,50,0.2); color: var(--bronze); }
+    .ref-level-badge.silver { background: rgba(192,192,192,0.25); color: #7a7a7a; }
+    .ref-level-badge.gold { background: rgba(255,215,0,0.25); color: #b8860b; }
+    .ref-level-badge.platinum { background: linear-gradient(135deg, rgba(108,92,231,0.2), rgba(162,155,254,0.2)); color: var(--primary); }
+
+    /* Referral History Item */
+    .ref-history-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+    }
+    .ref-history-item:last-child { border-bottom: none; }
+    .ref-history-item .name { font-weight: 600; font-size: 0.9rem; }
+    .ref-history-item .date { font-size: 0.7rem; color: var(--text-light); }
+    .ref-history-item .bonus { font-weight: 700; color: var(--success); font-size: 0.85rem; }
+
+    /* Referral Leaderboard */
+    .ref-leader-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        background: var(--bg);
+        border-radius: 12px;
+        margin-bottom: 8px;
+        border: 1px solid var(--border);
+    }
+    .ref-leader-item .rank { font-weight: 900; font-size: 1.1rem; color: var(--primary); width: 30px; text-align: center; }
+    .ref-leader-item .info { flex: 1; }
+    .ref-leader-item .info .name { font-weight: 600; font-size: 0.9rem; }
+    .ref-leader-item .info .refs { font-size: 0.75rem; color: var(--text-light); }
+    .ref-leader-item .badge { font-size: 1.2rem; }
+
+    /* Ad Reset Timer */
+    .ad-reset-timer {
+        text-align: center;
+        background: var(--bg);
+        padding: 10px 14px;
+        border-radius: 12px;
+        margin: 10px 20px 15px;
+        border: 1px solid var(--border);
+        font-size: 0.85rem;
+    }
+    .ad-reset-timer .timer-text {
+        font-weight: 700;
+        color: var(--warning);
+    }
+    .ad-reset-timer .countdown {
+        font-weight: 800;
+        font-size: 1.1rem;
+        color: var(--primary);
+    }
+    .ad-reset-timer .label {
+        color: var(--text-light);
+        font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -198,6 +444,53 @@
   </div>
 
   <div id="toast" class="toast">Alert</div>
+
+  <!-- ✅ Ad Error Popup -->
+  <div id="adErrorPopup">
+    <div class="box">
+      <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
+      <h3 id="adErrorTitle">⚠️ Ad Not Watched!</h3>
+      <p id="adErrorMsg">You must watch the ad for at least 10 seconds before clicking! Please watch the full ad to earn rewards.</p>
+      <button class="btn-main" onclick="closeAdError()" style="max-width:200px; margin:0 auto; padding:12px; font-size:0.9rem;">I Understand</button>
+    </div>
+  </div>
+
+  <!-- ✅ Maintenance Overlay -->
+  <div id="maintenanceOverlay">
+    <div class="icon"><i class="fas fa-tools"></i></div>
+    <h2>🔧 Under Maintenance</h2>
+    <p id="maintenanceMsg">We're currently updating our system. Please check back later.</p>
+    <div class="time" id="maintenanceTime">⏳ Estimated time: 30 minutes</div>
+  </div>
+
+  <!-- ✅ Banned Overlay -->
+  <div id="bannedOverlay">
+    <div class="icon"><i class="fas fa-ban"></i></div>
+    <h2>🚫 Account Banned</h2>
+    <p id="banReason">Your account has been suspended due to violation of our terms of service.</p>
+    <button class="btn-main" onclick="openSupport()" style="max-width:280px; margin:0 auto; background: linear-gradient(135deg, #6C5CE7, #A29BFE);">
+      <i class="fas fa-headset"></i> Contact Support
+    </button>
+  </div>
+
+  <!-- ✅ Offline Overlay -->
+  <div id="offlineOverlay">
+    <div class="icon"><i class="fas fa-wifi-slash"></i></div>
+    <h2>No Internet Connection</h2>
+    <p>Please check your internet connection and try again.</p>
+    <p style="font-size:0.8rem; opacity:0.5; margin-top:10px;">⏳ Waiting for network...</p>
+  </div>
+
+  <!-- ✅ Join Channel Modal -->
+  <div id="joinModal">
+    <div class="box">
+      <div class="icon">📢</div>
+      <h2>Join Our Channels</h2>
+      <p>Please join all Telegram channels below to access the dashboard.</p>
+      <div id="channelLinks"></div>
+      <div class="verify-status" id="verifyStatus"></div>
+    </div>
+  </div>
 
   <!-- ✅ Daily Bonus Modal -->
   <div id="bonusOverlay" class="bonus-overlay">
@@ -225,12 +518,18 @@
       </div>
     </div>
     <div class="balance-card">
-      <div class="bal-title">Total Balance</div>
+      <div class="bal-title">Total Balance <span class="offline-indicator" id="offlineIndicator"><i class="fas fa-wifi-slash"></i> Offline</span></div>
       <div class="bal-amt"><span id="u-bal">0.00</span> <span class="currency">টাকা</span></div>
       <div class="stats">
         <div class="stat-box"><h4 id="u-earn">0.00</h4><p>Earned</p></div>
         <div class="stat-box"><h4 id="u-ref">0</h4><p>Referrals</p></div>
       </div>
+    </div>
+
+    <!-- Ad Reset Timer -->
+    <div class="ad-reset-timer" id="adResetTimer">
+      <span class="label">🔄 Next Ad Reset in:</span>
+      <span class="countdown" id="resetCountdown">--:--:--</span>
     </div>
 
     <!-- ================= TAB 1: HOME ================= -->
@@ -252,12 +551,36 @@
     <!-- ================= TAB 2: REFERRAL ================= -->
     <div id="page-referral" class="page-section">
       <div class="premium-card">
-        <div class="card-title"><i class="fas fa-link" style="color:#0984e3;"></i> Your Referral Link</div>
-        <p style="font-size:0.85rem; color:#555; margin-bottom:12px; font-weight:600;">এই লিংকটি শেয়ার করুন। বন্ধুরা যোগ দিলে আপনি <b id="ref-bonus-txt" style="color:var(--primary);">...</b> পাবেন।</p>
+        <div class="card-title"><i class="fas fa-users" style="color:#0984e3;"></i> Referral Program</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+          <div style="background:var(--bg); padding:12px; border-radius:12px; text-align:center;">
+            <div style="font-size:1.5rem; font-weight:800; color:var(--primary);" id="refTotalCount">0</div>
+            <div style="font-size:0.7rem; color:var(--text-light);">Total Referrals</div>
+          </div>
+          <div style="background:var(--bg); padding:12px; border-radius:12px; text-align:center;">
+            <div style="font-size:1.5rem; font-weight:800; color:var(--success);" id="refTotalBonus">0 TK</div>
+            <div style="font-size:0.7rem; color:var(--text-light);">Referral Bonus</div>
+          </div>
+        </div>
+        <div style="text-align:center; margin-bottom:12px;">
+          <span class="ref-level-badge beginner" id="refLevelBadge">⭐ BEGINNER</span>
+        </div>
         <div class="ref-link-box" id="ref-link-text">Loading...</div>
-        <div class="flex-btns">
+        <div class="flex-btns" style="margin-top:10px;">
           <button class="btn-blue" onclick="shareLink()"><i class="fab fa-telegram-plane"></i> শেয়ার করুন</button>
           <button class="btn-dark" onclick="copyLink()"><i class="fas fa-copy"></i></button>
+        </div>
+      </div>
+      <div class="premium-card">
+        <div class="card-title"><i class="fas fa-history" style="color:#f39c12;"></i> Referral History</div>
+        <div id="refHistoryList">
+          <p style="text-align:center; color:#999; padding:10px 0;">No referrals yet.</p>
+        </div>
+      </div>
+      <div class="premium-card">
+        <div class="card-title"><i class="fas fa-trophy" style="color:var(--gold);"></i> Top Referrers</div>
+        <div id="refLeaderList">
+          <p style="text-align:center; color:#999; padding:10px 0;">Loading...</p>
         </div>
       </div>
       <div class="premium-card">
@@ -278,11 +601,42 @@
     <div id="page-withdraw" class="page-section">
       <div class="premium-card">
         <div class="card-title"><i class="fas fa-wallet" style="color:var(--primary);"></i> Withdraw Funds</div>
+        
+        <div id="withdrawInfo" style="background:var(--bg); padding:14px; border-radius:12px; margin-bottom:15px; border:1px solid var(--border);">
+          <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:0.9rem;">
+            <span style="color:var(--text-light);">📋 Withdraw Level</span>
+            <span style="font-weight:700; color:var(--primary);" id="wdLevel">Level 1</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:0.9rem;">
+            <span style="color:var(--text-light);">👥 Required Referrals</span>
+            <span style="font-weight:700; color:var(--warning);" id="wdRequiredRefs">5</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:0.9rem;">
+            <span style="color:var(--text-light);">💳 Withdraw Fee</span>
+            <span style="font-weight:700; color:var(--danger);" id="wdFee">5%</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:0.9rem;">
+            <span style="color:var(--text-light);">⏱️ Processing Time</span>
+            <span style="font-weight:700; color:var(--success);" id="wdTime">24-48 Hours</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:4px 0; font-size:0.9rem;">
+            <span style="color:var(--text-light);">💵 Amount Range</span>
+            <span style="font-weight:700; color:var(--primary);" id="wdRange">10 - 500 TK</span>
+          </div>
+        </div>
+
         <div class="input-group"><select id="wd-method"><option value="">Loading Methods...</option></select></div>
         <div class="input-group"><input type="text" id="wd-account" placeholder="Account Number"></div>
         <div class="input-group"><input type="number" id="wd-amount" placeholder="Amount"></div>
         <button class="btn-main" onclick="requestWithdraw()"><i class="fas fa-paper-plane"></i> Request Withdraw</button>
-        <div style="font-size: 0.8rem; color: #ff4757; text-align: center; margin-top: 15px; font-weight: 700;" id="wd-notice">Minimum withdraw: ...</div>
+        <div style="font-size: 0.8rem; text-align: center; margin-top: 15px; font-weight: 700;" id="wd-notice">Minimum withdraw: ...</div>
+      </div>
+
+      <div class="premium-card" style="margin-top:20px;">
+        <div class="card-title"><i class="fas fa-history" style="color:#f39c12;"></i> Withdraw History</div>
+        <div id="historyList">
+          <p style="text-align:center; color:#999; padding:20px 0;">Loading history...</p>
+        </div>
       </div>
     </div>
 
@@ -298,7 +652,7 @@
 
   <script>
     // ===================================================
-    // ✅ REPLACED WITH YOUR GIVEN FIREBASE CONFIG
+    // ✅ FIREBASE CONFIG
     // ===================================================
     const firebaseConfig = {
       apiKey: "AIzaSyC_WvNxSQQ58TcJhDcBw5NUrAZjOQe1T2g",
@@ -314,10 +668,149 @@
     const tg = window.Telegram.WebApp;
     if(tg){ try{ tg.ready(); tg.expand(); }catch(e){} }
 
-    let appState = { user: { balance:0, totalEarned:0, referrals:0, dailyAds:{}, taskHistory:{} }, config: { adSlots:[], webTasks:{} } };
+    // ===================================================
+    // ✅ BOT CONFIGURATION
+    // ===================================================
+    const BOT_USERNAME = "NexEarn2_Bot";
+    const BOT_TOKEN = "8072034659:AAE_I05sswA8gBYVOSHtjGEf1LE6i6aq0T8";
+    const ADMIN_ID = "6624254778";
+    const SUPPORT_LINK = "https://t.me/NexEarn2Support";
+
+    // ===================================================
+    // ✅ REFERRAL LEVELS
+    // ===================================================
+    const REFERRAL_LEVELS = {
+      BEGINNER: { min: 0, label: '⭐ BEGINNER', class: 'beginner', icon: '🌟' },
+      BRONZE: { min: 5, label: '🥉 BRONZE', class: 'bronze', icon: '🥉' },
+      SILVER: { min: 15, label: '🥈 SILVER', class: 'silver', icon: '🥈' },
+      GOLD: { min: 30, label: '🥇 GOLD', class: 'gold', icon: '🥇' },
+      PLATINUM: { min: 50, label: '👑 PLATINUM', class: 'platinum', icon: '👑' }
+    };
+
+    function getReferralLevel(refs) {
+      if (refs >= 50) return REFERRAL_LEVELS.PLATINUM;
+      if (refs >= 30) return REFERRAL_LEVELS.GOLD;
+      if (refs >= 15) return REFERRAL_LEVELS.SILVER;
+      if (refs >= 5) return REFERRAL_LEVELS.BRONZE;
+      return REFERRAL_LEVELS.BEGINNER;
+    }
+
+    // ===================================================
+    // ✅ AD RESET SYSTEM
+    // ===================================================
+    let adResetInterval = null;
+    let adResetEndTime = null;
+
+    function getAdResetTime() {
+      const hours = appState.config.adResetHour || 0;
+      const now = new Date();
+      const resetTime = new Date(now);
+      resetTime.setHours(hours, 0, 0, 0);
+      
+      if (resetTime <= now) {
+        resetTime.setDate(resetTime.getDate() + 1);
+      }
+      return resetTime;
+    }
+
+    function updateAdResetTimer() {
+      const now = Date.now();
+      const resetTime = getAdResetTime();
+      const diff = Math.max(0, Math.floor((resetTime.getTime() - now) / 1000));
+      
+      const hours = Math.floor(diff / 3600);
+      const minutes = Math.floor((diff % 3600) / 60);
+      const seconds = diff % 60;
+      
+      document.getElementById('resetCountdown').textContent = 
+        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      
+      if (diff <= 0) {
+        document.getElementById('resetCountdown').textContent = '🔄 Resetting...';
+        resetDailyAds();
+      }
+    }
+
+    async function resetDailyAds() {
+      try {
+        await db.ref('users/' + tgUser.id).update({ 
+          dailyAds: {}, 
+          lastActive: todayStr() 
+        });
+        appState.user.dailyAds = {};
+        renderAds();
+        toast('🔄 Ads reset! You can watch again.');
+      } catch(e) {
+        console.error('Reset error:', e);
+      }
+    }
+
+    function startAdResetTimer() {
+      if (adResetInterval) clearInterval(adResetInterval);
+      updateAdResetTimer();
+      adResetInterval = setInterval(updateAdResetTimer, 1000);
+    }
+
+    // ===================================================
+    // ✅ WITHDRAW CONFIG
+    // ===================================================
+    let withdrawLevels = [];
+
+    let appState = { user: { balance:0, totalEarned:0, referrals:0, dailyAds:{}, taskHistory:{}, withdrawCount:0, referralHistory:[] }, config: { adSlots:[], webTasks:{} } };
     let isBooted = false;
+    let loadingTimeout = null;
     let tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : {id: '123456', first_name: 'Guest User', photo_url: 'https://via.placeholder.com/100'};
 
+    // ===================================================
+    // ✅ CHANNEL VERIFICATION STATE
+    // ===================================================
+    let channelVerified = false;
+    let channelLinks = [];
+    let verifyInterval = null;
+
+    // ===================================================
+    // ✅ NETWORK STATE
+    // ===================================================
+    let isOnline = navigator.onLine;
+
+    // ===================================================
+    // ✅ AD WATCH STATE
+    // ===================================================
+    let isAdWatching = false;
+    let adWatchStartTime = 0;
+    const MIN_AD_WATCH_TIME = 10;
+
+    // ===================================================
+    // ✅ LOADER MANAGEMENT - FIXED
+    // ===================================================
+    function setLoading(isLoading) {
+      const loader = document.getElementById('loader');
+      const app = document.getElementById('app');
+      if (isLoading) {
+        loader.style.display = 'flex';
+        app.style.display = 'none';
+        if (loadingTimeout) clearTimeout(loadingTimeout);
+        loadingTimeout = setTimeout(() => {
+          if (!isBooted) {
+            console.warn('⚠️ Loading timeout! Forcing app show...');
+            loader.style.display = 'none';
+            app.style.display = 'block';
+            toast('⏳ Loading took too long. Please refresh if data missing.');
+          }
+        }, 15000);
+      } else {
+        loader.style.display = 'none';
+        app.style.display = 'block';
+        if (loadingTimeout) {
+          clearTimeout(loadingTimeout);
+          loadingTimeout = null;
+        }
+      }
+    }
+
+    // ===================================================
+    // ✅ TOAST FUNCTION
+    // ===================================================
     function toast(msg) {
       const t = document.getElementById('toast');
       t.innerText = msg; t.classList.add('show');
@@ -325,15 +818,277 @@
     }
     function todayStr() { return new Date().toISOString().slice(0, 10); }
 
+    // ===================================================
+    // ✅ AD ERROR POPUP
+    // ===================================================
+    function showAdError(title, msg) {
+      document.getElementById('adErrorTitle').textContent = title || '⚠️ Ad Not Watched!';
+      document.getElementById('adErrorMsg').textContent = msg || 'You must watch the ad for at least 10 seconds before clicking!';
+      document.getElementById('adErrorPopup').classList.add('active');
+    }
+
+    function closeAdError() {
+      document.getElementById('adErrorPopup').classList.remove('active');
+    }
+
+    // ===================================================
+    // ✅ NETWORK MANAGEMENT
+    // ===================================================
+    function updateNetworkStatus() {
+      isOnline = navigator.onLine;
+      const offlineOverlay = document.getElementById('offlineOverlay');
+      const indicator = document.getElementById('offlineIndicator');
+      
+      if (!isOnline) {
+        offlineOverlay.classList.add('active');
+        indicator.classList.add('show');
+        document.getElementById('app').style.display = 'none';
+      } else {
+        offlineOverlay.classList.remove('active');
+        indicator.classList.remove('show');
+        if (isBooted && !document.getElementById('joinModal').classList.contains('active')) {
+          document.getElementById('app').style.display = 'block';
+        }
+      }
+    }
+
+    window.addEventListener('online', () => {
+      updateNetworkStatus();
+      toast('🔄 Internet reconnected!');
+    });
+    window.addEventListener('offline', () => {
+      updateNetworkStatus();
+      toast('⚠️ No internet connection!');
+    });
+
+    // ===================================================
+    // ✅ SWITCH TAB
+    // ===================================================
     function switchTab(tabId, el) {
+      if (!isOnline) { toast('No internet connection!'); return; }
       document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       document.getElementById('page-' + tabId).classList.add('active');
       el.classList.add('active');
       if(tabId === 'leaderboard') loadLeaderboard();
+      if(tabId === 'withdraw') { loadWithdrawHistory(); updateWithdrawInfo(); }
+      if(tabId === 'referral') { loadReferralHistory(); loadReferralLeaderboard(); updateReferralUI(); }
       if(tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
     }
 
+    // ===================================================
+    // ✅ UPDATE REFERRAL UI
+    // ===================================================
+    function updateReferralUI() {
+      const refs = appState.user.referrals || 0;
+      const bonus = (refs || 0) * (appState.config.refBonus || 5);
+      const level = getReferralLevel(refs);
+      
+      document.getElementById('refTotalCount').textContent = refs;
+      document.getElementById('refTotalBonus').textContent = bonus + ' TK';
+      
+      const badge = document.getElementById('refLevelBadge');
+      badge.textContent = level.icon + ' ' + level.label;
+      badge.className = 'ref-level-badge ' + level.class;
+    }
+
+    // ===================================================
+    // ✅ REFERRAL HISTORY
+    // ===================================================
+    async function loadReferralHistory() {
+      if (!isOnline) { return; }
+      try {
+        const snap = await db.ref('users/' + tgUser.id + '/referralHistory').once('value');
+        const container = document.getElementById('refHistoryList');
+        
+        if (!snap.exists()) {
+          container.innerHTML = '<p style="text-align:center; color:#999; padding:10px 0;">No referrals yet.</p>';
+          return;
+        }
+        
+        let html = '';
+        let count = 0;
+        snap.forEach(child => {
+          const data = child.val();
+          count++;
+          html += `
+            <div class="ref-history-item">
+              <div>
+                <div class="name">${data.name || 'User'}</div>
+                <div class="date">${new Date(data.timestamp).toLocaleDateString('bn-BD')}</div>
+              </div>
+              <div class="bonus">+${data.bonus || 5} TK</div>
+            </div>
+          `;
+        });
+        
+        container.innerHTML = html || '<p style="text-align:center; color:#999; padding:10px 0;">No referrals yet.</p>';
+      } catch(e) {
+        console.error('Error loading referral history:', e);
+      }
+    }
+
+    // ===================================================
+    // ✅ REFERRAL LEADERBOARD
+    // ===================================================
+    async function loadReferralLeaderboard() {
+      if (!isOnline) { return; }
+      try {
+        const snap = await db.ref('users').orderByChild('referrals').limitToLast(10).once('value');
+        const container = document.getElementById('refLeaderList');
+        
+        let users = [];
+        snap.forEach(child => {
+          const u = child.val();
+          if (u.referrals > 0) {
+            users.push({ id: child.key, name: u.name || 'User', referrals: u.referrals || 0 });
+          }
+        });
+        
+        users.sort((a, b) => b.referrals - a.referrals);
+        
+        if (users.length === 0) {
+          container.innerHTML = '<p style="text-align:center; color:#999; padding:10px 0;">No referrers yet.</p>';
+          return;
+        }
+        
+        let html = '';
+        const medals = ['🥇', '🥈', '🥉'];
+        users.forEach((u, i) => {
+          const medal = i < 3 ? medals[i] : `#${i+1}`;
+          html += `
+            <div class="ref-leader-item">
+              <div class="rank">${medal}</div>
+              <div class="info">
+                <div class="name">${u.name}</div>
+                <div class="refs">👥 ${u.referrals} referrals</div>
+              </div>
+              <div class="badge">${getReferralLevel(u.referrals).icon}</div>
+            </div>
+          `;
+        });
+        
+        container.innerHTML = html;
+      } catch(e) {
+        console.error('Error loading referral leaderboard:', e);
+      }
+    }
+
+    // ===================================================
+    // ✅ GET WITHDRAW LEVEL
+    // ===================================================
+    function getWithdrawLevel() {
+      if (!withdrawLevels || withdrawLevels.length === 0) {
+        return { level: 1, requiredRefs: 5, fee: 5, minAmount: 10, maxAmount: 100, time: "24-48 Hours" };
+      }
+      
+      const count = appState.user.withdrawCount || 0;
+      const refs = appState.user.referrals || 0;
+      
+      let eligibleLevel = withdrawLevels[0];
+      for (let i = 0; i < withdrawLevels.length; i++) {
+        const level = withdrawLevels[i];
+        if (refs >= level.requiredRefs) {
+          eligibleLevel = level;
+        } else {
+          break;
+        }
+      }
+      
+      if (count > 0) {
+        const levelIndex = Math.min(count, withdrawLevels.length - 1);
+        const levelByCount = withdrawLevels[levelIndex];
+        const eligibleIndex = withdrawLevels.indexOf(eligibleLevel);
+        const finalIndex = Math.max(eligibleIndex, levelIndex);
+        return withdrawLevels[Math.min(finalIndex, withdrawLevels.length - 1)];
+      }
+      
+      return eligibleLevel;
+    }
+
+    function updateWithdrawInfo() {
+      const level = getWithdrawLevel();
+      const refs = appState.user.referrals || 0;
+      
+      document.getElementById('wdLevel').textContent = `Level ${level.level || 1}`;
+      document.getElementById('wdRequiredRefs').textContent = level.requiredRefs || 5;
+      document.getElementById('wdFee').textContent = (level.fee || 5) + '%';
+      document.getElementById('wdTime').textContent = level.time || "24-48 Hours";
+      document.getElementById('wdRange').textContent = `${level.minAmount || 10} - ${level.maxAmount || 100} TK`;
+      
+      const canWithdraw = refs >= (level.requiredRefs || 5);
+      const notice = document.getElementById('wd-notice');
+      if (!canWithdraw) {
+        notice.textContent = `⚠️ Need ${(level.requiredRefs || 5) - refs} more referrals for Level ${level.level || 1}`;
+        notice.style.color = '#ff4757';
+      } else {
+        notice.textContent = `✅ Eligible for withdraw (Level ${level.level || 1})`;
+        notice.style.color = '#00b894';
+      }
+    }
+
+    // ===================================================
+    // ✅ MAINTENANCE CHECK
+    // ===================================================
+    let maintenanceTimer = null;
+    let maintenanceEndTime = null;
+
+    function checkMaintenance() {
+      if (appState.config && appState.config.maintenance && appState.config.maintenance.active) {
+        document.getElementById('maintenanceOverlay').classList.add('active');
+        document.getElementById('maintenanceMsg').textContent = appState.config.maintenance.message || 'We\'re updating our system.';
+        
+        if (appState.config.maintenance.estimatedMinutes) {
+          const minutes = parseInt(appState.config.maintenance.estimatedMinutes) || 30;
+          maintenanceEndTime = Date.now() + (minutes * 60 * 1000);
+          updateMaintenanceTimer();
+          if (maintenanceTimer) clearInterval(maintenanceTimer);
+          maintenanceTimer = setInterval(updateMaintenanceTimer, 1000);
+        }
+        document.getElementById('app').style.display = 'none';
+        return true;
+      } else {
+        document.getElementById('maintenanceOverlay').classList.remove('active');
+        if (maintenanceTimer) { clearInterval(maintenanceTimer); maintenanceTimer = null; }
+        return false;
+      }
+    }
+
+    function updateMaintenanceTimer() {
+      if (!maintenanceEndTime) return;
+      const diff = Math.max(0, Math.floor((maintenanceEndTime - Date.now()) / 1000));
+      const mins = Math.floor(diff / 60);
+      const secs = diff % 60;
+      document.getElementById('maintenanceTime').textContent = `⏳ ${mins}m ${secs}s remaining`;
+      if (diff <= 0) {
+        clearInterval(maintenanceTimer);
+        maintenanceTimer = null;
+        db.ref('config/maintenance').once('value').then(snap => {
+          if (snap.exists() && !snap.val().active) {
+            document.getElementById('maintenanceOverlay').classList.remove('active');
+          }
+        });
+      }
+    }
+
+    // ===================================================
+    // ✅ BAN CHECK
+    // ===================================================
+    function checkBan() {
+      if (appState.user && appState.user.isBanned) {
+        document.getElementById('bannedOverlay').classList.add('active');
+        document.getElementById('banReason').textContent = appState.user.banReason || 'Your account has been suspended.';
+        document.getElementById('app').style.display = 'none';
+        return true;
+      } else {
+        document.getElementById('bannedOverlay').classList.remove('active');
+        return false;
+      }
+    }
+
+    // ===================================================
+    // ✅ PRELOAD ADS
+    // ===================================================
     function preloadAds() {
       const slots = appState.config.adSlots || [];
       slots.forEach(slot => {
@@ -349,6 +1104,9 @@
       });
     }
 
+    // ===================================================
+    // ✅ UPDATE UI ELEMENTS
+    // ===================================================
     function updateTextElements() {
       const sym = appState.config.currencySymbol || "TK";
       document.getElementById('u-bal').innerText = (appState.user.balance || 0).toFixed(2);
@@ -359,7 +1117,6 @@
       document.getElementById('ref-link-text').innerText = getRefLink();
       document.getElementById('ref-bonus-txt').innerText = (appState.config.refBonus || 5) + " " + sym;
       document.getElementById('bonusAmt').innerText = appState.config.dailyBonusAmount || 20;
-      document.getElementById('wd-notice').innerText = appState.config.withdrawNotice || `Minimum withdraw: ${appState.config.minWithdraw||10} ${sym}`;
 
       const wdSel = document.getElementById('wd-method'); 
       let currentVal = wdSel.value;
@@ -369,14 +1126,33 @@
           wdSel.innerHTML += `<option value="${m}" ${currentVal===m?'selected':''}>${m}</option>`;
         });
       }
+      
+      if (appState.config.withdrawLevels && Array.isArray(appState.config.withdrawLevels) && appState.config.withdrawLevels.length > 0) {
+        withdrawLevels = appState.config.withdrawLevels;
+      } else {
+        withdrawLevels = [
+          { level: 1, requiredRefs: 5, fee: 5, minAmount: 10, maxAmount: 100, time: "24-48 Hours" },
+          { level: 2, requiredRefs: 7, fee: 4, minAmount: 10, maxAmount: 200, time: "24-48 Hours" },
+          { level: 3, requiredRefs: 7, fee: 3, minAmount: 10, maxAmount: 300, time: "12-24 Hours" },
+          { level: 4, requiredRefs: 7, fee: 2, minAmount: 10, maxAmount: 400, time: "12-24 Hours" },
+          { level: 5, requiredRefs: 7, fee: 1, minAmount: 10, maxAmount: 500, time: "6-12 Hours" }
+        ];
+      }
+      
+      updateWithdrawInfo();
+      updateReferralUI();
     }
 
+    // ===================================================
+    // ✅ RENDER ADS
+    // ===================================================
     function renderAds() {
       const el = document.getElementById('ad-area'); el.innerHTML = '';
       const slots = appState.config.adSlots || [];
       const limit = Number(appState.config.dailyAdLimit || 10);
       const reward = Number(appState.config.adReward || 0.5);
       const sym = appState.config.currencySymbol || "TK";
+      const totalWatched = Object.values(appState.user.dailyAds || {}).reduce((a, b) => a + b, 0);
 
       for (let i=0; i<4; i++) {
         const slot = slots[i];
@@ -388,7 +1164,7 @@
         const icon = (i===0?'fa-play':i===1?'fa-circle-play':i===2?'fa-bolt':'fa-gem');
 
         el.innerHTML += `
-          <div class="ad-card ${extraClass} ${cardClass}" onclick="${(!configured||max)?'':'watchAd('+i+')'}">
+          <div class="ad-card ${extraClass} ${cardClass}" onclick="${(!configured||max)?'':'startAdWatch('+i+')'}">
             <div class="ad-inner">
               <i class="fas ${icon}"></i> <h4>Ad Slot ${i+1}</h4>
               <div class="reward-pill"><i class="fas fa-coins"></i> +${reward} ${sym}</div>
@@ -396,11 +1172,32 @@
             </div>
           </div>`;
       }
+
+      const totalSlots = slots.filter(s => s && s.network && s.network !== 'none').length || 4;
+      const totalLimit = totalSlots * limit;
+      if (totalWatched >= totalLimit) {
+        toast('🎉 All ads watched! Waiting for reset...');
+      }
     }
 
-    let slotLocks = {};
+    // ===================================================
+    // ✅ AD WATCH SYSTEM
+    // ===================================================
+    function startAdWatch(i) {
+      if (!isOnline) { toast('No internet connection!'); return; }
+      if (isAdWatching) { toast('Please wait for current ad to finish!'); return; }
+      
+      isAdWatching = true;
+      adWatchStartTime = Date.now();
+      
+      toast(`⏳ Watching ad... Please watch for ${MIN_AD_WATCH_TIME} seconds!`);
+      
+      watchAd(i);
+    }
+
     async function watchAd(i) {
-      if(slotLocks[i]) return; slotLocks[i] = true;
+      if(slotLocks[i]) return;
+      slotLocks[i] = true;
       const slot = appState.config.adSlots[i];
       try {
         toast('Loading Ad...');
@@ -423,6 +1220,18 @@
         }
 
         if(success) {
+          const watchTime = (Date.now() - adWatchStartTime) / 1000;
+          
+          if (watchTime < MIN_AD_WATCH_TIME) {
+            isAdWatching = false;
+            slotLocks[i] = false;
+            showAdError(
+              '⚠️ Ad Not Watched!',
+              `You only watched for ${Math.round(watchTime)} seconds. You must watch for at least ${MIN_AD_WATCH_TIME} seconds to earn the reward!`
+            );
+            return;
+          }
+          
           const r = Number(appState.config.adReward || 0.5);
           let newBal = (appState.user.balance || 0) + r;
           let newEarn = (appState.user.totalEarned || 0) + r;
@@ -430,13 +1239,34 @@
           newAds[i] = (newAds[i] || 0) + 1;
           
           await db.ref('users/' + appState.user.id).update({ balance: newBal, totalEarned: newEarn, dailyAds: newAds });
-          toast('Success! +'+r);
+          toast('✅ Success! +' + r + ' TK earned!');
+          renderAds();
         }
       } catch(e) { 
-        toast(e.message === "Ad Closed" ? "Ad Closed!" : 'Failed/Ad Blocked'); 
-      } finally { slotLocks[i] = false; }
+        if (e.message === "Ad Closed") {
+          const watchTime = (Date.now() - adWatchStartTime) / 1000;
+          if (watchTime < MIN_AD_WATCH_TIME) {
+            showAdError(
+              '⚠️ Ad Skipped!',
+              `You closed the ad after ${Math.round(watchTime)} seconds. You must watch at least ${MIN_AD_WATCH_TIME} seconds to earn the reward!`
+            );
+          } else {
+            toast('Ad Closed! Try again.');
+          }
+        } else {
+          toast('Failed/Ad Blocked');
+        }
+      } finally { 
+        slotLocks[i] = false;
+        isAdWatching = false;
+      }
     }
 
+    let slotLocks = {};
+
+    // ===================================================
+    // ✅ RENDER TASKS
+    // ===================================================
     function renderTasks() {
       const el = document.getElementById('task-area'); el.innerHTML = '';
       const tasks = appState.config.webTasks || {};
@@ -460,6 +1290,7 @@
     }
 
     function runTask(id) {
+      if (!isOnline) { toast('No internet connection!'); return; }
       const t = appState.config.webTasks[id];
       if(tg && tg.openLink) tg.openLink(t.url); else window.open(t.url, '_blank');
       const btn = document.getElementById('btn-'+id);
@@ -471,6 +1302,7 @@
     }
 
     async function claimTask(id, t) {
+      if (!isOnline) { toast('No internet connection!'); return; }
       const newBal = (appState.user.balance || 0) + Number(t.reward); 
       const newEarn = (appState.user.totalEarned || 0) + Number(t.reward);
       let th = appState.user.taskHistory || {}; th[id] = true;
@@ -478,7 +1310,11 @@
       toast('Claimed Successfully!');
     }
 
+    // ===================================================
+    // ✅ BONUS SYSTEM
+    // ===================================================
     function showBonus(){ 
+      if (!isOnline) { toast('No internet connection!'); return; }
       if(appState.user.dailyBonusDate === todayStr()) {
         toast("আজকের বোনাস আগেই নেওয়া হয়েছে!"); return;
       }
@@ -492,6 +1328,7 @@
     }
 
     async function claimDailyBonus() {
+      if (!isOnline) { toast('No internet connection!'); return; }
       const btn = document.getElementById('btnClaimBonus'); 
       const btnCancel = document.getElementById('btnCancelBonus');
       const subText = document.getElementById('bonusSubText');
@@ -502,7 +1339,6 @@
         const agSlot = slots.find(s => s.network === 'adsgram');
         const mtSlot = slots.find(s => s.network === 'monetag');
 
-        // 1. Show Adsgram Ad First
         if (agSlot && agSlot.id) {
           subText.innerText = "১ম অ্যাড লোড হচ্ছে (Adsgram)... অ্যাডটি সম্পূর্ণ দেখুন।";
           btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading Ad 1...';
@@ -512,7 +1348,6 @@
           if(!res || res.done !== true) throw new Error("Ad Closed or Cancelled");
         }
 
-        // 2. Show Monetag Ad Second
         if (mtSlot && mtSlot.id) {
           subText.innerText = "২য় অ্যাড লোড হচ্ছে (Monetag)... এটি শেষ অ্যাড।";
           btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading Ad 2...';
@@ -523,7 +1358,6 @@
           }
         }
 
-        // 3. Claim Money
         btn.innerHTML = '<i class="fas fa-check"></i> Claiming...';
         subText.innerText = "অ্যাড দেখা সফল হয়েছে! বোনাস যোগ করা হচ্ছে...";
         
@@ -548,15 +1382,33 @@
       }
     }
 
+    // ===================================================
+    // ✅ WITHDRAW SYSTEM
+    // ===================================================
     async function requestWithdraw() {
+      if (!isOnline) { toast('No internet connection!'); return; }
+      
       const method = document.getElementById('wd-method').value;
-      const account = document.getElementById('wd-account').value;
+      const account = document.getElementById('wd-account').value.trim();
       const amount = Number(document.getElementById('wd-amount').value);
-      const minWd = Number(appState.config.minWithdraw || 10);
+      
+      const level = getWithdrawLevel();
+      const refs = appState.user.referrals || 0;
+      
+      if (refs < (level.requiredRefs || 5)) {
+        toast(`❌ Need ${(level.requiredRefs || 5)} referrals for Level ${level.level || 1} withdrawal!`);
+        return;
+      }
+      
+      if(!method) return toast('Please select a payment method.');
+      if(!account || account.length < 3) return toast('Please enter a valid account number.');
+      if(isNaN(amount) || amount <= 0) return toast('Please enter a valid amount.');
+      if(amount < (level.minAmount || 10)) return toast(`Minimum withdraw is ${level.minAmount || 10} TK.`);
+      if(amount > (level.maxAmount || 100)) return toast(`Maximum withdraw is ${level.maxAmount || 100} TK for Level ${level.level || 1}.`);
+      if(amount > appState.user.balance) return toast('Insufficient balance.');
 
-      if(!method || !account || !amount) return toast('Fill all fields');
-      if(amount < minWd) return toast(`Minimum is ${minWd}`);
-      if(amount > appState.user.balance) return toast('Insufficient balance');
+      const feeAmount = (amount * (level.fee || 5)) / 100;
+      const netAmount = amount - feeAmount;
 
       try {
         const wdId = 'WD' + Date.now();
@@ -565,126 +1417,204 @@
           userName: appState.user.name || 'User', 
           method: method, 
           account: account, 
-          amount: amount, 
+          amount: amount,
+          fee: feeAmount,
+          netAmount: netAmount,
+          level: level.level || 1,
+          requiredRefs: level.requiredRefs || 5,
           status: 'pending', 
           timestamp: Date.now() 
         });
-        await db.ref('users/' + appState.user.id).update({ balance: appState.user.balance - amount });
+        
+        const newCount = (appState.user.withdrawCount || 0) + 1;
+        await db.ref('users/' + appState.user.id).update({ 
+          balance: appState.user.balance - amount,
+          withdrawCount: newCount
+        });
         
         document.getElementById('wd-account').value = ''; document.getElementById('wd-amount').value = '';
-        toast('Withdraw Request Sent Successfully!');
+        toast(`✅ Withdraw Request Sent! Fee: ${feeAmount.toFixed(2)} TK`);
+
+        await sendNotification(tgUser.id, 
+          `✅ <b>Withdraw Request Submitted!</b>\n\n` +
+          `💰 Amount: ${amount} TK\n` +
+          `💳 Fee: ${feeAmount.toFixed(2)} TK (${level.fee || 5}%)\n` +
+          `💵 Net: ${netAmount.toFixed(2)} TK\n` +
+          `📊 Level: ${level.level || 1}\n` +
+          `🏦 Method: ${method}\n` +
+          `📅 Date: ${new Date().toLocaleDateString('bn-BD')}\n\n` +
+          `⏳ Processing time: ${level.time || '24-48 Hours'}`
+        );
+        
+        await sendNotification(ADMIN_ID,
+          `💰 <b>New Withdraw Request</b>\n\n` +
+          `👤 User: ${appState.user.name}\n` +
+          `🆔 ID: ${tgUser.id}\n` +
+          `💵 Amount: ${amount} TK\n` +
+          `💳 Fee: ${feeAmount.toFixed(2)} TK (${level.fee || 5}%)\n` +
+          `💸 Net: ${netAmount.toFixed(2)} TK\n` +
+          `📊 Level: ${level.level || 1}\n` +
+          `🏦 Method: ${method}\n` +
+          `📧 Account: ${account}\n` +
+          `📅 Date: ${new Date().toLocaleDateString('bn-BD')}`
+        );
+
+        updateWithdrawInfo();
       } catch(e) { toast('Error Processing Request'); }
     }
 
+    // ===================================================
+    // ✅ WITHDRAW HISTORY
+    // ===================================================
+    async function loadWithdrawHistory() {
+      if (!isOnline) { document.getElementById('historyList').innerHTML = '<p style="text-align:center; color:#999; padding:20px 0;">No internet connection.</p>'; return; }
+      try {
+        const snap = await db.ref('withdrawals')
+          .orderByChild('userId')
+          .equalTo(tgUser.id)
+          .once('value');
+        
+        let html = '';
+        let count = 0;
+        snap.forEach(child => {
+          const w = child.val();
+          count++;
+          const statusColor = w.status === 'pending' ? '#f39c12' : w.status === 'approved' ? '#2ecc71' : '#e74c3c';
+          const statusText = w.status === 'pending' ? '⏳ Pending' : w.status === 'approved' ? '✅ Approved' : '❌ Rejected';
+          const feeText = w.fee ? `(Fee: ${w.fee.toFixed(2)})` : '';
+          html += `
+            <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #eee; align-items:center;">
+              <div>
+                <span style="font-weight:700; font-size:1.1rem;">${w.amount} TK ${feeText}</span>
+                <div style="font-size:0.75rem; color:#999;">Level ${w.level || 1} | ${new Date(w.timestamp).toLocaleDateString('bn-BD')}</div>
+              </div>
+              <span style="color:${statusColor}; font-weight:600; padding:4px 12px; border-radius:20px; background:${statusColor}20; text-transform:capitalize;">${statusText}</span>
+            </div>
+          `;
+        });
+        
+        document.getElementById('historyList').innerHTML = html || '<p style="text-align:center; color:#999; padding:20px 0;">No withdraw history found.</p>';
+      } catch(e) {
+        document.getElementById('historyList').innerHTML = '<p style="text-align:center; color:#e74c3c;">Error loading history</p>';
+      }
+    }
+
+    // ===================================================
+    // ✅ REFERRAL SYSTEM
+    // ===================================================
     function getRefLink() { 
-      // Link should be your telegram bot username + /app (shortname) 
-      return `https://t.me/${appState.config.botUsername||"bot"}/app?startapp=${appState.user.id}`; 
+      return `https://t.me/${BOT_USERNAME}/app?startapp=${tgUser.id}`; 
     }
     
-    function copyLink() { navigator.clipboard.writeText(getRefLink()); toast('Link Copied!'); }
+    function copyLink() { 
+      navigator.clipboard.writeText(getRefLink()); 
+      toast('Link Copied!'); 
+    }
+    
     function shareLink() {
-      const url = `https://t.me/share/url?url=${encodeURIComponent(getRefLink())}&text=Join%20Now!`;
+      const message = `💰 Earn money with me! Join NexEarn and start earning by watching ads.
+      
+🎁 Get ${appState.config.refBonus || 5} TK as joining bonus!
+👥 Refer & earn more!
+
+Join now: ${getRefLink()}`;
+      
+      const url = `https://t.me/share/url?url=${encodeURIComponent(getRefLink())}&text=${encodeURIComponent(message)}`;
       if(tg && tg.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank');
     }
-    function openTutorial() { if(appState.config.tutorialLink) window.open(appState.config.tutorialLink, '_blank'); else toast('No tutorial available'); }
-    function openSupport() { if(appState.config.supportLink) window.open(appState.config.supportLink, '_blank'); }
+    
+    function openTutorial() { 
+      if(appState.config.tutorialLink) window.open(appState.config.tutorialLink, '_blank'); 
+      else toast('No tutorial available'); 
+    }
+    
+    function openSupport() { 
+      if(appState.config.supportLink) window.open(appState.config.supportLink, '_blank');
+      else {
+        const supportUrl = SUPPORT_LINK;
+        if(tg && tg.openTelegramLink) tg.openTelegramLink(supportUrl); 
+        else window.open(supportUrl, '_blank');
+      }
+    }
 
-    // ==========================================
-    // ✅ FIXED REFERRAL AND INITIALIZATION LOGIC 
-    // ==========================================
-    window.onload = () => {
-      document.getElementById('u-name').innerText = tgUser.first_name;
-      document.getElementById('u-id').innerText = 'ID: ' + tgUser.id;
-      if(tgUser.photo_url) document.getElementById('u-img').src = tgUser.photo_url;
-
-      // 1. Always Listen to Admin Config
-      db.ref('config').on('value', snap => {
-        if(snap.exists()) {
-          appState.config = snap.val();
-          preloadAds();
-          if(isBooted) { updateTextElements(); renderAds(); renderTasks(); }
+    // ===================================================
+    // ✅ PROCESS REFERRAL
+    // ===================================================
+    async function processReferral() {
+        if (!db || !tg || !tg.initDataUnsafe) return;
+        
+        const user = tg.initDataUnsafe.user;
+        if (!user || !user.id) return;
+        
+        let refBy = tg.initDataUnsafe.start_param || null;
+        if (!refBy) {
+            const urlParams = new URLSearchParams(window.location.search);
+            refBy = urlParams.get('tgWebAppStartParam') || urlParams.get('startapp') || null;
         }
-      });
-
-      // 2. Initialize User Carefully to Ensure Referrals Count 100%
-      const userRef = db.ref('users/' + tgUser.id);
-      userRef.once('value').then(async snap => {
-        const today = todayStr();
-
-        if(!snap.exists()) {
-          // --- It's a brand new user! ---
-          appState.user = { 
-            id: tgUser.id, 
-            name: tgUser.first_name, 
-            photo: tgUser.photo_url||'', 
-            balance: 0, 
-            totalEarned: 0, 
-            referrals: 0, 
-            dailyAds: {}, 
-            taskHistory: {}, 
-            lastActive: today, 
-            dailyBonusDate: '' 
-          };
-          
-          // Save new user immediately
-          await userRef.set(appState.user);
-
-          // --- Process The Referral Link System ---
-          let refBy = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) ? tg.initDataUnsafe.start_param : null;
-          
-          if(!refBy) { // Fallback if testing outside telegram natively
-             const urlParams = new URLSearchParams(window.location.search);
-             refBy = urlParams.get('tgWebAppStartParam') || urlParams.get('startapp');
-          }
-
-          if(refBy && String(refBy) !== String(tgUser.id)) {
-             // We get the actual ref bonus directly from the live config
-             let cSnap = await db.ref('config').once('value');
-             let rBonus = (cSnap.exists() && cSnap.val().refBonus) ? Number(cSnap.val().refBonus) : 5;
-
-             let refSnap = await db.ref('users/' + refBy).once('value');
-             if(refSnap.exists()){
-                let r = refSnap.val();
+        
+        if (refBy && String(refBy) !== String(user.id)) {
+            try {
+                const existingRef = await db.ref('users/' + user.id + '/referred_by').once('value');
+                if (existingRef.exists()) return;
                 
-                // ADD the bonus to the referring person's account
-                await db.ref('users/' + refBy).update({
-                   referrals: (r.referrals || 0) + 1,
-                   balance: (r.balance || 0) + rBonus,
-                   totalEarned: (r.totalEarned || 0) + rBonus
-                });
-             }
-          }
+                const cSnap = await db.ref('config/refBonus').once('value');
+                let rBonus = cSnap.exists() ? Number(cSnap.val()) : 5;
+                
+                const refSnap = await db.ref('users/' + refBy).once('value');
+                if (refSnap.exists()) {
+                    const refData = refSnap.val();
+                    if (String(refBy) === String(user.id)) return;
+                    
+                    await db.ref('users/' + refBy).update({
+                        referrals: (refData.referrals || 0) + 1,
+                        balance: (refData.balance || 0) + rBonus,
+                        totalEarned: (refData.totalEarned || 0) + rBonus
+                    });
+                    
+                    await db.ref('users/' + user.id + '/referred_by').set(refBy);
+                    
+                    await db.ref('users/' + refBy + '/referralHistory').push({
+                        userId: user.id,
+                        name: user.first_name || 'User',
+                        timestamp: Date.now(),
+                        bonus: rBonus
+                    });
+                    
+                    await sendNotification(refBy, 
+                        `🎉 <b>New Referral!</b>\n\n` +
+                        `👤 ${user.first_name || 'Someone'} joined using your referral link.\n` +
+                        `💰 You earned ${rBonus} TK as bonus!`
+                    );
+                }
+            } catch (e) {
+                console.error('❌ Referral processing error:', e);
+            }
         }
+    }
 
-        // 3. Start Live Listener AFTER Initialization
-        userRef.on('value', async liveSnap => {
-          if(liveSnap.exists()) {
-            appState.user = liveSnap.val();
-            if(!appState.user.dailyAds) appState.user.dailyAds = {};
-            if(!appState.user.taskHistory) appState.user.taskHistory = {};
-
-            if(appState.user.lastActive !== today) {
-              await userRef.update({ dailyAds: {}, lastActive: today });
-              appState.user.dailyAds = {};
-            }
-
-            updateTextElements();
-            renderAds();
-            renderTasks();
-
-            if(!isBooted) {
-              isBooted = true;
-              document.getElementById('loader').style.display='none';
-              document.getElementById('app').style.display='block';
-              if(appState.user.dailyBonusDate !== today) showBonus();
-            }
-          }
+    // ===================================================
+    // ✅ NOTIFICATION SYSTEM
+    // ===================================================
+    async function sendNotification(userId, message) {
+      if(!BOT_TOKEN) return;
+      try {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: userId,
+            text: message,
+            parse_mode: 'HTML'
+          })
         });
-      });
-    };
+      } catch(e) { console.error('Notification error:', e); }
+    }
 
-    // ✅ FIXED LEADERBOARD (Top 10, Safe Images, Fixed CSS Gaps)
+    // ===================================================
+    // ✅ LEADERBOARD
+    // ===================================================
     async function loadLeaderboard() {
+      if (!isOnline) { return; }
       const sym = appState.config.currencySymbol || "TK";
       const snap = await db.ref('users').orderByChild('balance').limitToLast(10).once('value');
       let users = []; 
@@ -730,8 +1660,340 @@
       });
       
       document.getElementById('podium-area').innerHTML = p2 + p1 + p3;
-      document.getElementById('leader-list-area').innerHTML = listHtml;
+      document.getElementById('leader-list-area').innerHTML = listHtml || '<p style="text-align:center; color:#999; padding:20px;">No users yet.</p>';
     }
+
+    // ===================================================
+    // ✅ CHANNEL VERIFICATION SYSTEM
+    // ===================================================
+    async function checkChannelMembership(userId, chatId) {
+      try {
+        const response = await fetch(
+          `https://api.telegram.org/bot${BOT_TOKEN}/getChatMember?chat_id=@${chatId}&user_id=${userId}`
+        );
+        const data = await response.json();
+        return data.ok && ['member', 'administrator', 'creator'].includes(data.result?.status);
+      } catch(e) {
+        return false;
+      }
+    }
+
+    function renderChannelButtons() {
+      const container = document.getElementById('channelLinks');
+      container.innerHTML = '';
+      
+      const links = channelLinks.length ? channelLinks : [
+        { label: 'NexEarn Channel', chatId: 'nexearn2' },
+        { label: 'NexEarn Adda', chatId: 'nexearn2_adda' },
+        { label: 'NexEarn Official', chatId: 'nexearn2_official' },
+        { label: 'NexEarn Payment', chatId: 'nexearn2_payment' }
+      ];
+
+      links.forEach(link => {
+        const btn = document.createElement('a');
+        btn.className = 'channel-btn';
+        btn.dataset.chatId = link.chatId;
+        btn.href = `https://t.me/${link.chatId}`;
+        btn.target = '_blank';
+        btn.innerHTML = `<i class="fa-brands fa-telegram"></i> ${link.label}`;
+        btn.onclick = (e) => {
+          e.preventDefault();
+          openLink(`https://t.me/${link.chatId}`);
+          setTimeout(checkAndUpdateStatus, 2000);
+        };
+        container.appendChild(btn);
+      });
+
+      const statusEl = document.getElementById('verifyStatus');
+      statusEl.textContent = '⏳ Checking channel membership...';
+      statusEl.className = 'verify-status loading';
+
+      if (verifyInterval) clearInterval(verifyInterval);
+      verifyInterval = setInterval(checkAndUpdateStatus, 3000);
+      setTimeout(checkAndUpdateStatus, 1500);
+    }
+
+    async function checkAndUpdateStatus() {
+      const userId = tgUser.id;
+      const buttons = document.querySelectorAll('.channel-btn');
+      const statusEl = document.getElementById('verifyStatus');
+      
+      if (!userId || userId === '123456') {
+        statusEl.textContent = '⚠️ Unable to verify. Please open in Telegram.';
+        statusEl.className = 'verify-status error';
+        return;
+      }
+
+      let allJoined = true;
+      let checked = 0;
+
+      for (const btn of buttons) {
+        const chatId = btn.dataset.chatId;
+        const joined = await checkChannelMembership(userId, chatId);
+        checked++;
+        
+        if (joined) {
+          btn.classList.add('joined');
+        } else {
+          btn.classList.remove('joined');
+          allJoined = false;
+        }
+      }
+
+      if (allJoined && buttons.length > 0) {
+        statusEl.textContent = '✅ All channels joined!';
+        statusEl.className = 'verify-status success';
+        if (verifyInterval) clearInterval(verifyInterval);
+        verifyInterval = null;
+        
+        channelVerified = true;
+        await db.ref('users/' + tgUser.id + '/channelVerified').set(true);
+        
+        setTimeout(() => {
+          document.getElementById('joinModal').classList.remove('active');
+          showAppAfterVerify();
+        }, 800);
+      } else if (checked === buttons.length) {
+        const remaining = buttons.length - document.querySelectorAll('.channel-btn.joined').length;
+        statusEl.textContent = `❌ Please join ${remaining} more channel(s)`;
+        statusEl.className = 'verify-status error';
+      }
+    }
+
+    function showAppAfterVerify() {
+      if (!isOnline) {
+        document.getElementById('offlineOverlay').classList.add('active');
+        return;
+      }
+      if (checkMaintenance()) return;
+      if (checkBan()) return;
+      document.getElementById('app').style.display = 'block';
+      setLoading(false);
+      if(appState.user.dailyBonusDate !== todayStr()) showBonus();
+      startAdResetTimer();
+    }
+
+    // ===================================================
+    // ✅ OPEN LINK FUNCTION
+    // ===================================================
+    function openLink(url) {
+      if (tg && tg.openLink) tg.openLink(url);
+      else window.open(url, '_blank');
+    }
+
+    // ===================================================
+    // ✅ INITIALIZATION - FIXED
+    // ===================================================
+    window.onload = () => {
+      setLoading(true);
+      updateNetworkStatus();
+      
+      document.getElementById('u-name').innerText = tgUser.first_name;
+      document.getElementById('u-id').innerText = 'ID: ' + tgUser.id;
+      if(tgUser.photo_url) document.getElementById('u-img').src = tgUser.photo_url;
+
+      // 1. Config Listener - with timeout fallback
+      let configLoaded = false;
+      const configTimeout = setTimeout(() => {
+        if (!configLoaded && !appState.config) {
+          console.warn('⚠️ Config load timeout, using default...');
+          appState.config = {
+            refBonus: 5,
+            adReward: 0.5,
+            dailyBonusAmount: 20,
+            dailyAdLimit: 10,
+            minWithdraw: 10,
+            currencySymbol: 'TK',
+            botUsername: BOT_USERNAME,
+            botToken: BOT_TOKEN,
+            paymentMethods: ['bKash', 'Nagad', 'Rocket'],
+            adSlots: [],
+            webTasks: {},
+            adResetHour: 0,
+            channelLinks: [
+              { label: 'NexEarn Channel', chatId: 'nexearn2' },
+              { label: 'NexEarn Adda', chatId: 'nexearn2_adda' }
+            ],
+            maintenance: { active: false, message: '', estimatedMinutes: 30 },
+            withdrawLevels: [
+              { requiredRefs: 5, fee: 5, minAmount: 10, maxAmount: 100, time: "24-48 Hours" },
+              { requiredRefs: 7, fee: 4, minAmount: 10, maxAmount: 200, time: "24-48 Hours" },
+              { requiredRefs: 7, fee: 3, minAmount: 10, maxAmount: 300, time: "12-24 Hours" },
+              { requiredRefs: 7, fee: 2, minAmount: 10, maxAmount: 400, time: "12-24 Hours" },
+              { requiredRefs: 7, fee: 1, minAmount: 10, maxAmount: 500, time: "6-12 Hours" }
+            ]
+          };
+          configLoaded = true;
+          proceedWithApp();
+        }
+      }, 5000);
+
+      db.ref('config').on('value', snap => {
+        try {
+          if(snap.exists()) {
+            appState.config = snap.val();
+          } else {
+            const defaultConfig = {
+              refBonus: 5,
+              adReward: 0.5,
+              dailyBonusAmount: 20,
+              dailyAdLimit: 10,
+              minWithdraw: 10,
+              currencySymbol: 'TK',
+              botUsername: BOT_USERNAME,
+              botToken: BOT_TOKEN,
+              paymentMethods: ['bKash', 'Nagad', 'Rocket'],
+              adSlots: [],
+              webTasks: {},
+              adResetHour: 0,
+              channelLinks: [
+                { label: 'NexEarn Channel', chatId: 'nexearn2' },
+                { label: 'NexEarn Adda', chatId: 'nexearn2_adda' }
+              ],
+              maintenance: { active: false, message: '', estimatedMinutes: 30 },
+              withdrawLevels: [
+                { requiredRefs: 5, fee: 5, minAmount: 10, maxAmount: 100, time: "24-48 Hours" },
+                { requiredRefs: 7, fee: 4, minAmount: 10, maxAmount: 200, time: "24-48 Hours" },
+                { requiredRefs: 7, fee: 3, minAmount: 10, maxAmount: 300, time: "12-24 Hours" },
+                { requiredRefs: 7, fee: 2, minAmount: 10, maxAmount: 400, time: "12-24 Hours" },
+                { requiredRefs: 7, fee: 1, minAmount: 10, maxAmount: 500, time: "6-12 Hours" }
+              ]
+            };
+            db.ref('config').set(defaultConfig);
+            appState.config = defaultConfig;
+          }
+          configLoaded = true;
+          clearTimeout(configTimeout);
+          proceedWithApp();
+        } catch(e) {
+          console.error('Config error:', e);
+          configLoaded = true;
+          clearTimeout(configTimeout);
+          toast('Error loading config. Using defaults.');
+          proceedWithApp();
+        }
+      });
+
+      function proceedWithApp() {
+        if (isBooted) return;
+        
+        if (appState.config.channelLinks) channelLinks = appState.config.channelLinks;
+        if (appState.config.withdrawLevels && Array.isArray(appState.config.withdrawLevels) && appState.config.withdrawLevels.length > 0) {
+          withdrawLevels = appState.config.withdrawLevels;
+        }
+        
+        preloadAds();
+        
+        // 2. User Initialization
+        const userRef = db.ref('users/' + tgUser.id);
+        userRef.once('value').then(async snap => {
+          try {
+            const today = todayStr();
+
+            if(!snap.exists()) {
+              appState.user = { 
+                id: tgUser.id, 
+                name: tgUser.first_name, 
+                photo: tgUser.photo_url||'', 
+                balance: 0, 
+                totalEarned: 0, 
+                referrals: 0, 
+                dailyAds: {}, 
+                taskHistory: {}, 
+                lastActive: today, 
+                dailyBonusDate: '',
+                channelVerified: false,
+                isBanned: false,
+                banReason: '',
+                withdrawCount: 0,
+                referralHistory: []
+              };
+              await userRef.set(appState.user);
+              await processReferral();
+            } else {
+              appState.user = snap.val();
+            }
+
+            // Start live listener
+            userRef.on('value', async liveSnap => {
+              if(liveSnap.exists()) {
+                appState.user = liveSnap.val();
+                if(!appState.user.dailyAds) appState.user.dailyAds = {};
+                if(!appState.user.taskHistory) appState.user.taskHistory = {};
+                if(!appState.user.referralHistory) appState.user.referralHistory = [];
+                if(appState.user.withdrawCount === undefined) appState.user.withdrawCount = 0;
+
+                if (appState.user.isBanned) {
+                  document.getElementById('bannedOverlay').classList.add('active');
+                  document.getElementById('banReason').textContent = appState.user.banReason || 'Your account has been suspended.';
+                  document.getElementById('app').style.display = 'none';
+                  return;
+                } else {
+                  document.getElementById('bannedOverlay').classList.remove('active');
+                }
+
+                const today = todayStr();
+                if(appState.user.lastActive !== today) {
+                  await userRef.update({ dailyAds: {}, lastActive: today });
+                  appState.user.dailyAds = {};
+                }
+
+                updateTextElements();
+                renderAds();
+                renderTasks();
+
+                if(!isBooted) {
+                  isBooted = true;
+                  clearTimeout(loadingTimeout);
+                  
+                  if (checkMaintenance()) {
+                    setLoading(false);
+                    return;
+                  }
+                  
+                  if (checkBan()) {
+                    setLoading(false);
+                    return;
+                  }
+                  
+                  const isVerified = appState.user.channelVerified || false;
+                  
+                  if (!isVerified) {
+                    document.getElementById('joinModal').classList.add('active');
+                    renderChannelButtons();
+                  } else {
+                    channelVerified = true;
+                    if (isOnline) {
+                      setLoading(false);
+                      if(appState.user.dailyBonusDate !== today) showBonus();
+                      loadReferralHistory();
+                      loadReferralLeaderboard();
+                      updateReferralUI();
+                      startAdResetTimer();
+                    } else {
+                      document.getElementById('offlineOverlay').classList.add('active');
+                    }
+                  }
+                }
+              }
+            });
+          } catch(e) {
+            console.error('User init error:', e);
+            isBooted = true;
+            clearTimeout(loadingTimeout);
+            setLoading(false);
+            toast('Error loading user data. Please refresh.');
+          }
+        }).catch(e => {
+          console.error('User fetch error:', e);
+          isBooted = true;
+          clearTimeout(loadingTimeout);
+          setLoading(false);
+          toast('Network error. Please check your connection.');
+        });
+      }
+    };
+
   </script>
 </body>
 </html>
