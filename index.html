@@ -2340,7 +2340,7 @@
         // ==========================================================
         function getWithdrawLevel() {
             if (!withdrawLevels || withdrawLevels.length === 0) {
-                return { level: 1, requiredRefs: 5, fee: 5, minAmount: 10, maxAmount: 100, time: '24-48 Hours' };
+                return { level: 1, requiredRefs: 5, fee: 5, minAmount: 10, maxAmount: 100, time: '30 Min-1 Hours' };
             }
             const count = appState.user.withdrawCount || 0;
             const refs = appState.user.referrals || 0;
