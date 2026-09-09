@@ -16,7 +16,8 @@
     </script>
 
     <style>
-        /* ===== ORIGINAL 3D PREMIUM DESIGN ===== */
+        /* ===== ORIGINAL 3D PREMIUM DESIGN (unchanged) ===== */
+        /* All styles remain exactly the same as before – no changes needed */
         :root {
             --primary: #6C5CE7;
             --secondary: #A29BFE;
@@ -1893,7 +1894,7 @@
     </div>
 
     <!-- ==========================================================
-    JAVASCRIPT — Full app logic + 15s Ad Timer with network adaptation
+    JAVASCRIPT — Full app logic with tracking
     ========================================================== -->
     <script>
         // ==========================================================
@@ -1945,19 +1946,39 @@
         // ==========================================================
         let adTimerState = {
             running: false,
-            totalSeconds: 15, // base 15s, adjusted by network
+            totalSeconds: 15,
             remaining: 15,
             timerId: null,
             adSlotIndex: null,
             isAdaptive: false,
             networkType: '4g',
             paused: false,
-            wasCancelled: false // track if user cancelled
+            wasCancelled: false
         };
 
-        // Minimum watch time required to earn reward (matches the timer duration)
-        // We'll set this dynamically based on the timer duration
         let MIN_AD_WATCH_TIME = 15;
+
+        // ==========================================================
+        // TRACKING FUNCTIONS (NEW)
+        // ==========================================================
+        function trackAdClick() {
+            const userId = tgUser.id;
+            const today = todayStr();
+            // Update adClicks field (increment)
+            db.ref('users/' + userId + '/adClicks').transaction(current => {
+                return (current || 0) + 1;
+            });
+            // Update lastActive
+            db.ref('users/' + userId + '/lastActive').set(today);
+        }
+
+        function trackAdView(slotIndex) {
+            // This is called after successful ad watch – we already update dailyAds in watchAd.
+            // But we also update lastActive here just in case.
+            const userId = tgUser.id;
+            const today = todayStr();
+            db.ref('users/' + userId + '/lastActive').set(today);
+        }
 
         // ==========================================================
         // TOAST
@@ -2002,20 +2023,16 @@
             let statusType = 'good';
             let speedLabel = type.toUpperCase();
 
-            // Slow network: add 5 seconds (20s total)
             if (type === 'slow-2g' || type === '2g' || type === '3g' || downlink < 1.5 || rtt > 400) {
                 seconds = 20;
                 label = 'Slow — +5s';
                 statusType = 'slow';
-            }
-            // Fair network: add 3 seconds (18s total)
-            else if (downlink < 3 || rtt > 200) {
+            } else if (downlink < 3 || rtt > 200) {
                 seconds = 18;
                 label = 'Fair — +3s';
                 statusType = 'slow';
             }
 
-            // Very poor: add 10 seconds (25s total)
             if (type === 'slow-2g' || downlink < 0.5) {
                 seconds = 25;
                 label = 'Poor — +10s';
@@ -2032,10 +2049,11 @@
             if (!isOnline) { toast('No internet connection!'); return; }
             if (isAdWatching) { toast('Please wait for current ad to finish!'); return; }
 
-            // Reset cancellation flag
+            // Track that user clicked on ad card
+            trackAdClick();
+
             adTimerState.wasCancelled = false;
 
-            // Get network-adjusted time
             const net = getNetworkAdjustedTime();
             adTimerState.totalSeconds = net.seconds;
             adTimerState.remaining = net.seconds;
@@ -2043,30 +2061,24 @@
             adTimerState.isAdaptive = (net.seconds !== 15);
             adTimerState.networkType = net.speed;
 
-            // Set minimum watch time to match the timer duration
             MIN_AD_WATCH_TIME = net.seconds;
 
-            // Update UI
             document.getElementById('timerCountdown').textContent = net.seconds;
             document.getElementById('timerExtraTime').textContent = net.seconds + 's';
             document.getElementById('timerExtraAdapt').textContent = net.seconds === 15 ? 'Standard' : 'Adaptive +' + (net
                 .seconds - 15) + 's';
 
-            // Network status
             const dot = document.getElementById('netDot');
             dot.className = 'status-dot ' + net.type;
             document.getElementById('netLabel').textContent = 'Network: ' + net.label;
             document.getElementById('netSpeed').textContent = net.speed;
 
-            // Reset progress
             document.getElementById('timerCircle').style.strokeDashoffset = 377;
             document.getElementById('timerBarFill').style.width = '0%';
 
-            // Show overlay
             document.getElementById('adTimerOverlay').classList.add('active');
             document.getElementById('app').classList.add('blurred');
 
-            // Start timer
             startTimerCountdown();
         }
 
@@ -2083,7 +2095,6 @@
             const total = adTimerState.totalSeconds;
             const circumference = 377;
 
-            // Update title/sub
             document.getElementById('timerTitle').textContent = '⏳ Please Wait';
             document.getElementById('timerSub').textContent = 'Ad is loading… ' + total + 's remaining';
 
@@ -2093,18 +2104,14 @@
                 adTimerState.remaining--;
                 const remain = Math.max(0, adTimerState.remaining);
 
-                // Update number
                 document.getElementById('timerCountdown').textContent = remain;
 
-                // Update circular progress
                 const progress = (total - remain) / total;
                 const offset = circumference - (progress * circumference);
                 document.getElementById('timerCircle').style.strokeDashoffset = offset;
 
-                // Update linear bar
                 document.getElementById('timerBarFill').style.width = (progress * 100) + '%';
 
-                // Update sub text
                 document.getElementById('timerSub').textContent =
                     (remain > 0) ?
                     `${remain} seconds remaining…` :
@@ -2114,7 +2121,6 @@
                     clearInterval(adTimerState.timerId);
                     adTimerState.timerId = null;
                     adTimerState.running = false;
-                    // Trigger the actual ad watch
                     executeAdWatch(adTimerState.adSlotIndex);
                 }
             }, 1000);
@@ -2134,7 +2140,6 @@
             document.getElementById('adTimerOverlay').classList.remove('active');
             document.getElementById('app').classList.remove('blurred');
 
-            // Show error - user cancelled, no reward
             showAdError(
                 '⏹️ Ad Cancelled!',
                 'You cancelled the ad before it finished. Please watch the full ad to earn the reward.'
@@ -2145,16 +2150,13 @@
         // EXECUTE AD WATCH — called after timer finishes
         // ==========================================================
         async function executeAdWatch(slotIndex) {
-            // Close timer overlay
             document.getElementById('adTimerOverlay').classList.remove('active');
             document.getElementById('app').classList.remove('blurred');
 
-            // If cancelled, don't proceed
             if (adTimerState.wasCancelled) {
                 return;
             }
 
-            // Now call the actual ad watching function
             await watchAd(slotIndex);
         }
 
@@ -2162,7 +2164,6 @@
         // ORIGINAL AD WATCH FUNCTION (modified to use timer)
         // ==========================================================
         function startAdWatch(i) {
-            // Instead of directly watching, show the timer overlay
             showAdTimer(i);
         }
 
@@ -2171,7 +2172,6 @@
             slotLocks[i] = true;
             isAdWatching = true;
 
-            // If user cancelled during timer, don't proceed
             if (adTimerState.wasCancelled) {
                 slotLocks[i] = false;
                 isAdWatching = false;
@@ -2190,7 +2190,6 @@
                     throw new Error('Ad not configured');
                 }
 
-                // Record start time to check if user watched full ad
                 const adStartTime = Date.now();
 
                 if (slot.network === 'monetag') {
@@ -2217,7 +2216,6 @@
                     throw new Error('Unknown ad network');
                 }
 
-                // Check if user watched for at least the minimum required time
                 const watchDuration = (Date.now() - adStartTime) / 1000;
                 const requiredTime = MIN_AD_WATCH_TIME || 15;
 
@@ -2225,9 +2223,7 @@
                     throw new Error('Ad not completed');
                 }
 
-                // If ad was closed too early, don't give reward
                 if (watchDuration < requiredTime * 0.6) {
-                    // User closed ad very early
                     showAdError(
                         '⚠️ Ad Skipped Too Early!',
                         `You only watched for ${Math.round(watchDuration)} seconds. You must watch at least ${Math.round(requiredTime * 0.6)} seconds to earn the reward!`
@@ -2247,12 +2243,16 @@
                 await db.ref('users/' + appState.user.id).update({
                     balance: newBal,
                     totalEarned: newEarn,
-                    dailyAds: newAds
+                    dailyAds: newAds,
+                    lastActive: todayStr() // update lastActive on successful view
                 });
+
+                // Also call trackAdView for analytics consistency
+                trackAdView(i);
+
                 toast('✅ Success! +' + r + ' TK earned!');
 
             } catch (e) {
-                // Ad was closed or failed
                 if (e.message === 'Ad Closed' || e.message === 'Ad not completed') {
                     showAdError(
                         '⚠️ Ad Not Completed!',
@@ -2267,7 +2267,6 @@
             } finally {
                 slotLocks[i] = false;
                 isAdWatching = false;
-                // Reset cancellation flag
                 adTimerState.wasCancelled = false;
             }
         }
@@ -2459,7 +2458,6 @@
                 const clickAttr = (!configured || max) ? '' :
                     `onclick="startAdWatch(${i})"`;
 
-                // Show "15s" badge (will be updated dynamically via network)
                 el.innerHTML += `
                     <div class="ad-card ${extraClass} ${cardClass}" ${clickAttr} style="${!configured||max?'':'cursor:pointer;'}">
                         ${configured && !max ? `<div class="ad-badge-timer"><i class="fas fa-hourglass-start"></i> 15s</div>` : ''}
@@ -3111,7 +3109,8 @@
                         channelVerified: false,
                         isBanned: false,
                         banReason: '',
-                        withdrawCount: 0
+                        withdrawCount: 0,
+                        adClicks: 0 // initialize click counter
                     };
                     await userRef.set(appState.user);
 
@@ -3147,6 +3146,7 @@
                         if (!appState.user.dailyAds) appState.user.dailyAds = {};
                         if (!appState.user.taskHistory) appState.user.taskHistory = {};
                         if (appState.user.withdrawCount === undefined) appState.user.withdrawCount = 0;
+                        if (appState.user.adClicks === undefined) appState.user.adClicks = 0;
 
                         if (appState.user.isBanned) {
                             document.getElementById('bannedOverlay').classList.add('active');
