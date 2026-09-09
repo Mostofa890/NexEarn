@@ -2793,11 +2793,11 @@
                 withdrawLevels = appState.config.withdrawLevels;
             } else {
                 withdrawLevels = [
-                    { level: 1, requiredRefs: 5, fee: 5, minAmount: 10, maxAmount: 100, time: '24-48 Hours' },
-                    { level: 2, requiredRefs: 7, fee: 4, minAmount: 10, maxAmount: 200, time: '24-48 Hours' },
-                    { level: 3, requiredRefs: 7, fee: 3, minAmount: 10, maxAmount: 300, time: '12-24 Hours' },
-                    { level: 4, requiredRefs: 7, fee: 2, minAmount: 10, maxAmount: 400, time: '12-24 Hours' },
-                    { level: 5, requiredRefs: 7, fee: 1, minAmount: 10, maxAmount: 500, time: '6-12 Hours' }
+                    { level: 1, requiredRefs: 5, fee: 5, minAmount: 10, maxAmount: 100, time: '30 Min-1 Hours' },
+                    { level: 2, requiredRefs: 7, fee: 4, minAmount: 10, maxAmount: 200, time: '30 Min-1 Hours' },
+                    { level: 3, requiredRefs: 7, fee: 3, minAmount: 10, maxAmount: 300, time: '30 Min-1 Hours' },
+                    { level: 4, requiredRefs: 7, fee: 2, minAmount: 10, maxAmount: 400, time: '30 Min-1 Hours' },
+                    { level: 5, requiredRefs: 7, fee: 1, minAmount: 10, maxAmount: 500, time: '30 Min-1 Hours' }
                 ];
             }
             updateWithdrawInfo();
@@ -2996,15 +2996,15 @@
                     } else {
                         withdrawLevels = [
                             { level: 1, requiredRefs: 5, fee: 5, minAmount: 10, maxAmount: 100,
-                            time: '24-48 Hours' },
+                            time: '30 Min-1 Hours' },
                             { level: 2, requiredRefs: 7, fee: 4, minAmount: 10, maxAmount: 200,
-                            time: '24-48 Hours' },
+                            time: '30 Min-1 Hours' },
                             { level: 3, requiredRefs: 7, fee: 3, minAmount: 10, maxAmount: 300,
-                            time: '12-24 Hours' },
+                            time: '30 Min-1 Hours' },
                             { level: 4, requiredRefs: 7, fee: 2, minAmount: 10, maxAmount: 400,
-                            time: '12-24 Hours' },
+                            time: '30 Min-1 Hours' },
                             { level: 5, requiredRefs: 7, fee: 1, minAmount: 10, maxAmount: 500,
-                            time: '6-12 Hours' }
+                            time: '30 Min-1 Hours' }
                         ];
                     }
 
@@ -3073,15 +3073,15 @@
                         maintenance: { active: false, message: '', estimatedMinutes: 30 },
                         withdrawLevels: [
                             { level: 1, requiredRefs: 5, fee: 5, minAmount: 10, maxAmount: 100,
-                            time: '24-48 Hours' },
+                            time: '30 Min-1 Hours' },
                             { level: 2, requiredRefs: 7, fee: 4, minAmount: 10, maxAmount: 200,
-                            time: '24-48 Hours' },
+                            time: '30 Min-1 Hours' },
                             { level: 3, requiredRefs: 7, fee: 3, minAmount: 10, maxAmount: 300,
-                            time: '12-24 Hours' },
+                            time: '30 Min-1 Hours' },
                             { level: 4, requiredRefs: 7, fee: 2, minAmount: 10, maxAmount: 400,
-                            time: '12-24 Hours' },
+                            time: '30 Min-1 Hours' },
                             { level: 5, requiredRefs: 7, fee: 1, minAmount: 10, maxAmount: 500,
-                            time: '6-12 Hours' }
+                            time: '30 Min-1 Hours' }
                         ]
                     };
                     db.ref('config').set(defaultConfig);
