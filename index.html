@@ -17,7 +17,6 @@
 
     <style>
         /* ===== ORIGINAL 3D PREMIUM DESIGN (unchanged) ===== */
-        /* All styles remain exactly the same as before – no changes needed */
         :root {
             --primary: #6C5CE7;
             --secondary: #A29BFE;
@@ -1894,7 +1893,7 @@
     </div>
 
     <!-- ==========================================================
-    JAVASCRIPT — Full app logic with tracking
+    JAVASCRIPT — Full app logic with tracking (all times updated)
     ========================================================== -->
     <script>
         // ==========================================================
@@ -1959,22 +1958,18 @@
         let MIN_AD_WATCH_TIME = 15;
 
         // ==========================================================
-        // TRACKING FUNCTIONS (NEW)
+        // TRACKING FUNCTIONS
         // ==========================================================
         function trackAdClick() {
             const userId = tgUser.id;
             const today = todayStr();
-            // Update adClicks field (increment)
             db.ref('users/' + userId + '/adClicks').transaction(current => {
                 return (current || 0) + 1;
             });
-            // Update lastActive
             db.ref('users/' + userId + '/lastActive').set(today);
         }
 
         function trackAdView(slotIndex) {
-            // This is called after successful ad watch – we already update dailyAds in watchAd.
-            // But we also update lastActive here just in case.
             const userId = tgUser.id;
             const today = todayStr();
             db.ref('users/' + userId + '/lastActive').set(today);
@@ -2049,7 +2044,6 @@
             if (!isOnline) { toast('No internet connection!'); return; }
             if (isAdWatching) { toast('Please wait for current ad to finish!'); return; }
 
-            // Track that user clicked on ad card
             trackAdClick();
 
             adTimerState.wasCancelled = false;
@@ -2233,7 +2227,6 @@
                     return;
                 }
 
-                // Reward the user
                 const r = Number(appState.config.adReward || 0.5);
                 let newBal = (appState.user.balance || 0) + r;
                 let newEarn = (appState.user.totalEarned || 0) + r;
@@ -2244,10 +2237,9 @@
                     balance: newBal,
                     totalEarned: newEarn,
                     dailyAds: newAds,
-                    lastActive: todayStr() // update lastActive on successful view
+                    lastActive: todayStr()
                 });
 
-                // Also call trackAdView for analytics consistency
                 trackAdView(i);
 
                 toast('✅ Success! +' + r + ' TK earned!');
@@ -2335,7 +2327,7 @@
         }
 
         // ==========================================================
-        // WITHDRAW LEVELS
+        // WITHDRAW LEVELS (ALL TIMES SET TO '30 Min-1 Hours')
         // ==========================================================
         function getWithdrawLevel() {
             if (!withdrawLevels || withdrawLevels.length === 0) {
@@ -2788,6 +2780,7 @@
                 });
             }
 
+            // ====== ALL WITHDRAW LEVELS NOW USE '30 Min-1 Hours' ======
             if (appState.config.withdrawLevels && Array.isArray(appState.config.withdrawLevels) && appState.config
                 .withdrawLevels.length > 0) {
                 withdrawLevels = appState.config.withdrawLevels;
@@ -3025,7 +3018,6 @@
                             maintenanceTimer = null; }
                     }
 
-                    // Preload ad scripts
                     const slots = appState.config.adSlots || [];
                     slots.forEach(slot => {
                         if (slot.network === 'monetag' && slot.id && !document.querySelector(
@@ -3110,7 +3102,7 @@
                         isBanned: false,
                         banReason: '',
                         withdrawCount: 0,
-                        adClicks: 0 // initialize click counter
+                        adClicks: 0
                     };
                     await userRef.set(appState.user);
 
