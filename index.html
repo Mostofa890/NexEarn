@@ -1277,19 +1277,20 @@ function openTaskSubmit() {
     inputsContainer.innerHTML = '';
     imagesContainer.innerHTML = '';
 
-    // ✅ Render Text Inputs with Example Images if available
+    // ✅ 1. Text Inputs Section
     if (task.inputs && task.inputs.length > 0) {
+        inputsContainer.innerHTML += `<div style="font-weight:800; font-size:0.9rem; margin-bottom:10px; color:#6C5CE7;"><i class="fas fa-keyboard"></i> Text Information</div>`;
         task.inputs.forEach((input, idx) => {
             let exampleImgHtml = '';
             if (input.exampleUrl) {
                 exampleImgHtml = `
-                    <div style="margin-top:8px; text-align:center;">
-                        <p style="font-size:0.65rem; color:#888; margin-bottom:4px;">Example:</p>
-                        <img src="${input.exampleUrl}" style="max-width:100%; max-height:120px; border-radius:8px; border:1px solid #e1e1e1;" alt="Example">
+                    <div style="margin-top:6px; text-align:center;">
+                        <p style="font-size:0.6rem; color:#888; margin-bottom:2px;">Example:</p>
+                        <img src="${input.exampleUrl}" style="max-width:100%; max-height:80px; border-radius:6px; border:1px solid #ddd;" alt="Example">
                     </div>`;
             }
             inputsContainer.innerHTML += `
-                <div class="input-group">
+                <div class="input-group" style="margin-bottom:12px;">
                     <label style="font-weight:700; font-size:0.85rem; margin-bottom:5px; display:block;">${input.label} <span style="color:red;">*</span></label>
                     <input type="text" id="task-input-${idx}" placeholder="${input.placeholder || 'Enter here...'}" />
                     ${exampleImgHtml}
@@ -1298,24 +1299,25 @@ function openTaskSubmit() {
         });
     }
 
-    // ✅ Render Image Uploads with Example Images if available
+    // ✅ 2. Image Uploads Section
     if (task.images && task.images.length > 0) {
+        imagesContainer.innerHTML += `<div style="font-weight:800; font-size:0.9rem; margin-bottom:10px; margin-top:10px; color:#f39c12;"><i class="fas fa-image"></i> Required Screenshots</div>`;
         task.images.forEach((img, idx) => {
             let exampleImgHtml = '';
             if (img.exampleUrl) {
                 exampleImgHtml = `
-                    <div style="margin-bottom:8px;">
-                        <p style="font-size:0.65rem; color:#888; margin-bottom:4px;">Example Screenshot:</p>
-                        <img src="${img.exampleUrl}" style="max-width:100%; max-height:120px; border-radius:8px; border:1px solid #e1e1e1;" alt="Example">
+                    <div style="margin-top:10px; text-align:center;">
+                        <p style="font-size:0.6rem; color:#888; margin-bottom:2px;">Example Screenshot:</p>
+                        <img src="${img.exampleUrl}" style="max-width:100%; max-height:80px; border-radius:6px; border:1px solid #ddd;" alt="Example">
                     </div>`;
             }
             imagesContainer.innerHTML += `
-                <div class="image-upload-box">
+                <div class="image-upload-box" style="margin-bottom:15px;">
                     <p style="font-size:0.85rem; font-weight:700; margin-bottom:5px;">${img.label} <span style="color:red;">*</span></p>
-                    ${exampleImgHtml}
                     <input type="file" id="task-img-${idx}" accept="image/*" onchange="previewImage(this, 'preview-${idx}')" />
-                    <label for="task-img-${idx}"><i class="fas fa-cloud-upload-alt"></i> Choose File</label>
+                    <label for="task-img-${idx}" style="margin-top:5px;"><i class="fas fa-cloud-upload-alt"></i> Choose File</label>
                     <img id="preview-${idx}" class="image-preview" />
+                    ${exampleImgHtml}
                 </div>
             `;
         });
