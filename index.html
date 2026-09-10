@@ -231,6 +231,19 @@
         .stat-mini .num{font-size:1.4rem;font-weight:900;color:var(--primary);}
         .stat-mini .lbl{font-size:0.68rem;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.5px;}
         .stat-mini .num.green{color:var(--success);}
+        .commission-hero{background:linear-gradient(135deg,#00b894,#00cec9);color:#fff;padding:18px;border-radius:16px;margin-bottom:15px;text-align:center;position:relative;overflow:hidden;}
+        .commission-hero::before{content:'';position:absolute;width:120px;height:120px;background:rgba(255,255,255,.15);border-radius:50%;top:-40px;right:-30px;}
+        .commission-hero .comm-label{font-size:.75rem;font-weight:700;opacity:.9;letter-spacing:1.2px;text-transform:uppercase;position:relative;}
+        .commission-hero .comm-amt{font-size:2rem;font-weight:900;margin:4px 0;position:relative;text-shadow:0 3px 10px rgba(0,0,0,.15);}
+        .commission-hero .comm-sub{font-size:.72rem;font-weight:600;opacity:.85;position:relative;}
+        .comm-item{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#f0fff9,#e6fff5);padding:12px 14px;border-radius:12px;margin-bottom:8px;border:1px solid rgba(0,184,148,0.2);}
+        .comm-item-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;}
+        .comm-item-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#00b894,#00cec9);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;flex-shrink:0;}
+        .comm-item-info{min-width:0;flex:1;}
+        .comm-item-info h5{font-size:.85rem;font-weight:700;color:#065f46;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .comm-item-info p{font-size:.68rem;color:#10b981;font-weight:600;}
+        .comm-item-amt{font-weight:900;font-size:.95rem;color:#00b894;flex-shrink:0;text-align:right;}
+        .comm-item-amt small{display:block;font-size:.62rem;font-weight:600;color:#888;margin-top:2px;}
     </style>
 </head>
 <body>
@@ -304,21 +317,46 @@
         <div class="sec-head"><i class="fas fa-gift"></i> Daily Rewards</div>
         <div style="padding:0 20px 15px;"><button class="btn-main" onclick="showBonus()" style="background:linear-gradient(135deg,#00b894,#00cec9);"><i class="fas fa-box-open"></i> Open Daily Bonus</button></div>
         <div class="sec-head"><i class="fas fa-play-circle"></i> Daily Ads</div>
+        <!-- ✅ NEW: AM/PM Cycle Info Bar -->
+        <div style="padding:0 20px 12px;">
+            <div id="cycleInfoBar" style="background:linear-gradient(135deg,#6C5CE7,#A29BFE);color:#fff;padding:12px 16px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 8px 20px rgba(108,92,231,0.3);">
+                <div style="flex:1;min-width:0;">
+                    <div style="font-size:0.65rem;opacity:0.85;font-weight:700;letter-spacing:0.5px;">CURRENT CYCLE</div>
+                    <div id="cycleLabel" style="font-size:0.85rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">🌅 AM Cycle</div>
+                </div>
+                <div style="text-align:right;flex-shrink:0;">
+                    <div style="font-size:0.65rem;opacity:0.85;font-weight:700;letter-spacing:0.5px;">RESET IN</div>
+                    <div id="cycleResetTimer" style="font-size:0.95rem;font-weight:900;">12h 0m</div>
+                </div>
+            </div>
+        </div>
         <div id="ad-area" class="ad-grid"></div>
         <div class="sec-head"><i class="fas fa-tasks"></i> Tasks</div>
         <div id="task-area" class="task-list"></div>
     </div>
 
     <div id="page-referral" class="page-section">
+        <div style="padding: 0 20px 15px;">
+            <div class="commission-hero">
+                <div class="comm-label">💰 Total Commission Earned</div>
+                <div class="comm-amt"><span id="commTotalAmt">0.00</span> <span class="currency">টাকা</span></div>
+                <div class="comm-sub">প্রতি রেফারেল থেকে <b id="commRateTxt">2%</b> কমিশন পাবেন</div>
+            </div>
+        </div>
+
         <div class="premium-card">
             <div class="card-title"><i class="fas fa-link" style="color:#0984e3;"></i> Your Referral Link</div>
             <p style="font-size:0.85rem;color:#555;margin-bottom:12px;font-weight:600;">এই লিংকটি শেয়ার করুন। বন্ধুরা যোগ দিলে আপনি <b id="ref-bonus-txt" style="color:var(--primary);">...</b> পাবেন।</p>
             <div class="ref-link-box" id="ref-link-text">Loading...</div>
             <div class="flex-btns"><button class="btn-blue" onclick="shareLink()"><i class="fab fa-telegram-plane"></i> শেয়ার করুন</button><button class="btn-dark" onclick="copyLink()"><i class="fas fa-copy"></i></button></div>
-            <div style="margin-top:12px;padding:10px 12px;background:rgba(243,156,18,0.1);border-radius:10px;border:1px dashed rgba(243,156,18,0.3);">
+            <div style="margin-top:12px;padding:10px 12px;background:rgba(0,184,148,0.1);border-radius:10px;border:1px dashed rgba(0,184,148,0.4);">
+                <p style="font-size:0.75rem;color:#0e7a61;font-weight:700;line-height:1.4;"><i class="fas fa-info-circle"></i> আপনার বন্ধুরা যত টাকা ইনকাম করবে তার <b id="commInfoRate">2%</b> আপনি কমিশন পাবেন।</p>
+            </div>
+            <div style="margin-top:10px;padding:10px 12px;background:rgba(243,156,18,0.1);border-radius:10px;border:1px dashed rgba(243,156,18,0.3);">
                 <p style="font-size:0.75rem;color:#d35400;font-weight:700;line-height:1.4;"><i class="fas fa-info-circle"></i> শর্ত: রেফারেল গোনার জন্য আপনার রেফার করা ইউজারের একাউন্টে কমপক্ষে ২০ টাকা থাকতে হবে।</p>
             </div>
         </div>
+
         <div class="premium-card">
             <div class="card-title"><i class="fas fa-users" style="color:#00b894;"></i> আমার রেফারেল লিস্ট</div>
             <div class="stat-mini-grid">
@@ -327,6 +365,12 @@
             </div>
             <div id="myReferralsList"><div class="empty-state"><i class="fas fa-user-friends"></i><p>এখনো কেউ যোগ দেয়নি</p></div></div>
         </div>
+
+        <div class="premium-card">
+            <div class="card-title"><i class="fas fa-coins" style="color:#f39c12;"></i> কমিশন হিস্ট্রি</div>
+            <div id="commissionHistoryList"><div class="empty-state"><i class="fas fa-coins"></i><p>এখনো কোনো কমিশন পাইনি</p></div></div>
+        </div>
+
         <div class="premium-card">
             <div class="card-title"><i class="fas fa-video" style="color:#ff4757;"></i> টিউটোরিয়াল</div>
             <p style="font-size:0.85rem;color:#555;">কাজ বুঝতে ভিডিওটি দেখে নিন।</p>
@@ -383,7 +427,6 @@
 </div>
 
 <script>
-// ============= FIREBASE =============
 const firebaseConfig = {
     apiKey: "AIzaSyC_WvNxSQQ58TcJhDcBw5NUrAZjOQe1T2g",
     authDomain: "cat-coins-34d4c.firebaseapp.com",
@@ -404,9 +447,12 @@ const ADMIN_ID = "6624254778";
 const SUPPORT_LINK = "https://t.me/NexEarn2Support";
 const MIN_REFERRAL_BALANCE = 20;
 
+let REF_COMMISSION_RATE = 2;
+let REF_COMMISSION_MODE = 'bonus';
+
 let withdrawLevels = [];
 let appState = {
-    user: { balance: 0, totalEarned: 0, referrals: 0, dailyAds: {}, taskHistory: {}, withdrawCount: 0, adHistory: {}, referredUsers: {}, verifiedChannels: {} },
+    user: { balance: 0, totalEarned: 0, referrals: 0, dailyAds: {}, taskHistory: {}, withdrawCount: 0, adHistory: {}, referredUsers: {}, verifiedChannels: {}, totalCommission: 0, commissionHistory: {}, referredBy: null, lastAdCycle: '' },
     config: { adSlots: [], webTasks: {} }
 };
 let isBooted = false;
@@ -420,13 +466,70 @@ let slotLocks = {};
 let maintenanceTimer = null;
 let maintenanceEndTime = null;
 let validReferralCount = 0;
-
-// ✅ NEW: Periodic recheck variables
 let periodicRecheckInterval = null;
 let isRechecking = false;
-
+let cycleTimerInterval = null; // ✅ NEW: Cycle timer
 let adTimerState = { running: false, totalSeconds: 15, remaining: 15, timerId: null, adSlotIndex: null, paused: false, wasCancelled: false };
 let MIN_AD_WATCH_TIME = 15;
+
+// ===================================================
+// ✅ AD CYCLE SYSTEM (AM/PM) - Two resets per day
+// ===================================================
+function getCurrentAdCycle() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hour = now.getHours();
+    const half = hour < 12 ? 'AM' : 'PM';
+    return `${year}-${month}-${day}-${half}`;
+}
+
+function getNextResetTime() {
+    const now = new Date();
+    const next = new Date(now);
+    if (now.getHours() < 12) {
+        next.setHours(12, 0, 0, 0);
+    } else {
+        next.setDate(next.getDate() + 1);
+        next.setHours(0, 0, 0, 0);
+    }
+    return next;
+}
+
+function formatTimeUntil(targetMs) {
+    const diff = Math.max(0, targetMs - Date.now());
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    if (h > 0) return h + 'h ' + m + 'm';
+    return m + 'm ' + s + 's';
+}
+
+function startCycleTimer() {
+    stopCycleTimer();
+    updateCycleUI();
+    cycleTimerInterval = setInterval(updateCycleUI, 1000);
+}
+
+function stopCycleTimer() {
+    if (cycleTimerInterval) {
+        clearInterval(cycleTimerInterval);
+        cycleTimerInterval = null;
+    }
+}
+
+function updateCycleUI() {
+    const label = document.getElementById('cycleLabel');
+    const timer = document.getElementById('cycleResetTimer');
+    if (!label || !timer) return;
+    
+    const hour = new Date().getHours();
+    label.textContent = hour < 12 ? '🌅 AM Cycle' : '🌙 PM Cycle';
+    
+    const next = getNextResetTime();
+    timer.textContent = formatTimeUntil(next.getTime());
+}
 
 function getDeviceId() {
     let deviceId = localStorage.getItem('nexearn_device_id');
@@ -453,6 +556,81 @@ function showAdError(title, msg) {
 }
 function closeAdError() { document.getElementById('adErrorPopup').classList.remove('active'); }
 
+// ===================================================
+// ✅ COMMISSION SYSTEM - Handles both Bonus & Deduct modes
+// ===================================================
+async function creditReferrerCommission(commissionAmount, originalEarned, source) {
+    try {
+        const referrerId = appState.user.referredBy;
+        if (!referrerId || commissionAmount <= 0) return false;
+        
+        const refSnap = await db.ref('users/' + referrerId).once('value');
+        if (!refSnap.exists()) return false;
+        const refData = refSnap.val();
+        
+        const newBal = Number(refData.balance || 0) + commissionAmount;
+        const newEarn = Number(refData.totalEarned || 0) + commissionAmount;
+        const newTotalComm = Number(refData.totalCommission || 0) + commissionAmount;
+        
+        const commHist = refData.commissionHistory || {};
+        const histId = 'com_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+        commHist[histId] = {
+            fromId: String(appState.user.id),
+            fromName: appState.user.name || 'User',
+            earnedAmount: Number(originalEarned),
+            commission: commissionAmount,
+            source: String(source || 'Earning'),
+            rate: REF_COMMISSION_RATE,
+            mode: REF_COMMISSION_MODE,
+            timestamp: Date.now()
+        };
+        
+        const keys = Object.keys(commHist).sort((a,b) => (commHist[b].timestamp||0) - (commHist[a].timestamp||0));
+        if (keys.length > 100) keys.slice(100).forEach(k => delete commHist[k]);
+        
+        await db.ref('users/' + referrerId).update({
+            balance: newBal,
+            totalEarned: newEarn,
+            totalCommission: newTotalComm,
+            commissionHistory: commHist
+        });
+        
+        try {
+            await sendNotification(referrerId,
+                '💰 <b>নতুন কমিশন পেয়েছেন!</b>\n\n' +
+                '👤 ' + (appState.user.name || 'Your referral') + '\n' +
+                '💰 তারা কামালো: <b>' + Number(originalEarned).toFixed(4) + ' TK</b>\n' +
+                '📊 Source: ' + source + '\n' +
+                '💵 কমিশন (' + REF_COMMISSION_RATE + '%): <b>+' + commissionAmount.toFixed(4) + ' TK</b>\n' +
+                '💼 নতুন ব্যালেন্স: <b>' + newBal.toFixed(2) + ' TK</b>'
+            );
+        } catch(e) {}
+        
+        return true;
+    } catch(e) {
+        console.error('Commission error:', e);
+        return false;
+    }
+}
+
+function computeCommissionSplit(earnedAmount) {
+    const referrerId = appState.user.referredBy;
+    const rate = Number(REF_COMMISSION_RATE || 0);
+    const mode = REF_COMMISSION_MODE || 'bonus';
+    
+    if (!referrerId || rate <= 0) {
+        return { userReward: earnedAmount, referrerCommission: 0, mode };
+    }
+    
+    const commission = (Number(earnedAmount) * rate) / 100;
+    
+    if (mode === 'deduct') {
+        return { userReward: Number(earnedAmount) - commission, referrerCommission: commission, mode };
+    } else {
+        return { userReward: Number(earnedAmount), referrerCommission: commission, mode };
+    }
+}
+
 function getNetworkAdjustedTime() {
     const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     if (!conn) return { seconds: 15, label: 'Unknown', type: 'good', speed: '4G' };
@@ -466,9 +644,6 @@ function getNetworkAdjustedTime() {
     return { seconds, label, type: statusType, speed: speedLabel };
 }
 
-// ===================================================
-// ✅ NEW: GET CURRENT CHANNEL LINKS ARRAY
-// ===================================================
 function getCurrentChannelLinks() {
     return channelLinks.length ? channelLinks : [
         { label: 'NexEarn Channel', chatId: 'nexearn2' },
@@ -478,38 +653,20 @@ function getCurrentChannelLinks() {
     ];
 }
 
-// ===================================================
-// ✅ NEW: CHECK IF USER NEEDS RE-VERIFICATION
-// ===================================================
 async function needsVerification() {
     if (!tgUser || !tgUser.id || tgUser.id === '123456') return false;
-    
     const links = getCurrentChannelLinks();
     const verifiedChannels = appState.user.verifiedChannels || {};
-    
-    // ✅ Check 1: Admin added a new channel → user's verifiedChannels missing it
     for (const link of links) {
-        if (!verifiedChannels[link.chatId]) {
-            console.log('🆕 New channel detected:', link.chatId);
-            return true;
-        }
+        if (!verifiedChannels[link.chatId]) return true;
     }
-    
-    // ✅ Check 2: User left a channel → API returns not member
     for (const link of links) {
         const joined = await checkChannelMembership(tgUser.id, link.chatId);
-        if (!joined) {
-            console.log('❌ User left channel:', link.chatId);
-            return true;
-        }
+        if (!joined) return true;
     }
-    
     return false;
 }
 
-// ===================================================
-// ✅ NEW: MARK USER AS VERIFIED FOR ALL CURRENT CHANNELS
-// ===================================================
 async function markVerified() {
     const links = getCurrentChannelLinks();
     const verifiedMap = {};
@@ -518,50 +675,37 @@ async function markVerified() {
     await db.ref('users/' + tgUser.id + '/channelVerified').set(true);
     appState.user.verifiedChannels = verifiedMap;
     channelVerified = true;
-    console.log('✅ User marked verified for channels:', Object.keys(verifiedMap).join(', '));
 }
 
-// ===================================================
-// ✅ NEW: PERIODIC RECHECK (every 30 seconds)
-// ===================================================
 function startPeriodicRecheck() {
     stopPeriodicRecheck();
+    startCycleTimer(); // ✅ NEW: Start cycle countdown
     periodicRecheckInterval = setInterval(async () => {
-        if (isRechecking) return;
-        if (!isOnline) return;
-        if (!isBooted) return;
+        if (isRechecking || !isOnline || !isBooted) return;
         if (document.getElementById('joinModal').classList.contains('active')) return;
         if (document.getElementById('app').style.display === 'none') return;
         if (appState.user.isBanned) return;
         if (checkMaintenance()) return;
-        
         isRechecking = true;
         try {
             const needs = await needsVerification();
             if (needs) {
-                console.log('⚠️ Re-verification needed!');
                 channelVerified = false;
                 await db.ref('users/' + tgUser.id + '/channelVerified').set(false);
-                
-                // Hide app and show verification modal
                 document.getElementById('app').style.display = 'none';
                 document.getElementById('joinModal').classList.add('active');
                 renderChannelButtons();
-                toast('⚠️ চ্যানেল ভেরিফিকেশন প্রয়োজন! আবার সব চ্যানেলে জয়েন করুন।');
+                toast('⚠️ চ্যানেল ভেরিফিকেশন প্রয়োজন!');
             }
-        } catch(e) { console.error('Recheck error:', e); }
+        } catch(e) {}
         finally { isRechecking = false; }
-    }, 30000); // 30 seconds
+    }, 30000);
 }
-
 function stopPeriodicRecheck() {
-    if (periodicRecheckInterval) {
-        clearInterval(periodicRecheckInterval);
-        periodicRecheckInterval = null;
-    }
+    if (periodicRecheckInterval) { clearInterval(periodicRecheckInterval); periodicRecheckInterval = null; }
+    stopCycleTimer(); // ✅ NEW
 }
 
-// ============= AD TIMER =============
 function showAdTimer(slotIndex) {
     if (!isOnline) { toast('No internet connection!'); return; }
     if (isAdWatching) { toast('Please wait for current ad to finish!'); return; }
@@ -634,6 +778,7 @@ function trackAdClick() {
     db.ref('users/' + tgUser.id + '/lastActive').set(todayStr());
 }
 
+// ===== WATCH AD =====
 async function watchAd(i) {
     if (slotLocks[i]) return;
     slotLocks[i] = true;
@@ -667,26 +812,33 @@ async function watchAd(i) {
             slotLocks[i] = false; isAdWatching = false; return;
         }
         
-        const r = Number(appState.config.adReward || 0.5);
-        let newBal = (appState.user.balance || 0) + r;
-        let newEarn = (appState.user.totalEarned || 0) + r;
+        const baseReward = Number(appState.config.adReward || 0.5);
+        const split = computeCommissionSplit(baseReward);
+        const userReward = split.userReward;
+        const referrerCommission = split.referrerCommission;
+        
+        let newBal = (appState.user.balance || 0) + userReward;
+        let newEarn = (appState.user.totalEarned || 0) + userReward;
         let newAds = appState.user.dailyAds || {};
         newAds[i] = (newAds[i] || 0) + 1;
         
         let adHist = appState.user.adHistory || {};
         const histId = 'ad_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-        adHist[histId] = { slot: i + 1, amount: r, timestamp: Date.now(), type: 'ad' };
+        adHist[histId] = { slot: i + 1, amount: userReward, timestamp: Date.now(), type: 'ad' };
         const histKeys = Object.keys(adHist).sort((a,b) => (adHist[b].timestamp || 0) - (adHist[a].timestamp || 0));
-        if (histKeys.length > 100) {
-            const toDelete = histKeys.slice(100);
-            toDelete.forEach(k => delete adHist[k]);
-        }
+        if (histKeys.length > 100) histKeys.slice(100).forEach(k => delete adHist[k]);
         
         await db.ref('users/' + appState.user.id).update({
             balance: newBal, totalEarned: newEarn, dailyAds: newAds,
             adHistory: adHist, lastActive: todayStr()
         });
-        toast('✅ Success! +' + r + ' TK earned!');
+        
+        if (referrerCommission > 0) {
+            await creditReferrerCommission(referrerCommission, baseReward, 'Ad Slot ' + (i+1));
+        }
+        
+        toast('✅ Success! +' + userReward.toFixed(2) + ' TK earned!');
+        
     } catch (e) {
         if (e.message === 'Ad Closed' || e.message === 'Ad not completed') showAdError('⚠️ Ad Not Completed!', 'You closed the ad before it finished.');
         else showAdError('⚠️ Ad Error', e.message || 'Error loading ad.');
@@ -739,7 +891,7 @@ function switchTab(tabId, el) {
     el.classList.add('active');
     if (tabId === 'leaderboard') loadLeaderboard();
     if (tabId === 'withdraw') { loadWithdrawHistory(); updateWithdrawInfo(); }
-    if (tabId === 'referral') loadMyReferrals();
+    if (tabId === 'referral') { loadMyReferrals(); loadCommissionHistory(); }
     if (tabId === 'history') loadAdHistory();
     if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 }
@@ -791,7 +943,7 @@ function updateWithdrawInfo() {
     const canWithdraw = validReferralCount >= reqRefs;
     const notice = document.getElementById('wd-notice');
     if (!canWithdraw) {
-        notice.textContent = '⚠️ Need ' + (reqRefs - validReferralCount) + ' more qualified referrals (with ' + MIN_REFERRAL_BALANCE + '+ TK each)';
+        notice.textContent = '⚠️ Need ' + (reqRefs - validReferralCount) + ' more qualified referrals';
         notice.style.color = '#ff4757';
     } else {
         notice.textContent = '✅ Eligible for withdraw (Level ' + (level.level || 1) + ')';
@@ -886,10 +1038,17 @@ function runTask(id) {
 
 async function claimTask(id, t) {
     if (!isOnline) { toast('No internet connection!'); return; }
-    const newBal = (appState.user.balance || 0) + Number(t.reward);
-    const newEarn = (appState.user.totalEarned || 0) + Number(t.reward);
+    const baseReward = Number(t.reward);
+    const split = computeCommissionSplit(baseReward);
+    const newBal = (appState.user.balance || 0) + split.userReward;
+    const newEarn = (appState.user.totalEarned || 0) + split.userReward;
     let th = appState.user.taskHistory || {}; th[id] = true;
     await db.ref('users/' + appState.user.id).update({ balance: newBal, totalEarned: newEarn, taskHistory: th });
+    
+    if (split.referrerCommission > 0) {
+        await creditReferrerCommission(split.referrerCommission, baseReward, 'Task: ' + t.name);
+    }
+    
     toast('Claimed Successfully!');
 }
 
@@ -924,13 +1083,21 @@ async function claimDailyBonus() {
             else throw new Error('Ad Network Not Ready');
         }
         btn.innerHTML = '<i class="fas fa-check"></i> Claiming...';
-        const amt = Number(appState.config.dailyBonusAmount || 20);
-        const newBal = (appState.user.balance || 0) + amt;
-        const newEarn = (appState.user.totalEarned || 0) + amt;
+        const baseBonus = Number(appState.config.dailyBonusAmount || 20);
+        const split = computeCommissionSplit(baseBonus);
+        
+        const newBal = (appState.user.balance || 0) + split.userReward;
+        const newEarn = (appState.user.totalEarned || 0) + split.userReward;
         let adHist = appState.user.adHistory || {};
-        adHist['bonus_' + Date.now()] = { slot: 'Bonus', amount: amt, timestamp: Date.now(), type: 'bonus' };
+        adHist['bonus_' + Date.now()] = { slot: 'Bonus', amount: split.userReward, timestamp: Date.now(), type: 'bonus' };
         await db.ref('users/' + appState.user.id).update({ balance: newBal, totalEarned: newEarn, dailyBonusDate: todayStr(), adHistory: adHist });
-        hideBonus(); toast('বোনাস ক্লেইম সফল! +' + amt);
+        
+        if (split.referrerCommission > 0) {
+            await creditReferrerCommission(split.referrerCommission, baseBonus, 'Daily Bonus');
+        }
+        
+        hideBonus();
+        toast('বোনাস ক্লেইম সফল! +' + split.userReward.toFixed(2));
     } catch (e) {
         toast(e.message === 'Ad Closed' ? 'অ্যাডটি সম্পূর্ণ দেখেননি!' : 'অ্যাড লোড সমস্যা!');
     } finally {
@@ -948,7 +1115,7 @@ async function requestWithdraw() {
     const reqRefs = level.requiredRefs || 5;
     await calculateValidReferrals();
     if (validReferralCount < reqRefs) {
-        toast('❌ Need ' + reqRefs + ' qualified referrals (each with ' + MIN_REFERRAL_BALANCE + '+ TK balance)!');
+        toast('❌ Need ' + reqRefs + ' qualified referrals!');
         return;
     }
     if (!method) return toast('Please select a payment method.');
@@ -973,8 +1140,8 @@ async function requestWithdraw() {
         await db.ref('users/' + appState.user.id).update({ balance: appState.user.balance - amount, withdrawCount: newCount });
         document.getElementById('wd-account').value = ''; document.getElementById('wd-amount').value = '';
         toast('✅ Withdraw Request Sent! Fee: ' + feeAmount.toFixed(2) + ' TK');
-        await sendNotification(tgUser.id, '✅ <b>Withdraw Request!</b>\n\n💰 Amount: ' + amount + ' TK\n💳 Fee: ' + feeAmount.toFixed(2) + ' TK\n💵 Net: ' + netAmount.toFixed(2) + ' TK');
-        await sendNotification(ADMIN_ID, '💰 <b>New Withdraw</b>\n\n👤 ' + appState.user.name + '\n🆔 ' + tgUser.id + '\n💵 Amount: ' + amount + ' TK\n🏦 Method: ' + method + '\n📧 Account: ' + account);
+        await sendNotification(tgUser.id, '✅ <b>Withdraw Request!</b>\n\n💰 Amount: ' + amount + ' TK');
+        await sendNotification(ADMIN_ID, '💰 <b>New Withdraw</b>\n\n👤 ' + appState.user.name + '\n💵 ' + amount + ' TK');
         updateWithdrawInfo();
     } catch (e) { toast('Error Processing Request'); }
 }
@@ -983,24 +1150,24 @@ async function loadWithdrawHistory() {
     if (!isOnline) { document.getElementById('historyList').innerHTML = '<p style="text-align:center;color:#999;padding:20px 0;">No internet.</p>'; return; }
     try {
         const snap = await db.ref('withdrawals').orderByChild('userId').equalTo(tgUser.id).once('value');
-        let html = '', count = 0;
+        let html = '';
         snap.forEach(child => {
-            const w = child.val(); count++;
+            const w = child.val();
             const statusColor = w.status === 'pending' ? '#f39c12' : w.status === 'approved' ? '#2ecc71' : '#e74c3c';
             const statusText = w.status === 'pending' ? '⏳ Pending' : w.status === 'approved' ? '✅ Approved' : '❌ Rejected';
-            html += '<div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #eee;align-items:center;"><div><span style="font-weight:700;font-size:1.1rem;">' + w.amount + ' TK</span><div style="font-size:0.75rem;color:#999;">Level ' + (w.level || 1) + ' | ' + new Date(w.timestamp).toLocaleDateString('bn-BD') + '</div></div><span style="color:' + statusColor + ';font-weight:600;padding:4px 12px;border-radius:20px;background:' + statusColor + '20;">' + statusText + '</span></div>';
+            html += '<div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #eee;align-items:center;"><div><span style="font-weight:700;font-size:1.1rem;">' + w.amount + ' TK</span><div style="font-size:0.75rem;color:#999;">Level ' + (w.level || 1) + '</div></div><span style="color:' + statusColor + ';font-weight:600;padding:4px 12px;border-radius:20px;background:' + statusColor + '20;">' + statusText + '</span></div>';
         });
-        document.getElementById('historyList').innerHTML = html || '<p style="text-align:center;color:#999;padding:20px 0;">No withdraw history.</p>';
-    } catch (e) { document.getElementById('historyList').innerHTML = '<p style="text-align:center;color:#e74c3c;">Error loading</p>'; }
+        document.getElementById('historyList').innerHTML = html || '<p style="text-align:center;color:#999;padding:20px 0;">No history.</p>';
+    } catch (e) {}
 }
 
 function getRefLink() { return 'https://t.me/' + BOT_USERNAME + '/app?startapp=' + tgUser.id; }
 function copyLink() { navigator.clipboard.writeText(getRefLink()); toast('Link Copied!'); }
 function shareLink() {
-    const url = 'https://t.me/share/url?url=' + encodeURIComponent(getRefLink()) + '&text=Join%20Now!%20and%20earn%20money!';
+    const url = 'https://t.me/share/url?url=' + encodeURIComponent(getRefLink()) + '&text=Join%20Now!';
     if (tg && tg.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank');
 }
-function openTutorial() { if (appState.config.tutorialLink) window.open(appState.config.tutorialLink, '_blank'); else toast('No tutorial available'); }
+function openTutorial() { if (appState.config.tutorialLink) window.open(appState.config.tutorialLink, '_blank'); else toast('No tutorial'); }
 function openSupport() {
     if (appState.config.supportLink) window.open(appState.config.supportLink, '_blank');
     else { if (tg && tg.openTelegramLink) tg.openTelegramLink(SUPPORT_LINK); else window.open(SUPPORT_LINK, '_blank'); }
@@ -1037,9 +1204,31 @@ async function loadMyReferrals() {
         container.innerHTML = html;
         document.getElementById('refTotalCount').textContent = userData.length;
         document.getElementById('refQualifiedCount').textContent = qualifiedCount;
-    } catch (e) {
-        container.innerHTML = '<p style="text-align:center;color:#e74c3c;padding:15px;">Error loading referrals</p>';
+    } catch (e) {}
+}
+
+function loadCommissionHistory() {
+    const container = document.getElementById('commissionHistoryList');
+    const hist = appState.user.commissionHistory || {};
+    const keys = Object.keys(hist);
+    if (keys.length === 0) {
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-coins"></i><p>এখনো কোনো কমিশন পাইনি</p></div>';
+        return;
     }
+    const items = keys.map(k => ({ id: k, ...hist[k] })).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    let html = '';
+    items.slice(0, 30).forEach(it => {
+        const initial = (it.fromName || 'U').charAt(0).toUpperCase();
+        const rate = it.rate || REF_COMMISSION_RATE;
+        html += '<div class="comm-item">' +
+            '<div class="comm-item-left">' +
+            '<div class="comm-item-avatar">' + initial + '</div>' +
+            '<div class="comm-item-info"><h5>' + it.fromName + '</h5><p><i class="fas fa-coins" style="color:#f39c12;"></i> ' + (it.source || 'Earning') + ' • ' + rate + '%</p></div>' +
+            '</div>' +
+            '<div class="comm-item-amt">+' + Number(it.commission || 0).toFixed(4) + '<small>' + shortDate(it.timestamp) + '</small></div>' +
+            '</div>';
+    });
+    container.innerHTML = html;
 }
 
 function loadAdHistory() {
@@ -1089,6 +1278,12 @@ async function updateTextElements() {
     document.getElementById('ref-link-text').innerText = getRefLink();
     document.getElementById('ref-bonus-txt').innerText = (appState.config.refBonus || 5) + ' ' + sym;
     document.getElementById('bonusAmt').innerText = appState.config.dailyBonusAmount || 20;
+    
+    document.getElementById('commTotalAmt').innerText = (appState.user.totalCommission || 0).toFixed(2);
+    document.getElementById('commRateTxt').innerText = REF_COMMISSION_RATE + '%';
+    const infoRateEl = document.getElementById('commInfoRate');
+    if (infoRateEl) infoRateEl.innerText = REF_COMMISSION_RATE + '%';
+    
     const wdSel = document.getElementById('wd-method');
     let currentVal = wdSel.value;
     wdSel.innerHTML = '<option value="">Select Method</option>';
@@ -1174,7 +1369,7 @@ async function checkAndUpdateStatus() {
     const buttons = document.querySelectorAll('.channel-btn');
     const statusEl = document.getElementById('verifyStatus');
     if (!userId || userId === '123456') {
-        statusEl.textContent = '⚠️ Unable to verify. Please open in Telegram.';
+        statusEl.textContent = '⚠️ Unable to verify.';
         statusEl.className = 'verify-status error'; return;
     }
     let allJoined = true;
@@ -1187,13 +1382,8 @@ async function checkAndUpdateStatus() {
         statusEl.className = 'verify-status success';
         if (verifyInterval) clearInterval(verifyInterval);
         verifyInterval = null;
-        
-        // ✅ NEW: Save verified channels map
         await markVerified();
-        
-        // ✅ NEW: Stop periodic recheck while modal closes
         stopPeriodicRecheck();
-        
         setTimeout(() => { 
             document.getElementById('joinModal').classList.remove('active'); 
             showAppAfterVerify(); 
@@ -1211,7 +1401,6 @@ async function showAppAfterVerify() {
     if (checkBan()) return;
     document.getElementById('app').style.display = 'block';
     setLoading(false);
-    // ✅ NEW: Start periodic recheck after app opens
     startPeriodicRecheck();
     if (appState.user.dailyBonusDate !== todayStr()) showBonus();
 }
@@ -1229,13 +1418,11 @@ window.onload = () => {
     document.getElementById('u-id').innerText = 'ID: ' + tgUser.id;
     if (tgUser.photo_url) document.getElementById('u-img').src = tgUser.photo_url;
     
-    // ✅ NEW: Stop periodic recheck when tab hidden
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
             stopPeriodicRecheck();
         } else if (isBooted && isOnline && !document.getElementById('joinModal').classList.contains('active') && document.getElementById('app').style.display !== 'none') {
             startPeriodicRecheck();
-            // Run immediate check when returning
             if (channelVerified) {
                 needsVerification().then(needs => {
                     if (needs) {
@@ -1248,14 +1435,35 @@ window.onload = () => {
                     }
                 });
             }
+            // ✅ Check cycle change when app becomes visible
+            checkCycleChange();
         }
     });
     
-    // ✅ NEW: Cleanup on unload
     window.addEventListener('beforeunload', () => {
         stopPeriodicRecheck();
         if (verifyInterval) clearInterval(verifyInterval);
     });
+
+    // ✅ NEW: Check cycle change
+    async function checkCycleChange() {
+        const currentCycle = getCurrentAdCycle();
+        if (appState.user.lastAdCycle && appState.user.lastAdCycle !== currentCycle) {
+            const isNewDay = appState.user.lastAdCycle.slice(0, 10) !== currentCycle.slice(0, 10);
+            await db.ref('users/' + tgUser.id).update({
+                dailyAds: {},
+                lastAdCycle: currentCycle
+            });
+            appState.user.dailyAds = {};
+            appState.user.lastAdCycle = currentCycle;
+            renderAds();
+            if (isNewDay) {
+                toast('🌅 নতুন দিন শুরু! অ্যাড সাইকেল রিসেট হয়েছে।');
+            } else {
+                toast('🔄 নতুন সাইকেল! আবার অ্যাড দেখতে পারবেন।');
+            }
+        }
+    }
 
     db.ref('config').on('value', snap => {
         if (snap.exists()) {
@@ -1263,6 +1471,10 @@ window.onload = () => {
             if (!appState.config.botUsername) appState.config.botUsername = BOT_USERNAME;
             if (!appState.config.botToken) appState.config.botToken = BOT_TOKEN;
             if (appState.config.channelLinks) channelLinks = appState.config.channelLinks;
+            
+            REF_COMMISSION_RATE = Number(appState.config.refCommissionRate || 2);
+            REF_COMMISSION_MODE = appState.config.refCommissionMode || 'bonus';
+            
             if (appState.config.withdrawLevels && appState.config.withdrawLevels.length > 0) withdrawLevels = appState.config.withdrawLevels;
             else withdrawLevels = [
                 { level: 1, requiredRefs: 5, fee: 5, minAmount: 10, maxAmount: 100, time: '30 Min-1 Hours' },
@@ -1299,6 +1511,7 @@ window.onload = () => {
         } else {
             const defaultConfig = {
                 refBonus: 5, adReward: 0.5, dailyBonusAmount: 20, dailyAdLimit: 10, minWithdraw: 10, currencySymbol: 'TK',
+                refCommissionRate: 2, refCommissionMode: 'bonus',
                 botUsername: BOT_USERNAME, botToken: BOT_TOKEN,
                 paymentMethods: ['bKash', 'Nagad', 'Rocket'],
                 adSlots: [], webTasks: {},
@@ -1320,6 +1533,8 @@ window.onload = () => {
             db.ref('config').set(defaultConfig);
             channelLinks = defaultConfig.channelLinks;
             withdrawLevels = defaultConfig.withdrawLevels;
+            REF_COMMISSION_RATE = 2;
+            REF_COMMISSION_MODE = 'bonus';
         }
     });
 
@@ -1330,6 +1545,8 @@ window.onload = () => {
             appState.user = {
                 id: tgUser.id, name: tgUser.first_name, photo: tgUser.photo_url || '',
                 balance: 0, totalEarned: 0, referrals: 0, dailyAds: {}, taskHistory: {}, adHistory: {}, referredUsers: {}, verifiedChannels: {},
+                totalCommission: 0, commissionHistory: {}, referredBy: null,
+                lastAdCycle: getCurrentAdCycle(), // ✅ NEW
                 lastActive: today, dailyBonusDate: '', channelVerified: false, isBanned: false, banReason: '',
                 withdrawCount: 0, adClicks: 0
             };
@@ -1345,7 +1562,6 @@ window.onload = () => {
                 const deviceId = getDeviceId();
                 const deviceSnap = await db.ref('deviceReferrals/' + deviceId).once('value');
                 if (deviceSnap.exists()) {
-                    console.log('Device already used for referral');
                     toast('⚠️ এই ডিভাইস দিয়ে আগেই রেফার করা হয়েছে!');
                 } else {
                     const refSnap = await db.ref('users/' + refBy).once('value');
@@ -1353,6 +1569,10 @@ window.onload = () => {
                         const r = refSnap.val();
                         let cSnap = await db.ref('config').once('value');
                         let rBonus = (cSnap.exists() && cSnap.val().refBonus) ? Number(cSnap.val().refBonus) : 5;
+                        
+                        await userRef.update({ referredBy: String(refBy) });
+                        appState.user.referredBy = String(refBy);
+                        
                         await db.ref('users/' + refBy).update({
                             referrals: (r.referrals || 0) + 1,
                             balance: (r.balance || 0) + rBonus,
@@ -1380,8 +1600,11 @@ window.onload = () => {
                 if (!appState.user.adHistory) appState.user.adHistory = {};
                 if (!appState.user.referredUsers) appState.user.referredUsers = {};
                 if (!appState.user.verifiedChannels) appState.user.verifiedChannels = {};
+                if (!appState.user.commissionHistory) appState.user.commissionHistory = {};
+                if (appState.user.totalCommission === undefined) appState.user.totalCommission = 0;
                 if (appState.user.withdrawCount === undefined) appState.user.withdrawCount = 0;
                 if (appState.user.adClicks === undefined) appState.user.adClicks = 0;
+                if (!appState.user.lastAdCycle) appState.user.lastAdCycle = getCurrentAdCycle();
                 
                 if (appState.user.isBanned) {
                     document.getElementById('bannedOverlay').classList.add('active');
@@ -1390,9 +1613,24 @@ window.onload = () => {
                     return;
                 } else document.getElementById('bannedOverlay').classList.remove('active');
                 
-                if (appState.user.lastActive !== today) {
-                    await userRef.update({ dailyAds: {}, lastActive: today });
+                // ✅ NEW: Check ad cycle (AM/PM) - resets twice per day
+                const currentCycle = getCurrentAdCycle();
+                if (appState.user.lastAdCycle !== currentCycle) {
+                    const isNewDay = appState.user.lastAdCycle.slice(0, 10) !== currentCycle.slice(0, 10);
+                    await userRef.update({ 
+                        dailyAds: {}, 
+                        lastAdCycle: currentCycle,
+                        lastActive: today
+                    });
                     appState.user.dailyAds = {};
+                    appState.user.lastAdCycle = currentCycle;
+                    if (isNewDay) {
+                        toast('🌅 নতুন দিন শুরু! অ্যাড সাইকেল রিসেট হয়েছে।');
+                    } else {
+                        toast('🔄 নতুন সাইকেল! আবার অ্যাড দেখতে পারবেন।');
+                    }
+                } else if (appState.user.lastActive !== today) {
+                    await userRef.update({ lastActive: today });
                 }
                 
                 await updateTextElements();
@@ -1403,14 +1641,8 @@ window.onload = () => {
                     isBooted = true;
                     if (checkMaintenance()) { setLoading(false); return; }
                     if (checkBan()) { setLoading(false); return; }
-                    
-                    // ✅ NEW: Comprehensive verification check
-                    // Checks: (a) verifiedChannels map matches current channels (admin added new)
-                    //         (b) actual membership via API (user left)
                     const needs = await needsVerification();
-                    
                     if (needs) {
-                        console.log('🔄 Verification needed on boot');
                         document.getElementById('joinModal').classList.add('active');
                         renderChannelButtons();
                     } else {
@@ -1418,7 +1650,6 @@ window.onload = () => {
                         if (isOnline) {
                             document.getElementById('app').style.display = 'block';
                             setLoading(false);
-                            // ✅ NEW: Start periodic recheck
                             startPeriodicRecheck();
                             if (appState.user.dailyBonusDate !== today) showBonus();
                         } else document.getElementById('offlineOverlay').classList.add('active');
