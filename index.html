@@ -244,6 +244,18 @@
         .comm-item-info p{font-size:.68rem;color:#10b981;font-weight:600;}
         .comm-item-amt{font-weight:900;font-size:.95rem;color:#00b894;flex-shrink:0;text-align:right;}
         .comm-item-amt small{display:block;font-size:.62rem;font-weight:600;color:#888;margin-top:2px;}
+        /* Modal Styles */
+        .modal { transition: opacity 0.3s ease; }
+        .input-group textarea { width:100%; padding:14px; border:1px solid #e1e1e1; border-radius:12px; font-size:0.95rem; background:#f9f9f9; outline:none; font-family:inherit; resize:vertical; min-height:80px; }
+        .image-upload-box { border:2px dashed #6C5CE7; border-radius:12px; padding:15px; text-align:center; background:#f9f9ff; margin-bottom:15px; position:relative; }
+        .image-upload-box input[type="file"] { display:none; }
+        .image-upload-box label { cursor:pointer; display:block; color:#6C5CE7; font-weight:700; }
+        .image-preview { max-width:100%; max-height:150px; border-radius:8px; margin-top:10px; display:none; }
+        .status-badge { padding:4px 12px; border-radius:20px; font-size:0.75rem; font-weight:700; }
+        .status-pending { background:#FFF3CD; color:#856404; }
+        .status-processing { background:#CCE5FF; color:#004085; }
+        .status-approved { background:#D4EDDA; color:#155724; }
+        .status-cancelled { background:#F8D7DA; color:#721C24; }
     </style>
 </head>
 <body>
@@ -317,7 +329,6 @@
         <div class="sec-head"><i class="fas fa-gift"></i> Daily Rewards</div>
         <div style="padding:0 20px 15px;"><button class="btn-main" onclick="showBonus()" style="background:linear-gradient(135deg,#00b894,#00cec9);"><i class="fas fa-box-open"></i> Open Daily Bonus</button></div>
         <div class="sec-head"><i class="fas fa-play-circle"></i> Daily Ads</div>
-        <!-- ✅ UPDATED: Bigger AM/PM Cycle Info Bar with seconds -->
         <div style="padding:0 20px 14px;">
             <div id="cycleInfoBar" style="background:linear-gradient(135deg,#6C5CE7,#A29BFE);color:#fff;padding:20px 22px;border-radius:18px;display:flex;align-items:center;justify-content:space-between;gap:14px;box-shadow:0 14px 32px rgba(108,92,231,0.4);position:relative;overflow:hidden;">
                 <div style="position:absolute;width:140px;height:140px;background:rgba(255,255,255,0.12);border-radius:50%;top:-60px;right:-40px;pointer-events:none;"></div>
@@ -333,6 +344,8 @@
             </div>
         </div>
         <div id="ad-area" class="ad-grid"></div>
+        
+        <!-- Updated Task Area -->
         <div class="sec-head"><i class="fas fa-tasks"></i> Tasks</div>
         <div id="task-area" class="task-list"></div>
     </div>
@@ -389,6 +402,12 @@
             </div>
             <div id="adHistoryList"><div class="empty-state"><i class="fas fa-play-circle"></i><p>এখনো কোনো অ্যাড দেখা হয়নি</p></div></div>
         </div>
+        
+        <!-- Task History Section -->
+        <div class="premium-card">
+            <div class="card-title"><i class="fas fa-tasks" style="color:#f39c12;"></i> My Task History</div>
+            <div id="myTasksList"><div class="empty-state"><i class="fas fa-tasks"></i><p>এখনো কোনো টাস্ক সাবমিট করা হয়নি</p></div></div>
+        </div>
     </div>
 
     <div id="page-leaderboard" class="page-section">
@@ -416,6 +435,77 @@
         <div class="premium-card" style="margin-top:20px;">
             <div class="card-title"><i class="fas fa-history" style="color:#f39c12;"></i> Withdraw History</div>
             <div id="historyList"><p style="text-align:center;color:#999;padding:20px 0;">Loading history...</p></div>
+        </div>
+    </div>
+</div>
+
+<!-- Task Detail Modal (Image 2) -->
+<div id="taskDetailModal" class="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; overflow-y:auto;">
+    <div style="background:#F0F3F8; min-height:100vh; width:100%; padding-bottom:90px;">
+        <div class="header" style="padding:20px 25px 40px; border-radius:0 0 25px 25px;">
+            <div class="top-bar">
+                <button onclick="closeTaskDetail()" style="background:none;border:none;color:#fff;font-size:1.5rem;"><i class="fas fa-arrow-left"></i></button>
+                <span style="color:#fff;font-weight:700;">Job Details</span>
+                <button onclick="closeTaskDetail()" style="background:none;border:none;color:#fff;font-size:1.5rem;"><i class="fas fa-times"></i></button>
+            </div>
+            <h2 id="det-task-title" style="margin-top:15px; font-size:1.4rem; color:#fff;">Task Title</h2>
+            <p id="det-task-type" style="color:rgba(255,255,255,0.8); font-size:0.85rem;">Category</p>
+        </div>
+        
+        <div style="padding:0 20px; margin-top:-20px;">
+            <div class="premium-card" style="display:flex; justify-content:space-between; text-align:center;">
+                <div><div style="color:#6b7280; font-size:0.75rem;">Payment</div><div id="det-task-reward" style="font-weight:800; color:#00b894; font-size:1.2rem;">$0.00</div></div>
+                <div><div style="color:#6b7280; font-size:0.75rem;">Workers</div><div id="det-task-slots" style="font-weight:800; color:#2D3436; font-size:1.2rem;">0 / 10</div></div>
+                <div><div style="color:#6b7280; font-size:0.75rem;">Time Left</div><div id="det-task-time" style="font-weight:800; color:#ff4757; font-size:1.2rem;">7 days</div></div>
+            </div>
+
+            <div class="premium-card">
+                <div class="card-title"><i class="fas fa-user-tie" style="color:#0984e3;"></i> Client Information</div>
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <div style="width:50px; height:50px; border-radius:50%; background:#00b894; color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.5rem; font-weight:800;">Z</div>
+                    <div>
+                        <h4 style="font-size:1rem;">Zillow <i class="fas fa-external-link-alt" style="font-size:0.8rem; color:#6C5CE7;"></i></h4>
+                        <div style="color:#f39c12; font-size:0.85rem;">★★★★☆ 4.2 (5)</div>
+                        <div style="color:#6b7280; font-size:0.75rem;">114 followers</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="premium-card">
+                <div class="card-title"><i class="fas fa-file-alt" style="color:#6C5CE7;"></i> Job Description</div>
+                <p id="det-task-desc" style="font-size:0.9rem; color:#555; line-height:1.6;">Description details here...</p>
+            </div>
+
+            <button class="btn-main" onclick="openTaskSubmit()" style="background:linear-gradient(135deg,#00b894,#00cec9);">Submit Now</button>
+        </div>
+    </div>
+</div>
+
+<!-- Task Submit Modal (Image 3) -->
+<div id="taskSubmitModal" class="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:10000; overflow-y:auto;">
+    <div style="background:#fff; min-height:100vh; padding:20px; padding-bottom:90px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="font-size:1.2rem;">Submit Your Work</h2>
+            <button onclick="closeTaskSubmit()" style="background:none;border:none;font-size:1.5rem;"><i class="fas fa-times"></i></button>
+        </div>
+
+        <div class="premium-card" style="background:#FFF5E6; border:1px solid #FFE0B2;">
+            <h3 id="sub-task-title" style="font-size:1.1rem; color:#D35400;">সততার কাজ করলে ১০০% পেমেন্ট</h3>
+            <p id="sub-task-reward" style="color:#00b894; font-weight:800; font-size:1.1rem;">$0.10</p>
+            <p id="sub-task-cat" style="font-size:0.8rem; color:#666;">Mobile Application / Download & Create Account</p>
+        </div>
+
+        <div id="dynamic-inputs-container" style="margin-top:20px;">
+            <!-- Dynamic inputs will be generated here -->
+        </div>
+
+        <div id="dynamic-images-container" style="margin-top:20px;">
+            <!-- Dynamic image uploads will be generated here -->
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:30px;">
+            <button class="btn-main" onclick="submitTaskWork(event)" style="background:#00b894; flex:2;">Submit Work</button>
+            <button class="btn-main" onclick="closeTaskSubmit()" style="background:#ddd; color:#333; flex:1;">Cancel</button>
         </div>
     </div>
 </div>
@@ -455,7 +545,7 @@ let REF_COMMISSION_MODE = 'bonus';
 let withdrawLevels = [];
 let appState = {
     user: { balance: 0, totalEarned: 0, referrals: 0, dailyAds: {}, taskHistory: {}, withdrawCount: 0, adHistory: {}, referredUsers: {}, verifiedChannels: {}, totalCommission: 0, commissionHistory: {}, referredBy: null, lastAdCycle: '' },
-    config: { adSlots: [], webTasks: {} }
+    config: { adSlots: [], newTasks: {} }
 };
 let isBooted = false;
 let tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : { id: '123456', first_name: 'Guest User', photo_url: 'https://via.placeholder.com/100' };
@@ -473,6 +563,8 @@ let isRechecking = false;
 let cycleTimerInterval = null;
 let adTimerState = { running: false, totalSeconds: 15, remaining: 15, timerId: null, adSlotIndex: null, paused: false, wasCancelled: false };
 let MIN_AD_WATCH_TIME = 15;
+let currentTaskId = null;
+let lastCycleCheck = '';
 
 // ===================================================
 // ✅ AD CYCLE SYSTEM (AM/PM)
@@ -499,7 +591,6 @@ function getNextResetTime() {
     return next;
 }
 
-// ✅ UPDATED: Always show HHh MMm SSs
 function formatTimeUntil(targetMs) {
     const diff = Math.max(0, targetMs - Date.now());
     const h = Math.floor(diff / 3600000);
@@ -510,6 +601,7 @@ function formatTimeUntil(targetMs) {
 
 function startCycleTimer() {
     stopCycleTimer();
+    lastCycleCheck = getCurrentAdCycle();
     updateCycleUI();
     cycleTimerInterval = setInterval(updateCycleUI, 1000);
 }
@@ -529,6 +621,28 @@ function updateCycleUI() {
     label.textContent = hour < 12 ? '🌅 AM Cycle' : '🌙 PM Cycle';
     const next = getNextResetTime();
     timer.textContent = formatTimeUntil(next.getTime());
+
+    // ✅ Check if cycle changed (timer hit 00h 00m 00s)
+    const currentCycle = getCurrentAdCycle();
+    if (currentCycle !== lastCycleCheck) {
+        lastCycleCheck = currentCycle;
+        forceCycleReset(currentCycle);
+    }
+}
+
+async function forceCycleReset(newCycle) {
+    if (!tgUser || !tgUser.id) return;
+    try {
+        // Reset dailyAds to empty object for the new cycle
+        await db.ref('users/' + tgUser.id).update({
+            dailyAds: {},
+            lastAdCycle: newCycle
+        });
+        appState.user.dailyAds = {};
+        appState.user.lastAdCycle = newCycle;
+        renderAds(); // Re-render ads to show 0/limit and active slots
+        toast('🔄 নতুন সাইকেল শুরু! অ্যাড স্লট রিসেট হয়েছে।');
+    } catch (e) { console.error("Cycle reset error:", e); }
 }
 
 function getDeviceId() {
@@ -867,7 +981,7 @@ function switchTab(tabId, el) {
     if (tabId === 'leaderboard') loadLeaderboard();
     if (tabId === 'withdraw') { loadWithdrawHistory(); updateWithdrawInfo(); }
     if (tabId === 'referral') { loadMyReferrals(); loadCommissionHistory(); }
-    if (tabId === 'history') loadAdHistory();
+    if (tabId === 'history') { loadAdHistory(); loadTaskHistory(); }
     if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 }
 
@@ -963,118 +1077,326 @@ function checkBan() {
     } else { document.getElementById('bannedOverlay').classList.remove('active'); return false; }
 }
 
+// ===================================================
+// ✅ RENDER ADS (Dynamic Slots)
+// ===================================================
 function renderAds() {
-    const el = document.getElementById('ad-area'); el.innerHTML = '';
+    const el = document.getElementById('ad-area'); 
+    if (!el) return;
+    el.innerHTML = '';
+    
     const slots = appState.config.adSlots || [];
-    const limit = Number(appState.config.dailyAdLimit || 10);
+    // Allow up to 6 slots, or as many as configured
+    const totalSlots = slots.length > 0 ? slots.length : 4; 
+    const limit = Number(appState.config.dailyAdLimit || 10); 
     const reward = Number(appState.config.adReward || 0.5);
     const sym = appState.config.currencySymbol || 'TK';
-    for (let i = 0; i < 4; i++) {
-        const slot = slots[i];
+    
+    for (let i = 0; i < totalSlots; i++) {
+        const slot = slots[i] || { network: 'none', id: '' };
+        const configured = slot && slot.network && slot.network !== 'none';
+        
+        // ✅ Get watched count for current cycle
         const done = (appState.user.dailyAds && appState.user.dailyAds[i]) ? appState.user.dailyAds[i] : 0;
         const max = done >= limit;
-        const configured = slot && slot.network && slot.network !== 'none';
+        
         const cardClass = !configured ? 'not-set disabled' : (max ? 'disabled' : '');
-        const extraClass = (i === 0 ? 'slot-1' : i === 1 ? 'slot-2' : i === 2 ? 'slot-3' : 'slot-4');
+        const extraClass = `slot-${(i % 4) + 1}`; 
         const icon = (i === 0 ? 'fa-play' : i === 1 ? 'fa-circle-play' : i === 2 ? 'fa-bolt' : 'fa-gem');
-        const clickAttr = (!configured || max) ? '' : 'onclick="startAdWatch(' + i + ')"';
-        el.innerHTML += '<div class="ad-card ' + extraClass + ' ' + cardClass + '" ' + clickAttr + ' style="' + (!configured||max?'':'cursor:pointer;') + '">' +
-            (configured && !max ? '<div class="ad-badge-timer"><i class="fas fa-hourglass-start"></i> 15s</div>' : '') +
-            '<div class="ad-inner"><i class="fas ' + icon + '"></i> <h4>Ad Slot ' + (i+1) + '</h4>' +
-            '<div class="reward-pill"><i class="fas fa-coins"></i> +' + reward + ' ' + sym + '</div>' +
-            (configured ? '<div class="progress-pill">' + done + '/' + limit + ' Watched</div>' : '<div class="progress-pill">Not Configured</div>') +
-            '</div></div>';
+        
+        const clickAttr = (!configured || max) ? '' : `onclick="startAdWatch(${i})"`;
+        const cursorStyle = (!configured || max) ? '' : 'cursor:pointer;';
+
+        el.innerHTML += `
+            <div class="ad-card ${extraClass} ${cardClass}" ${clickAttr} style="${cursorStyle}">
+                ${(configured && !max) ? '<div class="ad-badge-timer"><i class="fas fa-hourglass-start"></i> 15s</div>' : ''}
+                <div class="ad-inner">
+                    <i class="fas ${icon}"></i> 
+                    <h4>Ad Slot ${i+1}</h4>
+                    <div class="reward-pill"><i class="fas fa-coins"></i> +${reward} ${sym}</div>
+                    ${configured ? `<div class="progress-pill">${done}/${limit} Watched</div>` : '<div class="progress-pill">Not Configured</div>'}
+                </div>
+            </div>
+        `;
     }
 }
 
-function renderTasks() {
-    const el = document.getElementById('task-area'); el.innerHTML = '';
-    const tasks = appState.config.webTasks || {};
-    const sym = appState.config.currencySymbol || 'TK';
-    Object.keys(tasks).forEach(k => {
-        const t = tasks[k];
-        const isDone = appState.user.taskHistory && appState.user.taskHistory[k];
-        if (isDone) return;
-        el.innerHTML += '<div class="task-item"><div class="task-left"><img src="' + (t.icon || 'https://via.placeholder.com/40') + '" class="task-icon"><div class="task-info"><h4>' + t.name + '</h4><small>+' + t.reward + ' ' + sym + '</small></div></div><button id="btn-' + k + '" class="btn-act btn-start" onclick="runTask(\'' + k + '\')">Start</button></div>';
+// ===================================================
+// ✅ TASK SYSTEM (New Tasks + ImgBB Upload)
+// ===================================================
+const IMGBB_API_KEY = "bc5a5bca9a50833046600a2cc94de6c6";
+
+async function uploadToImgBB(file) {
+    return new Promise(async (resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = async () => {
+            const base64String = reader.result.split(',')[1];
+            const formData = new FormData();
+            formData.append('image', base64String);
+
+            try {
+                const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                if (data.success) {
+                    resolve(data.data.url);
+                } else {
+                    reject(new Error('ImgBB upload failed'));
+                }
+            } catch (error) {
+                reject(error);
+            }
+        };
+        reader.onerror = error => reject(error);
     });
 }
 
-function runTask(id) {
-    if (!isOnline) { toast('No internet connection!'); return; }
-    const t = appState.config.webTasks[id];
-    if (tg && tg.openLink) tg.openLink(t.url); else window.open(t.url, '_blank');
-    const btn = document.getElementById('btn-' + id);
-    let s = 15; btn.className = 'btn-act btn-wait'; btn.disabled = true;
-    const iv = setInterval(() => {
-        btn.innerText = s + 's'; s--;
-        if (s < 0) { clearInterval(iv); btn.className = 'btn-act btn-claim'; btn.disabled = false; btn.innerText = 'Claim'; btn.onclick = () => claimTask(id, t); }
-    }, 1000);
+function renderNewTasks() {
+    const el = document.getElementById('task-area');
+    if (!el) return;
+    el.innerHTML = '';
+    const tasks = appState.config.newTasks || {}; 
+    const sym = appState.config.currencySymbol || 'TK';
+
+    Object.keys(tasks).forEach(taskId => {
+        const task = tasks[taskId];
+        const isDone = appState.user.taskHistory && appState.user.taskHistory[taskId];
+        if (isDone) return;
+
+        const submittedCount = task.submittedCount || 0;
+        const slotsLeft = Math.max(0, (task.totalSlots || 100) - submittedCount);
+
+        el.innerHTML += `
+            <div class="task-item" style="flex-direction:column; align-items:flex-start; gap:10px;">
+                <div style="display:flex; justify-content:space-between; width:100%;">
+                    <div>
+                        <h4 style="font-size:1rem; font-weight:700;">${task.title}</h4>
+                        <p style="font-size:0.75rem; color:#6b7280; margin-top:2px;"><i class="fas fa-folder"></i> ${task.category || 'General'}</p>
+                    </div>
+                    <div style="text-align:right;">
+                        <p style="font-size:0.75rem; color:#6b7280;">Payment</p>
+                        <p style="font-weight:800; color:#00b894;">${task.reward} ${sym}</p>
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:space-between; width:100%; align-items:center; margin-top:5px;">
+                    <div>
+                        <p style="font-size:0.7rem; color:#ff4757;"><i class="fas fa-clock"></i> Time Left: ${task.timeLimit || '7 days'}</p>
+                        <p style="font-size:0.7rem; color:#6b7280;">${slotsLeft} left</p>
+                    </div>
+                    <button class="btn-act btn-start" style="background:#6C5CE7; color:#fff;" onclick="openTaskDetail('${taskId}')">Start</button>
+                </div>
+            </div>
+        `;
+    });
 }
 
-async function claimTask(id, t) {
-    if (!isOnline) { toast('No internet connection!'); return; }
-    const baseReward = Number(t.reward);
-    const split = computeCommissionSplit(baseReward);
-    const newBal = (appState.user.balance || 0) + split.userReward;
-    const newEarn = (appState.user.totalEarned || 0) + split.userReward;
-    let th = appState.user.taskHistory || {}; th[id] = true;
-    await db.ref('users/' + appState.user.id).update({ balance: newBal, totalEarned: newEarn, taskHistory: th });
-    if (split.referrerCommission > 0) {
-        await creditReferrerCommission(split.referrerCommission, baseReward, 'Task: ' + t.name);
-    }
-    toast('Claimed Successfully!');
-}
+function openTaskDetail(taskId) {
+    currentTaskId = taskId;
+    const task = appState.config.newTasks[taskId];
+    if (!task) return;
 
-function showBonus() {
-    if (!isOnline) { toast('No internet connection!'); return; }
-    if (appState.user.dailyBonusDate === todayStr()) { toast('আজকের বোনাস আগেই নেওয়া হয়েছে!'); return; }
-    document.getElementById('bonusOverlay').classList.add('show');
+    document.getElementById('det-task-title').innerText = task.title;
+    document.getElementById('det-task-type').innerText = task.category || 'General';
+    document.getElementById('det-task-reward').innerText = task.reward + ' ' + (appState.config.currencySymbol || 'TK');
+    document.getElementById('det-task-slots').innerText = (task.submittedCount || 0) + ' / ' + (task.totalSlots || 100);
+    document.getElementById('det-task-time').innerText = task.timeLimit || '7 days';
+    document.getElementById('det-task-desc').innerHTML = task.description || 'No description provided.';
+
+    document.getElementById('taskDetailModal').style.display = 'block';
     document.getElementById('app').classList.add('blurred');
 }
-function hideBonus() { document.getElementById('bonusOverlay').classList.remove('show'); document.getElementById('app').classList.remove('blurred'); }
 
-async function claimDailyBonus() {
-    if (!isOnline) { toast('No internet connection!'); return; }
-    const btn = document.getElementById('btnClaimBonus'), btnCancel = document.getElementById('btnCancelBonus'), subText = document.getElementById('bonusSubText');
-    btn.disabled = true; btnCancel.disabled = true;
-    try {
-        const slots = appState.config.adSlots || [];
-        const agSlot = slots.find(s => s.network === 'adsgram');
-        const mtSlot = slots.find(s => s.network === 'monetag');
-        if (agSlot && agSlot.id) {
-            subText.innerText = '১ম অ্যাড লোড হচ্ছে (Adsgram)...';
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading Ad 1...';
-            if (typeof window.Adsgram === 'undefined') throw new Error('Ad Network Not Ready');
-            const adCtrl = window.Adsgram.init({ blockId: String(agSlot.id) });
-            let res = await adCtrl.show();
-            if (!res || res.done !== true) throw new Error('Ad Closed');
+function closeTaskDetail() {
+    document.getElementById('taskDetailModal').style.display = 'none';
+    document.getElementById('app').classList.remove('blurred');
+}
+
+function openTaskSubmit() {
+    const task = appState.config.newTasks[currentTaskId];
+    if (!task) return;
+
+    document.getElementById('sub-task-title').innerText = task.title;
+    document.getElementById('sub-task-reward').innerText = task.reward + ' ' + (appState.config.currencySymbol || 'TK');
+    document.getElementById('sub-task-cat').innerText = task.category || 'General';
+
+    const inputsContainer = document.getElementById('dynamic-inputs-container');
+    const imagesContainer = document.getElementById('dynamic-images-container');
+    inputsContainer.innerHTML = '';
+    imagesContainer.innerHTML = '';
+
+    if (task.inputs && task.inputs.length > 0) {
+        task.inputs.forEach((input, idx) => {
+            inputsContainer.innerHTML += `
+                <div class="input-group">
+                    <label style="font-weight:700; font-size:0.85rem; margin-bottom:5px; display:block;">${input.label} <span style="color:red;">*</span></label>
+                    <input type="text" id="task-input-${idx}" placeholder="${input.placeholder || 'Enter here...'}" />
+                </div>
+            `;
+        });
+    }
+
+    if (task.images && task.images.length > 0) {
+        task.images.forEach((img, idx) => {
+            imagesContainer.innerHTML += `
+                <div class="image-upload-box">
+                    <p style="font-size:0.85rem; font-weight:700; margin-bottom:5px;">${img.label} <span style="color:red;">*</span></p>
+                    <input type="file" id="task-img-${idx}" accept="image/*" onchange="previewImage(this, 'preview-${idx}')" />
+                    <label for="task-img-${idx}"><i class="fas fa-cloud-upload-alt"></i> Choose File</label>
+                    <img id="preview-${idx}" class="image-preview" />
+                </div>
+            `;
+        });
+    }
+
+    document.getElementById('taskDetailModal').style.display = 'none';
+    document.getElementById('taskSubmitModal').style.display = 'block';
+}
+
+function closeTaskSubmit() {
+    document.getElementById('taskSubmitModal').style.display = 'none';
+    document.getElementById('app').classList.remove('blurred');
+    document.getElementById('taskDetailModal').style.display = 'block';
+}
+
+function previewImage(input, previewId) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.getElementById(previewId);
+            img.src = e.target.result;
+            img.style.display = 'block';
         }
-        if (mtSlot && mtSlot.id) {
-            subText.innerText = '২য় অ্যাড লোড হচ্ছে (Monetag)...';
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading Ad 2...';
-            if (typeof window['show_' + mtSlot.id] === 'function') await window['show_' + mtSlot.id]();
-            else throw new Error('Ad Network Not Ready');
-        }
-        btn.innerHTML = '<i class="fas fa-check"></i> Claiming...';
-        const baseBonus = Number(appState.config.dailyBonusAmount || 20);
-        const split = computeCommissionSplit(baseBonus);
-        const newBal = (appState.user.balance || 0) + split.userReward;
-        const newEarn = (appState.user.totalEarned || 0) + split.userReward;
-        let adHist = appState.user.adHistory || {};
-        adHist['bonus_' + Date.now()] = { slot: 'Bonus', amount: split.userReward, timestamp: Date.now(), type: 'bonus' };
-        await db.ref('users/' + appState.user.id).update({ balance: newBal, totalEarned: newEarn, dailyBonusDate: todayStr(), adHistory: adHist });
-        if (split.referrerCommission > 0) {
-            await creditReferrerCommission(split.referrerCommission, baseBonus, 'Daily Bonus');
-        }
-        hideBonus();
-        toast('বোনাস ক্লেইম সফল! +' + split.userReward.toFixed(2));
-    } catch (e) {
-        toast(e.message === 'Ad Closed' ? 'অ্যাডটি সম্পূর্ণ দেখেননি!' : 'অ্যাড লোড সমস্যা!');
-    } finally {
-        btn.disabled = false; btnCancel.disabled = false;
-        btn.innerHTML = '<i class="fas fa-play-circle"></i> Watch Ads & Claim';
+        reader.readAsDataURL(input.files[0]);
     }
 }
+
+async function submitTaskWork(event) {
+    const task = appState.config.newTasks[currentTaskId];
+    if (!task) return;
+
+    const btn = event.target;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+    try {
+        const userInputs = {};
+        if (task.inputs) {
+            for (let i = 0; i < task.inputs.length; i++) {
+                const val = document.getElementById(`task-input-${i}`).value.trim();
+                if (!val) throw new Error(`Please fill in: ${task.inputs[i].label}`);
+                userInputs[task.inputs[i].label] = val;
+            }
+        }
+
+        const uploadedImageUrls = [];
+        if (task.images) {
+            for (let i = 0; i < task.images.length; i++) {
+                const fileInput = document.getElementById(`task-img-${i}`);
+                if (!fileInput.files || fileInput.files.length === 0) {
+                    throw new Error(`Please upload: ${task.images[i].label}`);
+                }
+                toast('Uploading image ' + (i+1) + '...');
+                const url = await uploadToImgBB(fileInput.files[0]);
+                uploadedImageUrls.push({ label: task.images[i].label, url: url });
+            }
+        }
+
+        const submissionId = 'sub_' + Date.now() + '_' + tgUser.id;
+        const submissionData = {
+            userId: tgUser.id,
+            userName: tgUser.first_name,
+            taskId: currentTaskId,
+            taskTitle: task.title,
+            reward: task.reward,
+            inputs: userInputs,
+            images: uploadedImageUrls,
+            status: 'pending', 
+            reason: '',
+            timestamp: Date.now()
+        };
+
+        await db.ref('taskSubmissions/' + submissionId).set(submissionData);
+        await db.ref(`users/${tgUser.id}/taskHistory/${currentTaskId}`).set(submissionId);
+        
+        const currentSubmitted = task.submittedCount || 0;
+        await db.ref(`config/newTasks/${currentTaskId}/submittedCount`).set(currentSubmitted + 1);
+
+        const adminMsg = `📥 <b>New Task Submission</b>\n\n👤 User: ${tgUser.first_name}\n📋 Task: ${task.title}\n💰 Reward: ${task.reward}\n\n🔗 Check Admin Panel to review.`;
+        await sendNotification(ADMIN_ID, adminMsg);
+
+        toast('✅ Task Submitted Successfully!');
+        closeTaskSubmit();
+        renderNewTasks(); 
+        loadTaskHistory(); 
+
+    } catch (error) {
+        toast('❌ ' + error.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Submit Work';
+    }
+}
+
+async function loadTaskHistory() {
+    const container = document.getElementById('myTasksList');
+    if (!container) return;
+    
+    container.innerHTML = '<p style="text-align:center;color:#999;padding:15px;">Loading...</p>';
+    
+    try {
+        const snap = await db.ref('taskSubmissions').orderByChild('userId').equalTo(tgUser.id).once('value');
+        let html = '';
+        let hasData = false;
+
+        snap.forEach(child => {
+            hasData = true;
+            const sub = child.val();
+            let statusClass = 'status-pending';
+            let statusText = '⏳ Pending';
+            let reasonHtml = '';
+
+            if (sub.status === 'processing') { statusClass = 'status-processing'; statusText = '🔄 Processing'; }
+            else if (sub.status === 'approved') { statusClass = 'status-approved'; statusText = '✅ Approved'; }
+            else if (sub.status === 'cancelled') { 
+                statusClass = 'status-cancelled'; 
+                statusText = '❌ Cancelled'; 
+                reasonHtml = `<p style="font-size:0.75rem; color:#721C24; margin-top:5px;"><b>Reason:</b> ${sub.reason || 'No reason provided'}</p>`;
+            }
+
+            const date = new Date(sub.timestamp).toLocaleString();
+
+            html += `
+                <div class="premium-card" style="margin-bottom:12px; border-left:4px solid ${sub.status === 'approved' ? '#00b894' : sub.status === 'cancelled' ? '#ff4757' : '#f39c12'};">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h4 style="font-size:0.95rem; font-weight:700;">${sub.taskTitle}</h4>
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                    </div>
+                    <div style="margin-top:8px; font-size:0.8rem; color:#666;">
+                        <p><i class="fas fa-coins"></i> Reward: <b>${sub.reward} TK</b></p>
+                        <p><i class="fas fa-clock"></i> ${date}</p>
+                    </div>
+                    ${reasonHtml}
+                </div>
+            `;
+        });
+
+        if (!hasData) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-tasks"></i><p>এখনো কোনো টাস্ক সাবমিট করা হয়নি</p></div>';
+        } else {
+            container.innerHTML = html;
+        }
+    } catch (e) {
+        container.innerHTML = '<p style="text-align:center;color:#999;padding:15px;">Error loading history</p>';
+    }
+}
+
+// ===================================================
+// ✅ ADDITIONAL FUNCTIONS
+// ===================================================
+function renderTasks() { /* Deprecated, replaced by renderNewTasks */ }
 
 async function requestWithdraw() {
     if (!isOnline) { toast('No internet connection!'); return; }
@@ -1463,14 +1785,14 @@ window.onload = () => {
                     const sc = document.createElement('script'); sc.id = 'giga-script'; sc.src = 'https://ad.gigapub.tech/script?id=1'; document.body.appendChild(sc);
                 }
             });
-            if (isBooted) { updateTextElements(); renderAds(); renderTasks(); }
+            if (isBooted) { updateTextElements(); renderAds(); renderNewTasks(); }
         } else {
             const defaultConfig = {
                 refBonus: 5, adReward: 0.5, dailyBonusAmount: 20, dailyAdLimit: 10, minWithdraw: 10, currencySymbol: 'TK',
                 refCommissionRate: 2, refCommissionMode: 'bonus',
                 botUsername: BOT_USERNAME, botToken: BOT_TOKEN,
                 paymentMethods: ['bKash', 'Nagad', 'Rocket'],
-                adSlots: [], webTasks: {},
+                adSlots: [], newTasks: {},
                 channelLinks: [
                     { label: 'NexEarn Channel', chatId: 'nexearn2' },
                     { label: 'NexEarn Adda', chatId: 'nexearn2_adda' },
@@ -1581,7 +1903,7 @@ window.onload = () => {
                 
                 await updateTextElements();
                 renderAds();
-                renderTasks();
+                renderNewTasks();
                 
                 if (!isBooted) {
                     isBooted = true;
