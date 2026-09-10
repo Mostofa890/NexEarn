@@ -532,7 +532,7 @@ let REF_COMMISSION_MODE = 'bonus';
 
 let withdrawLevels = [];
 let appState = {
-    user: { balance: 0, totalEarned: 0, referrals: 0, dailyAds: {}, taskHistory: {}, withdrawCount: 0, adHistory: {}, referredUsers: {}, verifiedChannels: {}, totalCommission: 0, commissionHistory: {}, referredBy: null, lastAdCycle: '' },
+    user: { balance: 0, totalEarned: 0, referrals: 0, dailyAds: {}, taskHistory: {}, withdrawCount: 0, adHistory: {}, referredUsers: {}, verifiedChannels: {}, totalCommission: 0, commissionHistory: {}, referredBy: null, lastAdCycle: '', taskStatuses: {} },
     config: { adSlots: [], newTasks: {} }
 };
 let isBooted = false;
@@ -610,7 +610,6 @@ function updateCycleUI() {
     const next = getNextResetTime();
     timer.textContent = formatTimeUntil(next.getTime());
 
-    // ✅ Check if cycle changed (timer hit 00h 00m 00s)
     const currentCycle = getCurrentAdCycle();
     if (currentCycle !== lastCycleCheck) {
         lastCycleCheck = currentCycle;
@@ -621,14 +620,13 @@ function updateCycleUI() {
 async function forceCycleReset(newCycle) {
     if (!tgUser || !tgUser.id) return;
     try {
-        // Reset dailyAds to empty object for the new cycle
         await db.ref('users/' + tgUser.id).update({
             dailyAds: {},
             lastAdCycle: newCycle
         });
         appState.user.dailyAds = {};
         appState.user.lastAdCycle = newCycle;
-        renderAds(); // Re-render ads to show 0/limit and active slots
+        renderAds();
         toast('🔄 নতুন সাইকেল শুরু! অ্যাড স্লট রিসেট হয়েছে।');
     } catch (e) { console.error("Cycle reset error:", e); }
 }
@@ -1074,7 +1072,6 @@ function renderAds() {
     el.innerHTML = '';
     
     const slots = appState.config.adSlots || [];
-    // Allow up to 6 slots, or as many as configured
     const totalSlots = slots.length > 0 ? slots.length : 4; 
     const limit = Number(appState.config.dailyAdLimit || 10); 
     const reward = Number(appState.config.adReward || 0.5);
@@ -1084,7 +1081,6 @@ function renderAds() {
         const slot = slots[i] || { network: 'none', id: '' };
         const configured = slot && slot.network && slot.network !== 'none';
         
-        // ✅ Get watched count for current cycle
         const done = (appState.user.dailyAds && appState.user.dailyAds[i]) ? appState.user.dailyAds[i] : 0;
         const max = done >= limit;
         
@@ -1142,6 +1138,24 @@ async function uploadToImgBB(file) {
     });
 }
 
+// ✅ NEW: Check if Task is Expired
+function isTaskExpired(task) {
+    if (!task.createdAt) return false;
+    const daysMatch = (task.timeLimit || '7 days').match(/(\d+)/);
+    const days = daysMatch ? parseInt(daysMatch[1]) : 7;
+    const expiryTime = task.createdAt + (days * 24 * 60 * 60 * 1000);
+    return Date.now() > expiryTime;
+}
+
+// ✅ NEW: Check if Task should be auto-deleted (1 day after expiry)
+function isTaskAutoDeleted(task) {
+    if (!task.createdAt) return false;
+    const daysMatch = (task.timeLimit || '7 days').match(/(\d+)/);
+    const days = daysMatch ? parseInt(daysMatch[1]) : 7;
+    const autoDeleteTime = task.createdAt + ((days + 1) * 24 * 60 * 60 * 1000);
+    return Date.now() > autoDeleteTime;
+}
+
 function renderNewTasks() {
     const el = document.getElementById('task-area');
     if (!el) return;
@@ -1151,14 +1165,34 @@ function renderNewTasks() {
 
     Object.keys(tasks).forEach(taskId => {
         const task = tasks[taskId];
-        const isDone = appState.user.taskHistory && appState.user.taskHistory[taskId];
-        if (isDone) return;
+        
+        // Auto Delete check
+        if (isTaskAutoDeleted(task)) {
+            return; // Don't render, effectively deleting from UI
+        }
 
+        const isExpired = isTaskExpired(task);
+        const subStatus = appState.user.taskStatuses ? appState.user.taskStatuses[taskId] : null;
         const submittedCount = task.submittedCount || 0;
         const slotsLeft = Math.max(0, (task.totalSlots || 100) - submittedCount);
 
+        // Button Logic
+        let btnHtml = `<button class="btn-act btn-start" style="background:#6C5CE7; color:#fff;" onclick="openTaskDetail('${taskId}')">Start</button>`;
+        let statusBadge = '';
+
+        if (isExpired) {
+            btnHtml = `<button class="btn-act btn-start" style="background:#ccc; color:#666; pointer-events:none;">Expired</button>`;
+            statusBadge = `<span style="font-size:0.7rem; color:#ff4757; font-weight:bold;"><i class="fas fa-clock"></i> Expired</span>`;
+        } else if (subStatus === 'pending' || subStatus === 'processing' || subStatus === 'approved') {
+            btnHtml = `<button class="btn-act btn-start" style="background:#00b894; color:#fff; pointer-events:none;">Completed</button>`;
+            statusBadge = `<span style="font-size:0.7rem; color:#00b894; font-weight:bold;"><i class="fas fa-check-circle"></i> Submitted</span>`;
+        } else if (subStatus === 'cancelled') {
+            btnHtml = `<button class="btn-act btn-start" style="background:#ff4757; color:#fff;" onclick="openTaskDetail('${taskId}')">Re-Submit</button>`;
+            statusBadge = `<span style="font-size:0.7rem; color:#ff4757; font-weight:bold;"><i class="fas fa-times-circle"></i> Cancelled</span>`;
+        }
+
         el.innerHTML += `
-            <div class="task-item" style="flex-direction:column; align-items:flex-start; gap:10px;">
+            <div class="task-item" style="flex-direction:column; align-items:flex-start; gap:10px; ${isExpired ? 'opacity:0.7;' : ''}">
                 <div style="display:flex; justify-content:space-between; width:100%;">
                     <div>
                         <h4 style="font-size:1rem; font-weight:700;">${task.title}</h4>
@@ -1171,14 +1205,31 @@ function renderNewTasks() {
                 </div>
                 <div style="display:flex; justify-content:space-between; width:100%; align-items:center; margin-top:5px;">
                     <div>
-                        <p style="font-size:0.7rem; color:#ff4757;"><i class="fas fa-clock"></i> Time Left: ${task.timeLimit || '7 days'}</p>
+                        <p style="font-size:0.7rem; color:#ff4757;"><i class="fas fa-clock"></i> Time Left: ${isExpired ? 'Expired' : (task.timeLimit || '7 days')}</p>
                         <p style="font-size:0.7rem; color:#6b7280;">${slotsLeft} left</p>
+                        ${statusBadge}
                     </div>
-                    <button class="btn-act btn-start" style="background:#6C5CE7; color:#fff;" onclick="openTaskDetail('${taskId}')">Start</button>
+                    ${btnHtml}
                 </div>
             </div>
         `;
     });
+}
+
+// ✅ NEW: Fetch Task Statuses for Home Screen rendering
+async function fetchTaskStatuses() {
+    try {
+        const snap = await db.ref('taskSubmissions').orderByChild('userId').equalTo(tgUser.id).once('value');
+        appState.user.taskStatuses = {};
+        snap.forEach(child => {
+            const sub = child.val();
+            // If multiple submissions, keep the latest status
+            if (!appState.user.taskStatuses[sub.taskId] || appState.user.taskStatuses[sub.taskId] === 'cancelled') {
+                appState.user.taskStatuses[sub.taskId] = sub.status;
+            }
+        });
+        renderNewTasks();
+    } catch(e) { console.error("Error fetching task statuses:", e); }
 }
 
 function openTaskDetail(taskId) {
@@ -1190,11 +1241,9 @@ function openTaskDetail(taskId) {
     document.getElementById('det-task-type').innerText = task.category || 'General';
     document.getElementById('det-task-reward').innerText = task.reward + ' ' + (appState.config.currencySymbol || 'TK');
     document.getElementById('det-task-slots').innerText = (task.submittedCount || 0) + ' / ' + (task.totalSlots || 100);
-    document.getElementById('det-task-time').innerText = task.timeLimit || '7 days';
+    document.getElementById('det-task-time').innerText = isTaskExpired(task) ? 'Expired' : (task.timeLimit || '7 days');
     
-    // ✅ Make description clickable
     let desc = task.description || 'No description provided.';
-    // Basic regex to convert URLs to clickable links (if not already inside an anchor tag)
     desc = desc.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:#6C5CE7; text-decoration:underline; font-weight:bold;">$1</a>');
     document.getElementById('det-task-desc').innerHTML = desc;
 
@@ -1322,6 +1371,9 @@ async function submitTaskWork(event) {
 
         toast('✅ Task Submitted Successfully!');
         closeTaskSubmit();
+        
+        // Update local status and re-render
+        appState.user.taskStatuses[currentTaskId] = 'pending';
         renderNewTasks(); 
         loadTaskHistory(); 
 
@@ -1343,20 +1395,33 @@ async function loadTaskHistory() {
         const snap = await db.ref('taskSubmissions').orderByChild('userId').equalTo(tgUser.id).once('value');
         let html = '';
         let hasData = false;
+        
+        // Reset local statuses while building history
+        appState.user.taskStatuses = {};
 
         snap.forEach(child => {
             hasData = true;
             const sub = child.val();
+            const subId = child.key;
+            
+            // Update local status map
+            if (!appState.user.taskStatuses[sub.taskId] || sub.status === 'cancelled') {
+                appState.user.taskStatuses[sub.taskId] = sub.status;
+            }
+
             let statusClass = 'status-pending';
             let statusText = '⏳ Pending';
             let reasonHtml = '';
+            let resubmitBtn = '';
 
             if (sub.status === 'processing') { statusClass = 'status-processing'; statusText = '🔄 Processing'; }
             else if (sub.status === 'approved') { statusClass = 'status-approved'; statusText = '✅ Approved'; }
             else if (sub.status === 'cancelled') { 
                 statusClass = 'status-cancelled'; 
                 statusText = '❌ Cancelled'; 
-                reasonHtml = `<p style="font-size:0.75rem; color:#721C24; margin-top:5px;"><b>Reason:</b> ${sub.reason || 'No reason provided'}</p>`;
+                reasonHtml = `<p style="font-size:0.75rem; color:#721C24; margin-top:5px; background:#fff; padding:8px; border-radius:6px;"><b>Reason:</b> ${sub.reason || 'No reason provided'}</p>`;
+                // Add Re-submit button for cancelled tasks
+                resubmitBtn = `<button class="btn-main" style="padding:10px; font-size:0.85rem; margin-top:10px; background:#6C5CE7;" onclick="openTaskDetail('${sub.taskId}')"><i class="fas fa-redo"></i> Re-Submit Task</button>`;
             }
 
             const date = new Date(sub.timestamp).toLocaleString();
@@ -1372,6 +1437,7 @@ async function loadTaskHistory() {
                         <p><i class="fas fa-clock"></i> ${date}</p>
                     </div>
                     ${reasonHtml}
+                    ${resubmitBtn}
                 </div>
             `;
         });
@@ -1381,6 +1447,10 @@ async function loadTaskHistory() {
         } else {
             container.innerHTML = html;
         }
+        
+        // Re-render home screen with updated statuses
+        renderNewTasks();
+        
     } catch (e) {
         container.innerHTML = '<p style="text-align:center;color:#999;padding:15px;">Error loading history</p>';
     }
@@ -1819,7 +1889,7 @@ window.onload = () => {
                 totalCommission: 0, commissionHistory: {}, referredBy: null,
                 lastAdCycle: getCurrentAdCycle(),
                 lastActive: today, dailyBonusDate: '', channelVerified: false, isBanned: false, banReason: '',
-                withdrawCount: 0, adClicks: 0
+                withdrawCount: 0, adClicks: 0, taskStatuses: {}
             };
             await userRef.set(appState.user);
             
@@ -1870,6 +1940,7 @@ window.onload = () => {
                 if (!appState.user.referredUsers) appState.user.referredUsers = {};
                 if (!appState.user.verifiedChannels) appState.user.verifiedChannels = {};
                 if (!appState.user.commissionHistory) appState.user.commissionHistory = {};
+                if (!appState.user.taskStatuses) appState.user.taskStatuses = {};
                 if (appState.user.totalCommission === undefined) appState.user.totalCommission = 0;
                 if (appState.user.withdrawCount === undefined) appState.user.withdrawCount = 0;
                 if (appState.user.adClicks === undefined) appState.user.adClicks = 0;
@@ -1902,6 +1973,10 @@ window.onload = () => {
                     isBooted = true;
                     if (checkMaintenance()) { setLoading(false); return; }
                     if (checkBan()) { setLoading(false); return; }
+                    
+                    // Fetch task statuses on boot
+                    await fetchTaskStatuses();
+                    
                     const needs = await needsVerification();
                     if (needs) {
                         document.getElementById('joinModal').classList.add('active');
