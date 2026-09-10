@@ -317,16 +317,18 @@
         <div class="sec-head"><i class="fas fa-gift"></i> Daily Rewards</div>
         <div style="padding:0 20px 15px;"><button class="btn-main" onclick="showBonus()" style="background:linear-gradient(135deg,#00b894,#00cec9);"><i class="fas fa-box-open"></i> Open Daily Bonus</button></div>
         <div class="sec-head"><i class="fas fa-play-circle"></i> Daily Ads</div>
-        <!-- ✅ NEW: AM/PM Cycle Info Bar -->
-        <div style="padding:0 20px 12px;">
-            <div id="cycleInfoBar" style="background:linear-gradient(135deg,#6C5CE7,#A29BFE);color:#fff;padding:12px 16px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 8px 20px rgba(108,92,231,0.3);">
-                <div style="flex:1;min-width:0;">
-                    <div style="font-size:0.65rem;opacity:0.85;font-weight:700;letter-spacing:0.5px;">CURRENT CYCLE</div>
-                    <div id="cycleLabel" style="font-size:0.85rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">🌅 AM Cycle</div>
+        <!-- ✅ UPDATED: Bigger AM/PM Cycle Info Bar with seconds -->
+        <div style="padding:0 20px 14px;">
+            <div id="cycleInfoBar" style="background:linear-gradient(135deg,#6C5CE7,#A29BFE);color:#fff;padding:20px 22px;border-radius:18px;display:flex;align-items:center;justify-content:space-between;gap:14px;box-shadow:0 14px 32px rgba(108,92,231,0.4);position:relative;overflow:hidden;">
+                <div style="position:absolute;width:140px;height:140px;background:rgba(255,255,255,0.12);border-radius:50%;top:-60px;right:-40px;pointer-events:none;"></div>
+                <div style="position:absolute;width:100px;height:100px;background:rgba(255,255,255,0.08);border-radius:50%;bottom:-50px;left:-30px;pointer-events:none;"></div>
+                <div style="flex:1;min-width:0;position:relative;z-index:1;">
+                    <div style="font-size:0.72rem;opacity:0.9;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;">CURRENT CYCLE</div>
+                    <div id="cycleLabel" style="font-size:1.25rem;font-weight:900;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0.2px;">🌅 AM Cycle</div>
                 </div>
-                <div style="text-align:right;flex-shrink:0;">
-                    <div style="font-size:0.65rem;opacity:0.85;font-weight:700;letter-spacing:0.5px;">RESET IN</div>
-                    <div id="cycleResetTimer" style="font-size:0.95rem;font-weight:900;">12h 0m</div>
+                <div style="text-align:right;flex-shrink:0;position:relative;z-index:1;">
+                    <div style="font-size:0.72rem;opacity:0.9;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;">RESET IN</div>
+                    <div id="cycleResetTimer" style="font-size:1.6rem;font-weight:900;margin-top:3px;font-variant-numeric:tabular-nums;letter-spacing:0.5px;text-shadow:0 3px 8px rgba(0,0,0,0.15);">00h 00m 00s</div>
                 </div>
             </div>
         </div>
@@ -468,12 +470,12 @@ let maintenanceEndTime = null;
 let validReferralCount = 0;
 let periodicRecheckInterval = null;
 let isRechecking = false;
-let cycleTimerInterval = null; // ✅ NEW: Cycle timer
+let cycleTimerInterval = null;
 let adTimerState = { running: false, totalSeconds: 15, remaining: 15, timerId: null, adSlotIndex: null, paused: false, wasCancelled: false };
 let MIN_AD_WATCH_TIME = 15;
 
 // ===================================================
-// ✅ AD CYCLE SYSTEM (AM/PM) - Two resets per day
+// ✅ AD CYCLE SYSTEM (AM/PM)
 // ===================================================
 function getCurrentAdCycle() {
     const now = new Date();
@@ -497,13 +499,13 @@ function getNextResetTime() {
     return next;
 }
 
+// ✅ UPDATED: Always show HHh MMm SSs
 function formatTimeUntil(targetMs) {
     const diff = Math.max(0, targetMs - Date.now());
     const h = Math.floor(diff / 3600000);
     const m = Math.floor((diff % 3600000) / 60000);
     const s = Math.floor((diff % 60000) / 1000);
-    if (h > 0) return h + 'h ' + m + 'm';
-    return m + 'm ' + s + 's';
+    return String(h).padStart(2, '0') + 'h ' + String(m).padStart(2, '0') + 'm ' + String(s).padStart(2, '0') + 's';
 }
 
 function startCycleTimer() {
@@ -523,10 +525,8 @@ function updateCycleUI() {
     const label = document.getElementById('cycleLabel');
     const timer = document.getElementById('cycleResetTimer');
     if (!label || !timer) return;
-    
     const hour = new Date().getHours();
     label.textContent = hour < 12 ? '🌅 AM Cycle' : '🌙 PM Cycle';
-    
     const next = getNextResetTime();
     timer.textContent = formatTimeUntil(next.getTime());
 }
@@ -557,21 +557,18 @@ function showAdError(title, msg) {
 function closeAdError() { document.getElementById('adErrorPopup').classList.remove('active'); }
 
 // ===================================================
-// ✅ COMMISSION SYSTEM - Handles both Bonus & Deduct modes
+// ✅ COMMISSION SYSTEM
 // ===================================================
 async function creditReferrerCommission(commissionAmount, originalEarned, source) {
     try {
         const referrerId = appState.user.referredBy;
         if (!referrerId || commissionAmount <= 0) return false;
-        
         const refSnap = await db.ref('users/' + referrerId).once('value');
         if (!refSnap.exists()) return false;
         const refData = refSnap.val();
-        
         const newBal = Number(refData.balance || 0) + commissionAmount;
         const newEarn = Number(refData.totalEarned || 0) + commissionAmount;
         const newTotalComm = Number(refData.totalCommission || 0) + commissionAmount;
-        
         const commHist = refData.commissionHistory || {};
         const histId = 'com_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
         commHist[histId] = {
@@ -584,17 +581,12 @@ async function creditReferrerCommission(commissionAmount, originalEarned, source
             mode: REF_COMMISSION_MODE,
             timestamp: Date.now()
         };
-        
         const keys = Object.keys(commHist).sort((a,b) => (commHist[b].timestamp||0) - (commHist[a].timestamp||0));
         if (keys.length > 100) keys.slice(100).forEach(k => delete commHist[k]);
-        
         await db.ref('users/' + referrerId).update({
-            balance: newBal,
-            totalEarned: newEarn,
-            totalCommission: newTotalComm,
-            commissionHistory: commHist
+            balance: newBal, totalEarned: newEarn,
+            totalCommission: newTotalComm, commissionHistory: commHist
         });
-        
         try {
             await sendNotification(referrerId,
                 '💰 <b>নতুন কমিশন পেয়েছেন!</b>\n\n' +
@@ -605,30 +597,18 @@ async function creditReferrerCommission(commissionAmount, originalEarned, source
                 '💼 নতুন ব্যালেন্স: <b>' + newBal.toFixed(2) + ' TK</b>'
             );
         } catch(e) {}
-        
         return true;
-    } catch(e) {
-        console.error('Commission error:', e);
-        return false;
-    }
+    } catch(e) { return false; }
 }
 
 function computeCommissionSplit(earnedAmount) {
     const referrerId = appState.user.referredBy;
     const rate = Number(REF_COMMISSION_RATE || 0);
     const mode = REF_COMMISSION_MODE || 'bonus';
-    
-    if (!referrerId || rate <= 0) {
-        return { userReward: earnedAmount, referrerCommission: 0, mode };
-    }
-    
+    if (!referrerId || rate <= 0) return { userReward: earnedAmount, referrerCommission: 0, mode };
     const commission = (Number(earnedAmount) * rate) / 100;
-    
-    if (mode === 'deduct') {
-        return { userReward: Number(earnedAmount) - commission, referrerCommission: commission, mode };
-    } else {
-        return { userReward: Number(earnedAmount), referrerCommission: commission, mode };
-    }
+    if (mode === 'deduct') return { userReward: Number(earnedAmount) - commission, referrerCommission: commission, mode };
+    return { userReward: Number(earnedAmount), referrerCommission: commission, mode };
 }
 
 function getNetworkAdjustedTime() {
@@ -657,9 +637,7 @@ async function needsVerification() {
     if (!tgUser || !tgUser.id || tgUser.id === '123456') return false;
     const links = getCurrentChannelLinks();
     const verifiedChannels = appState.user.verifiedChannels || {};
-    for (const link of links) {
-        if (!verifiedChannels[link.chatId]) return true;
-    }
+    for (const link of links) { if (!verifiedChannels[link.chatId]) return true; }
     for (const link of links) {
         const joined = await checkChannelMembership(tgUser.id, link.chatId);
         if (!joined) return true;
@@ -679,7 +657,7 @@ async function markVerified() {
 
 function startPeriodicRecheck() {
     stopPeriodicRecheck();
-    startCycleTimer(); // ✅ NEW: Start cycle countdown
+    startCycleTimer();
     periodicRecheckInterval = setInterval(async () => {
         if (isRechecking || !isOnline || !isBooted) return;
         if (document.getElementById('joinModal').classList.contains('active')) return;
@@ -703,7 +681,7 @@ function startPeriodicRecheck() {
 }
 function stopPeriodicRecheck() {
     if (periodicRecheckInterval) { clearInterval(periodicRecheckInterval); periodicRecheckInterval = null; }
-    stopCycleTimer(); // ✅ NEW
+    stopCycleTimer();
 }
 
 function showAdTimer(slotIndex) {
@@ -778,7 +756,6 @@ function trackAdClick() {
     db.ref('users/' + tgUser.id + '/lastActive').set(todayStr());
 }
 
-// ===== WATCH AD =====
 async function watchAd(i) {
     if (slotLocks[i]) return;
     slotLocks[i] = true;
@@ -836,9 +813,7 @@ async function watchAd(i) {
         if (referrerCommission > 0) {
             await creditReferrerCommission(referrerCommission, baseReward, 'Ad Slot ' + (i+1));
         }
-        
         toast('✅ Success! +' + userReward.toFixed(2) + ' TK earned!');
-        
     } catch (e) {
         if (e.message === 'Ad Closed' || e.message === 'Ad not completed') showAdError('⚠️ Ad Not Completed!', 'You closed the ad before it finished.');
         else showAdError('⚠️ Ad Error', e.message || 'Error loading ad.');
@@ -1044,11 +1019,9 @@ async function claimTask(id, t) {
     const newEarn = (appState.user.totalEarned || 0) + split.userReward;
     let th = appState.user.taskHistory || {}; th[id] = true;
     await db.ref('users/' + appState.user.id).update({ balance: newBal, totalEarned: newEarn, taskHistory: th });
-    
     if (split.referrerCommission > 0) {
         await creditReferrerCommission(split.referrerCommission, baseReward, 'Task: ' + t.name);
     }
-    
     toast('Claimed Successfully!');
 }
 
@@ -1085,17 +1058,14 @@ async function claimDailyBonus() {
         btn.innerHTML = '<i class="fas fa-check"></i> Claiming...';
         const baseBonus = Number(appState.config.dailyBonusAmount || 20);
         const split = computeCommissionSplit(baseBonus);
-        
         const newBal = (appState.user.balance || 0) + split.userReward;
         const newEarn = (appState.user.totalEarned || 0) + split.userReward;
         let adHist = appState.user.adHistory || {};
         adHist['bonus_' + Date.now()] = { slot: 'Bonus', amount: split.userReward, timestamp: Date.now(), type: 'bonus' };
         await db.ref('users/' + appState.user.id).update({ balance: newBal, totalEarned: newEarn, dailyBonusDate: todayStr(), adHistory: adHist });
-        
         if (split.referrerCommission > 0) {
             await creditReferrerCommission(split.referrerCommission, baseBonus, 'Daily Bonus');
         }
-        
         hideBonus();
         toast('বোনাস ক্লেইম সফল! +' + split.userReward.toFixed(2));
     } catch (e) {
@@ -1114,10 +1084,7 @@ async function requestWithdraw() {
     const level = getWithdrawLevel();
     const reqRefs = level.requiredRefs || 5;
     await calculateValidReferrals();
-    if (validReferralCount < reqRefs) {
-        toast('❌ Need ' + reqRefs + ' qualified referrals!');
-        return;
-    }
+    if (validReferralCount < reqRefs) { toast('❌ Need ' + reqRefs + ' qualified referrals!'); return; }
     if (!method) return toast('Please select a payment method.');
     if (!account || account.length < 3) return toast('Please enter a valid account number.');
     if (isNaN(amount) || amount <= 0) return toast('Please enter a valid amount.');
@@ -1220,13 +1187,7 @@ function loadCommissionHistory() {
     items.slice(0, 30).forEach(it => {
         const initial = (it.fromName || 'U').charAt(0).toUpperCase();
         const rate = it.rate || REF_COMMISSION_RATE;
-        html += '<div class="comm-item">' +
-            '<div class="comm-item-left">' +
-            '<div class="comm-item-avatar">' + initial + '</div>' +
-            '<div class="comm-item-info"><h5>' + it.fromName + '</h5><p><i class="fas fa-coins" style="color:#f39c12;"></i> ' + (it.source || 'Earning') + ' • ' + rate + '%</p></div>' +
-            '</div>' +
-            '<div class="comm-item-amt">+' + Number(it.commission || 0).toFixed(4) + '<small>' + shortDate(it.timestamp) + '</small></div>' +
-            '</div>';
+        html += '<div class="comm-item"><div class="comm-item-left"><div class="comm-item-avatar">' + initial + '</div><div class="comm-item-info"><h5>' + it.fromName + '</h5><p><i class="fas fa-coins" style="color:#f39c12;"></i> ' + (it.source || 'Earning') + ' • ' + rate + '%</p></div></div><div class="comm-item-amt">+' + Number(it.commission || 0).toFixed(4) + '<small>' + shortDate(it.timestamp) + '</small></div></div>';
     });
     container.innerHTML = html;
 }
@@ -1384,9 +1345,9 @@ async function checkAndUpdateStatus() {
         verifyInterval = null;
         await markVerified();
         stopPeriodicRecheck();
-        setTimeout(() => { 
-            document.getElementById('joinModal').classList.remove('active'); 
-            showAppAfterVerify(); 
+        setTimeout(() => {
+            document.getElementById('joinModal').classList.remove('active');
+            showAppAfterVerify();
         }, 800);
     } else {
         const remaining = buttons.length - document.querySelectorAll('.channel-btn.joined').length;
@@ -1435,7 +1396,6 @@ window.onload = () => {
                     }
                 });
             }
-            // ✅ Check cycle change when app becomes visible
             checkCycleChange();
         }
     });
@@ -1445,7 +1405,6 @@ window.onload = () => {
         if (verifyInterval) clearInterval(verifyInterval);
     });
 
-    // ✅ NEW: Check cycle change
     async function checkCycleChange() {
         const currentCycle = getCurrentAdCycle();
         if (appState.user.lastAdCycle && appState.user.lastAdCycle !== currentCycle) {
@@ -1457,11 +1416,8 @@ window.onload = () => {
             appState.user.dailyAds = {};
             appState.user.lastAdCycle = currentCycle;
             renderAds();
-            if (isNewDay) {
-                toast('🌅 নতুন দিন শুরু! অ্যাড সাইকেল রিসেট হয়েছে।');
-            } else {
-                toast('🔄 নতুন সাইকেল! আবার অ্যাড দেখতে পারবেন।');
-            }
+            if (isNewDay) toast('🌅 নতুন দিন শুরু! অ্যাড সাইকেল রিসেট হয়েছে।');
+            else toast('🔄 নতুন সাইকেল! আবার অ্যাড দেখতে পারবেন।');
         }
     }
 
@@ -1546,7 +1502,7 @@ window.onload = () => {
                 id: tgUser.id, name: tgUser.first_name, photo: tgUser.photo_url || '',
                 balance: 0, totalEarned: 0, referrals: 0, dailyAds: {}, taskHistory: {}, adHistory: {}, referredUsers: {}, verifiedChannels: {},
                 totalCommission: 0, commissionHistory: {}, referredBy: null,
-                lastAdCycle: getCurrentAdCycle(), // ✅ NEW
+                lastAdCycle: getCurrentAdCycle(),
                 lastActive: today, dailyBonusDate: '', channelVerified: false, isBanned: false, banReason: '',
                 withdrawCount: 0, adClicks: 0
             };
@@ -1569,10 +1525,8 @@ window.onload = () => {
                         const r = refSnap.val();
                         let cSnap = await db.ref('config').once('value');
                         let rBonus = (cSnap.exists() && cSnap.val().refBonus) ? Number(cSnap.val().refBonus) : 5;
-                        
                         await userRef.update({ referredBy: String(refBy) });
                         appState.user.referredBy = String(refBy);
-                        
                         await db.ref('users/' + refBy).update({
                             referrals: (r.referrals || 0) + 1,
                             balance: (r.balance || 0) + rBonus,
@@ -1613,22 +1567,14 @@ window.onload = () => {
                     return;
                 } else document.getElementById('bannedOverlay').classList.remove('active');
                 
-                // ✅ NEW: Check ad cycle (AM/PM) - resets twice per day
                 const currentCycle = getCurrentAdCycle();
                 if (appState.user.lastAdCycle !== currentCycle) {
                     const isNewDay = appState.user.lastAdCycle.slice(0, 10) !== currentCycle.slice(0, 10);
-                    await userRef.update({ 
-                        dailyAds: {}, 
-                        lastAdCycle: currentCycle,
-                        lastActive: today
-                    });
+                    await userRef.update({ dailyAds: {}, lastAdCycle: currentCycle, lastActive: today });
                     appState.user.dailyAds = {};
                     appState.user.lastAdCycle = currentCycle;
-                    if (isNewDay) {
-                        toast('🌅 নতুন দিন শুরু! অ্যাড সাইকেল রিসেট হয়েছে।');
-                    } else {
-                        toast('🔄 নতুন সাইকেল! আবার অ্যাড দেখতে পারবেন।');
-                    }
+                    if (isNewDay) toast('🌅 নতুন দিন শুরু! অ্যাড সাইকেল রিসেট হয়েছে।');
+                    else toast('🔄 নতুন সাইকেল! আবার অ্যাড দেখতে পারবেন।');
                 } else if (appState.user.lastActive !== today) {
                     await userRef.update({ lastActive: today });
                 }
