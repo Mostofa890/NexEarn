@@ -122,8 +122,8 @@
         .leader-right-stats{text-align:right;display:flex;flex-direction:column;gap:4px;}
         .leader-right-bal{font-weight:800;color:var(--primary);font-size:0.85rem;background:rgba(108,92,231,0.08);padding:3px 10px;border-radius:6px;display:inline-block;}
         .leader-right-ref{font-size:0.75rem;color:#00b894;font-weight:700;background:rgba(0,184,148,0.08);padding:3px 10px;border-radius:6px;display:inline-block;}
-        .nav{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);width:92%;max-width:420px;background:#2d3436;display:flex;justify-content:space-around;padding:15px 10px;border-radius:25px;box-shadow:0 10px 30px rgba(0,0,0,.3);z-index:100;}
-        .nav i{font-size:1.35rem;color:rgba(255,255,255,.4);cursor:pointer;transition:.3s;}
+        .nav{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);width:92%;max-width:420px;background:#2d3436;display:flex;justify-content:space-around;padding:15px 5px;border-radius:25px;box-shadow:0 10px 30px rgba(0,0,0,.3);z-index:100;}
+        .nav i{font-size:1.25rem;color:rgba(255,255,255,.4);cursor:pointer;transition:.3s;padding:0 5px;}
         .nav i.active{color:#fff;transform:translateY(-5px);text-shadow:0 0 15px #fff;}
         .toast{position:fixed;top:40px;left:50%;transform:translateX(-50%);background:#2d3436;color:#fff;padding:12px 25px;border-radius:30px;font-size:.9rem;opacity:0;transition:.3s;z-index:10000;font-weight:600;max-width:90%;text-align:center;}
         .toast.show{opacity:1;top:50px;}
@@ -325,6 +325,7 @@
         </div>
     </div>
 
+    <!-- ================= HOME PAGE ================= -->
     <div id="page-home" class="page-section active">
         <div class="sec-head"><i class="fas fa-gift"></i> Daily Rewards</div>
         <div style="padding:0 20px 15px;"><button class="btn-main" onclick="showBonus()" style="background:linear-gradient(135deg,#00b894,#00cec9);"><i class="fas fa-box-open"></i> Open Daily Bonus</button></div>
@@ -344,12 +345,15 @@
             </div>
         </div>
         <div id="ad-area" class="ad-grid"></div>
-        
-        <!-- Updated Task Area -->
-        <div class="sec-head"><i class="fas fa-tasks"></i> Tasks</div>
+    </div>
+
+    <!-- ================= TASKS PAGE ================= -->
+    <div id="page-tasks" class="page-section">
+        <div class="sec-head"><i class="fas fa-tasks"></i> Available Tasks</div>
         <div id="task-area" class="task-list"></div>
     </div>
 
+    <!-- ================= REFERRAL PAGE ================= -->
     <div id="page-referral" class="page-section">
         <div style="padding: 0 20px 15px;">
             <div class="commission-hero">
@@ -393,6 +397,7 @@
         </div>
     </div>
 
+    <!-- ================= HISTORY PAGE ================= -->
     <div id="page-history" class="page-section">
         <div class="premium-card">
             <div class="card-title"><i class="fas fa-history" style="color:var(--primary);"></i> Ad Earning History</div>
@@ -403,19 +408,20 @@
             <div id="adHistoryList"><div class="empty-state"><i class="fas fa-play-circle"></i><p>এখনো কোনো অ্যাড দেখা হয়নি</p></div></div>
         </div>
         
-        <!-- Task History Section -->
         <div class="premium-card">
             <div class="card-title"><i class="fas fa-tasks" style="color:#f39c12;"></i> My Task History</div>
             <div id="myTasksList"><div class="empty-state"><i class="fas fa-tasks"></i><p>এখনো কোনো টাস্ক সাবমিট করা হয়নি</p></div></div>
         </div>
     </div>
 
+    <!-- ================= LEADERBOARD PAGE ================= -->
     <div id="page-leaderboard" class="page-section">
         <div class="leaderboard-title">🏆 Top 10 Earners</div>
         <div class="podium-container" id="podium-area"></div>
         <div class="leader-list" id="leader-list-area"></div>
     </div>
 
+    <!-- ================= WITHDRAW PAGE ================= -->
     <div id="page-withdraw" class="page-section">
         <div class="premium-card">
             <div class="card-title"><i class="fas fa-wallet" style="color:var(--primary);"></i> Withdraw Funds</div>
@@ -500,6 +506,7 @@
 
 <div class="nav">
     <i class="fas fa-home active nav-item" onclick="switchTab('home', this)"></i>
+    <i class="fas fa-tasks nav-item" onclick="switchTab('tasks', this)"></i>
     <i class="fas fa-users nav-item" onclick="switchTab('referral', this)"></i>
     <i class="fas fa-receipt nav-item" onclick="switchTab('history', this)"></i>
     <i class="fas fa-trophy nav-item" onclick="switchTab('leaderboard', this)"></i>
@@ -964,6 +971,7 @@ function switchTab(tabId, el) {
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById('page-' + tabId).classList.add('active');
     el.classList.add('active');
+    if (tabId === 'tasks') renderNewTasks();
     if (tabId === 'leaderboard') loadLeaderboard();
     if (tabId === 'withdraw') { loadWithdrawHistory(); updateWithdrawInfo(); }
     if (tabId === 'referral') { loadMyReferrals(); loadCommissionHistory(); }
