@@ -460,20 +460,8 @@
             </div>
 
             <div class="premium-card">
-                <div class="card-title"><i class="fas fa-user-tie" style="color:#0984e3;"></i> Client Information</div>
-                <div style="display:flex; align-items:center; gap:15px;">
-                    <div style="width:50px; height:50px; border-radius:50%; background:#00b894; color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.5rem; font-weight:800;">Z</div>
-                    <div>
-                        <h4 style="font-size:1rem;">Zillow <i class="fas fa-external-link-alt" style="font-size:0.8rem; color:#6C5CE7;"></i></h4>
-                        <div style="color:#f39c12; font-size:0.85rem;">★★★★☆ 4.2 (5)</div>
-                        <div style="color:#6b7280; font-size:0.75rem;">114 followers</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="premium-card">
                 <div class="card-title"><i class="fas fa-file-alt" style="color:#6C5CE7;"></i> Job Description</div>
-                <p id="det-task-desc" style="font-size:0.9rem; color:#555; line-height:1.6;">Description details here...</p>
+                <div id="det-task-desc" style="font-size:0.9rem; color:#555; line-height:1.6;">Description details here...</div>
             </div>
 
             <button class="btn-main" onclick="openTaskSubmit()" style="background:linear-gradient(135deg,#00b894,#00cec9);">Submit Now</button>
@@ -1203,7 +1191,12 @@ function openTaskDetail(taskId) {
     document.getElementById('det-task-reward').innerText = task.reward + ' ' + (appState.config.currencySymbol || 'TK');
     document.getElementById('det-task-slots').innerText = (task.submittedCount || 0) + ' / ' + (task.totalSlots || 100);
     document.getElementById('det-task-time').innerText = task.timeLimit || '7 days';
-    document.getElementById('det-task-desc').innerHTML = task.description || 'No description provided.';
+    
+    // ✅ Make description clickable
+    let desc = task.description || 'No description provided.';
+    // Basic regex to convert URLs to clickable links (if not already inside an anchor tag)
+    desc = desc.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:#6C5CE7; text-decoration:underline; font-weight:bold;">$1</a>');
+    document.getElementById('det-task-desc').innerHTML = desc;
 
     document.getElementById('taskDetailModal').style.display = 'block';
     document.getElementById('app').classList.add('blurred');
