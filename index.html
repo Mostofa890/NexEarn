@@ -335,12 +335,12 @@
                 <div style="position:absolute;width:140px;height:140px;background:rgba(255,255,255,0.12);border-radius:50%;top:-60px;right:-40px;pointer-events:none;"></div>
                 <div style="position:absolute;width:100px;height:100px;background:rgba(255,255,255,0.08);border-radius:50%;bottom:-50px;left:-30px;pointer-events:none;"></div>
                 <div style="flex:1;min-width:0;position:relative;z-index:1;">
-                    <div style="font-size:0.72rem;opacity:0.9;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;">CURRENT CYCLE</div>
-                    <div id="cycleLabel" style="font-size:1.25rem;font-weight:900;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0.2px;">🌅 AM Cycle</div>
+                    <div style="font-size:0.72rem;opacity:0.9;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;">AD TIMER</div>
+                    <div id="cycleLabel" style="font-size:1.25rem;font-weight:900;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0.2px;">⏸️ Not Started</div>
                 </div>
                 <div style="text-align:right;flex-shrink:0;position:relative;z-index:1;">
                     <div style="font-size:0.72rem;opacity:0.9;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;">RESET IN</div>
-                    <div id="cycleResetTimer" style="font-size:1.6rem;font-weight:900;margin-top:3px;font-variant-numeric:tabular-nums;letter-spacing:0.5px;text-shadow:0 3px 8px rgba(0,0,0,0.15);">00h 00m 00s</div>
+                    <div id="cycleResetTimer" style="font-size:1.6rem;font-weight:900;margin-top:3px;font-variant-numeric:tabular-nums;letter-spacing:0.5px;text-shadow:0 3px 8px rgba(0,0,0,0.15);">Watch All Ads</div>
                 </div>
             </div>
         </div>
@@ -445,7 +445,7 @@
     </div>
 </div>
 
-<!-- Task Detail Modal (Image 2) -->
+<!-- Task Detail Modal -->
 <div id="taskDetailModal" class="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; overflow-y:auto;">
     <div style="background:#F0F3F8; min-height:100vh; width:100%; padding-bottom:90px;">
         <div class="header" style="padding:20px 25px 40px; border-radius:0 0 25px 25px;">
@@ -475,7 +475,7 @@
     </div>
 </div>
 
-<!-- Task Submit Modal (Image 3) -->
+<!-- Task Submit Modal -->
 <div id="taskSubmitModal" class="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:10000; overflow-y:auto;">
     <div style="background:#fff; min-height:100vh; padding:20px; padding-bottom:90px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -489,13 +489,8 @@
             <p id="sub-task-cat" style="font-size:0.8rem; color:#666;">Mobile Application / Download & Create Account</p>
         </div>
 
-        <div id="dynamic-inputs-container" style="margin-top:20px;">
-            <!-- Dynamic inputs will be generated here -->
-        </div>
-
-        <div id="dynamic-images-container" style="margin-top:20px;">
-            <!-- Dynamic image uploads will be generated here -->
-        </div>
+        <div id="dynamic-inputs-container" style="margin-top:20px;"></div>
+        <div id="dynamic-images-container" style="margin-top:20px;"></div>
 
         <div style="display:flex; gap:10px; margin-top:30px;">
             <button class="btn-main" onclick="submitTaskWork(event)" style="background:#00b894; flex:2;">Submit Work</button>
@@ -533,13 +528,14 @@ const BOT_TOKEN = "8072034659:AAE_I05sswA8gBYVOSHtjGEf1LE6i6aq0T8";
 const ADMIN_ID = "6624254778";
 const SUPPORT_LINK = "https://t.me/NexEarn2Support";
 const MIN_REFERRAL_BALANCE = 20;
+const AD_RESET_HOURS = 12; // ✅ 12 ঘন্টা পর রিসেট
 
 let REF_COMMISSION_RATE = 2;
 let REF_COMMISSION_MODE = 'bonus';
 
 let withdrawLevels = [];
 let appState = {
-    user: { balance: 0, totalEarned: 0, referrals: 0, dailyAds: {}, taskHistory: {}, withdrawCount: 0, adHistory: {}, referredUsers: {}, verifiedChannels: {}, totalCommission: 0, commissionHistory: {}, referredBy: null, lastAdCycle: '', taskStatuses: {} },
+    user: { balance: 0, totalEarned: 0, referrals: 0, dailyAds: {}, taskHistory: {}, withdrawCount: 0, adHistory: {}, referredUsers: {}, verifiedChannels: {}, totalCommission: 0, commissionHistory: {}, referredBy: null, adsResetTime: 0, taskStatuses: {} },
     config: { adSlots: [], newTasks: {} }
 };
 let isBooted = false;
@@ -559,44 +555,66 @@ let cycleTimerInterval = null;
 let adTimerState = { running: false, totalSeconds: 15, remaining: 15, timerId: null, adSlotIndex: null, paused: false, wasCancelled: false };
 let MIN_AD_WATCH_TIME = 15;
 let currentTaskId = null;
-let lastCycleCheck = '';
 
 // ===================================================
-// ✅ AD CYCLE SYSTEM (AM/PM)
+// ✅ AD RESET SYSTEM (12-HOUR AFTER ALL ADS COMPLETED)
 // ===================================================
-function getCurrentAdCycle() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hour = now.getHours();
-    const half = hour < 12 ? 'AM' : 'PM';
-    return `${year}-${month}-${day}-${half}`;
-}
 
-function getNextResetTime() {
-    const now = new Date();
-    const next = new Date(now);
-    if (now.getHours() < 12) {
-        next.setHours(12, 0, 0, 0);
-    } else {
-        next.setDate(next.getDate() + 1);
-        next.setHours(0, 0, 0, 0);
+// ✅ ইউজার কি সব কনফিগারড অ্যাড স্লটের সব অ্যাড শেষ করেছে?
+function isAllAdsCompleted() {
+    const slots = appState.config.adSlots || [];
+    if (slots.length === 0) return false;
+    const limit = Number(appState.config.dailyAdLimit || 10);
+    const dailyAds = appState.user.dailyAds || {};
+    
+    let hasConfigured = false;
+    for (let i = 0; i < slots.length; i++) {
+        const slot = slots[i];
+        const configured = slot && slot.network && slot.network !== 'none';
+        if (!configured) continue; // Unconfigured slots skip
+        hasConfigured = true;
+        const done = Number(dailyAds[i] || 0);
+        if (done < limit) return false;
     }
-    return next;
+    return hasConfigured;
 }
 
-function formatTimeUntil(targetMs) {
-    const diff = Math.max(0, targetMs - Date.now());
-    const h = Math.floor(diff / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-    return String(h).padStart(2, '0') + 'h ' + String(m).padStart(2, '0') + 'm ' + String(s).padStart(2, '0') + 's';
+// ✅ ইউজার যদি সব অ্যাড শেষ করে, তাহলে ১২ ঘন্টার কাউন্টডাউন শুরু করবে
+async function startAdsResetCountdown() {
+    if (appState.user.adsResetTime && appState.user.adsResetTime > Date.now()) {
+        return; // Already running
+    }
+    const resetTime = Date.now() + (AD_RESET_HOURS * 60 * 60 * 1000);
+    appState.user.adsResetTime = resetTime;
+    updateCycleUI();
+    try {
+        await db.ref('users/' + tgUser.id + '/adsResetTime').set(resetTime);
+    } catch(e) { console.error("Reset time save error:", e); }
+    toast('🎉 সব অ্যাড দেখা শেষ! ' + AD_RESET_HOURS + ' ঘন্টা পর আবার দেখতে পারবেন।');
+}
+
+// ✅ অ্যাড রিসেট ফাংশন
+async function forceCycleReset() {
+    if (!tgUser || !tgUser.id) return;
+    
+    // ✅ লোকাল স্টেট আগে আপডেট
+    appState.user.dailyAds = {};
+    appState.user.adsResetTime = 0;
+    renderAds();
+    updateCycleUI();
+    toast('🔄 অ্যাড রিসেট হয়েছে! আবার দেখতে পারবেন।');
+    
+    // ✅ Firebase এ সিঙ্ক
+    try {
+        await db.ref('users/' + tgUser.id).update({
+            dailyAds: {},
+            adsResetTime: 0
+        });
+    } catch (e) { console.error("Cycle reset error:", e); }
 }
 
 function startCycleTimer() {
     stopCycleTimer();
-    lastCycleCheck = getCurrentAdCycle();
     updateCycleUI();
     cycleTimerInterval = setInterval(updateCycleUI, 1000);
 }
@@ -608,34 +626,45 @@ function stopCycleTimer() {
     }
 }
 
+function formatTimeUntil(targetMs) {
+    const diff = Math.max(0, targetMs - Date.now());
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    return String(h).padStart(2, '0') + 'h ' + String(m).padStart(2, '0') + 'm ' + String(s).padStart(2, '0') + 's';
+}
+
 function updateCycleUI() {
     const label = document.getElementById('cycleLabel');
     const timer = document.getElementById('cycleResetTimer');
     if (!label || !timer) return;
-    const hour = new Date().getHours();
-    label.textContent = hour < 12 ? '🌅 AM Cycle' : '🌙 PM Cycle';
-    const next = getNextResetTime();
-    timer.textContent = formatTimeUntil(next.getTime());
-
-    const currentCycle = getCurrentAdCycle();
-    if (currentCycle !== lastCycleCheck) {
-        lastCycleCheck = currentCycle;
-        forceCycleReset(currentCycle);
+    
+    const resetTime = Number(appState.user.adsResetTime || 0);
+    
+    // ✅ কেস ১: রিসেট টাইম সেট করা আছে
+    if (resetTime > 0) {
+        const remaining = resetTime - Date.now();
+        if (remaining <= 0) {
+            // ✅ সময় হয়ে গেছে — রিসেট করুন
+            label.textContent = '🔄 Resetting...';
+            timer.textContent = '00h 00m 00s';
+            forceCycleReset();
+            return;
+        }
+        label.textContent = '⏳ Next Reset In';
+        timer.textContent = formatTimeUntil(resetTime);
+        return;
     }
-}
-
-async function forceCycleReset(newCycle) {
-    if (!tgUser || !tgUser.id) return;
-    try {
-        await db.ref('users/' + tgUser.id).update({
-            dailyAds: {},
-            lastAdCycle: newCycle
-        });
-        appState.user.dailyAds = {};
-        appState.user.lastAdCycle = newCycle;
-        renderAds();
-        toast('🔄 নতুন সাইকেল শুরু! অ্যাড স্লট রিসেট হয়েছে।');
-    } catch (e) { console.error("Cycle reset error:", e); }
+    
+    // ✅ কেস ২: রিসেট টাইম সেট নেই — কিন্তু সব অ্যাড শেষ হয়ে গেছে (edge case)
+    if (isAllAdsCompleted()) {
+        startAdsResetCountdown();
+        return;
+    }
+    
+    // ✅ কেস ৩: সব অ্যাড শেষ হয়নি — ইউজার এখনো অ্যাড দেখতে পারবে
+    label.textContent = '⏸️ Not Started';
+    timer.textContent = 'Watch All Ads';
 }
 
 function getDeviceId() {
@@ -917,10 +946,27 @@ async function watchAd(i) {
             adHistory: adHist, lastActive: todayStr()
         });
         
+        // ✅ লোকাল স্টেট আপডেট
+        appState.user.balance = newBal;
+        appState.user.totalEarned = newEarn;
+        appState.user.dailyAds = newAds;
+        appState.user.adHistory = adHist;
+        
         if (referrerCommission > 0) {
             await creditReferrerCommission(referrerCommission, baseReward, 'Ad Slot ' + (i+1));
         }
         toast('✅ Success! +' + userReward.toFixed(2) + ' TK earned!');
+        
+        // ✅ অ্যাড দেখার পর চেক করুন — সব অ্যাড শেষ হলে ১২ ঘন্টার টাইমার চালু হবে
+        setTimeout(() => {
+            renderAds();
+            if (isAllAdsCompleted()) {
+                startAdsResetCountdown();
+            } else {
+                updateCycleUI();
+            }
+        }, 500);
+        
     } catch (e) {
         if (e.message === 'Ad Closed' || e.message === 'Ad not completed') showAdError('⚠️ Ad Not Completed!', 'You closed the ad before it finished.');
         else showAdError('⚠️ Ad Error', e.message || 'Error loading ad.');
@@ -1114,7 +1160,7 @@ function renderAds() {
 }
 
 // ===================================================
-// ✅ TASK SYSTEM (New Tasks + ImgBB Upload)
+// ✅ TASK SYSTEM
 // ===================================================
 const IMGBB_API_KEY = "bc5a5bca9a50833046600a2cc94de6c6";
 
@@ -1146,7 +1192,6 @@ async function uploadToImgBB(file) {
     });
 }
 
-// ✅ NEW: Check if Task is Expired
 function isTaskExpired(task) {
     if (!task.createdAt) return false;
     const daysMatch = (task.timeLimit || '7 days').match(/(\d+)/);
@@ -1155,7 +1200,6 @@ function isTaskExpired(task) {
     return Date.now() > expiryTime;
 }
 
-// ✅ NEW: Check if Task should be auto-deleted (1 day after expiry)
 function isTaskAutoDeleted(task) {
     if (!task.createdAt) return false;
     const daysMatch = (task.timeLimit || '7 days').match(/(\d+)/);
@@ -1174,17 +1218,13 @@ function renderNewTasks() {
     Object.keys(tasks).forEach(taskId => {
         const task = tasks[taskId];
         
-        // Auto Delete check
-        if (isTaskAutoDeleted(task)) {
-            return; // Don't render, effectively deleting from UI
-        }
+        if (isTaskAutoDeleted(task)) return;
 
         const isExpired = isTaskExpired(task);
         const subStatus = appState.user.taskStatuses ? appState.user.taskStatuses[taskId] : null;
         const submittedCount = task.submittedCount || 0;
         const slotsLeft = Math.max(0, (task.totalSlots || 100) - submittedCount);
 
-        // Button Logic
         let btnHtml = `<button class="btn-act btn-start" style="background:#6C5CE7; color:#fff;" onclick="openTaskDetail('${taskId}')">Start</button>`;
         let statusBadge = '';
 
@@ -1224,14 +1264,12 @@ function renderNewTasks() {
     });
 }
 
-// ✅ NEW: Fetch Task Statuses for Home Screen rendering
 async function fetchTaskStatuses() {
     try {
         const snap = await db.ref('taskSubmissions').orderByChild('userId').equalTo(tgUser.id).once('value');
         appState.user.taskStatuses = {};
         snap.forEach(child => {
             const sub = child.val();
-            // If multiple submissions, keep the latest status
             if (!appState.user.taskStatuses[sub.taskId] || appState.user.taskStatuses[sub.taskId] === 'cancelled') {
                 appState.user.taskStatuses[sub.taskId] = sub.status;
             }
@@ -1277,7 +1315,6 @@ function openTaskSubmit() {
     inputsContainer.innerHTML = '';
     imagesContainer.innerHTML = '';
 
-    // ✅ 1. Text Inputs Section
     if (task.inputs && task.inputs.length > 0) {
         inputsContainer.innerHTML += `<div style="font-weight:800; font-size:0.9rem; margin-bottom:10px; color:#6C5CE7;"><i class="fas fa-keyboard"></i> Text Information</div>`;
         task.inputs.forEach((input, idx) => {
@@ -1299,7 +1336,6 @@ function openTaskSubmit() {
         });
     }
 
-    // ✅ 2. Image Uploads Section
     if (task.images && task.images.length > 0) {
         imagesContainer.innerHTML += `<div style="font-weight:800; font-size:0.9rem; margin-bottom:10px; margin-top:10px; color:#f39c12;"><i class="fas fa-image"></i> Required Screenshots</div>`;
         task.images.forEach((img, idx) => {
@@ -1392,8 +1428,6 @@ async function submitTaskWork(event) {
 
         await db.ref('taskSubmissions/' + submissionId).set(submissionData);
         await db.ref(`users/${tgUser.id}/taskHistory/${currentTaskId}`).set(submissionId);
-        
-        // ✅ REMOVED: submittedCount increment from here. It will now only increment on Admin Approval.
 
         const adminMsg = `📥 <b>New Task Submission</b>\n\n👤 User: ${tgUser.first_name}\n📋 Task: ${task.title}\n💰 Reward: ${task.reward}\n\n🔗 Check Admin Panel to review.`;
         await sendNotification(ADMIN_ID, adminMsg);
@@ -1401,7 +1435,6 @@ async function submitTaskWork(event) {
         toast('✅ Task Submitted Successfully!');
         closeTaskSubmit();
         
-        // Update local status and re-render
         appState.user.taskStatuses[currentTaskId] = 'pending';
         renderNewTasks(); 
         loadTaskHistory(); 
@@ -1425,15 +1458,12 @@ async function loadTaskHistory() {
         let html = '';
         let hasData = false;
         
-        // Reset local statuses while building history
         appState.user.taskStatuses = {};
 
         snap.forEach(child => {
             hasData = true;
             const sub = child.val();
-            const subId = child.key;
             
-            // Update local status map
             if (!appState.user.taskStatuses[sub.taskId] || sub.status === 'cancelled') {
                 appState.user.taskStatuses[sub.taskId] = sub.status;
             }
@@ -1449,7 +1479,6 @@ async function loadTaskHistory() {
                 statusClass = 'status-cancelled'; 
                 statusText = '❌ Cancelled'; 
                 reasonHtml = `<p style="font-size:0.75rem; color:#721C24; margin-top:5px; background:#fff; padding:8px; border-radius:6px;"><b>Reason:</b> ${sub.reason || 'No reason provided'}</p>`;
-                // Add Re-submit button for cancelled tasks
                 resubmitBtn = `<button class="btn-main" style="padding:10px; font-size:0.85rem; margin-top:10px; background:#6C5CE7;" onclick="openTaskDetail('${sub.taskId}')"><i class="fas fa-redo"></i> Re-Submit Task</button>`;
             }
 
@@ -1477,7 +1506,6 @@ async function loadTaskHistory() {
             container.innerHTML = html;
         }
         
-        // Re-render home screen with updated statuses
         renderNewTasks();
         
     } catch (e) {
@@ -1488,8 +1516,6 @@ async function loadTaskHistory() {
 // ===================================================
 // ✅ ADDITIONAL FUNCTIONS
 // ===================================================
-function renderTasks() { /* Deprecated, replaced by renderNewTasks */ }
-
 async function requestWithdraw() {
     if (!isOnline) { toast('No internet connection!'); return; }
     const method = document.getElementById('wd-method').value;
@@ -1797,6 +1823,13 @@ window.onload = () => {
         if (document.hidden) {
             stopPeriodicRecheck();
         } else if (isBooted && isOnline && !document.getElementById('joinModal').classList.contains('active') && document.getElementById('app').style.display !== 'none') {
+            // ✅ অ্যাপ রিজিউম হলে রিসেট টাইম চেক করুন
+            const resetTime = Number(appState.user.adsResetTime || 0);
+            if (resetTime > 0 && resetTime <= Date.now()) {
+                forceCycleReset();
+            } else {
+                updateCycleUI();
+            }
             startPeriodicRecheck();
             if (channelVerified) {
                 needsVerification().then(needs => {
@@ -1810,7 +1843,6 @@ window.onload = () => {
                     }
                 });
             }
-            checkCycleChange();
         }
     });
     
@@ -1818,22 +1850,6 @@ window.onload = () => {
         stopPeriodicRecheck();
         if (verifyInterval) clearInterval(verifyInterval);
     });
-
-    async function checkCycleChange() {
-        const currentCycle = getCurrentAdCycle();
-        if (appState.user.lastAdCycle && appState.user.lastAdCycle !== currentCycle) {
-            const isNewDay = appState.user.lastAdCycle.slice(0, 10) !== currentCycle.slice(0, 10);
-            await db.ref('users/' + tgUser.id).update({
-                dailyAds: {},
-                lastAdCycle: currentCycle
-            });
-            appState.user.dailyAds = {};
-            appState.user.lastAdCycle = currentCycle;
-            renderAds();
-            if (isNewDay) toast('🌅 নতুন দিন শুরু! অ্যাড সাইকেল রিসেট হয়েছে।');
-            else toast('🔄 নতুন সাইকেল! আবার অ্যাড দেখতে পারবেন।');
-        }
-    }
 
     db.ref('config').on('value', snap => {
         if (snap.exists()) {
@@ -1877,7 +1893,7 @@ window.onload = () => {
                     const sc = document.createElement('script'); sc.id = 'giga-script'; sc.src = 'https://ad.gigapub.tech/script?id=1'; document.body.appendChild(sc);
                 }
             });
-            if (isBooted) { updateTextElements(); renderAds(); renderNewTasks(); }
+            if (isBooted) { updateTextElements(); renderAds(); renderNewTasks(); updateCycleUI(); }
         } else {
             const defaultConfig = {
                 refBonus: 5, adReward: 0.5, dailyBonusAmount: 20, dailyAdLimit: 10, minWithdraw: 10, currencySymbol: 'TK',
@@ -1916,7 +1932,7 @@ window.onload = () => {
                 id: tgUser.id, name: tgUser.first_name, photo: tgUser.photo_url || '',
                 balance: 0, totalEarned: 0, referrals: 0, dailyAds: {}, taskHistory: {}, adHistory: {}, referredUsers: {}, verifiedChannels: {},
                 totalCommission: 0, commissionHistory: {}, referredBy: null,
-                lastAdCycle: getCurrentAdCycle(),
+                adsResetTime: 0,
                 lastActive: today, dailyBonusDate: '', channelVerified: false, isBanned: false, banReason: '',
                 withdrawCount: 0, adClicks: 0, taskStatuses: {}
             };
@@ -1970,10 +1986,10 @@ window.onload = () => {
                 if (!appState.user.verifiedChannels) appState.user.verifiedChannels = {};
                 if (!appState.user.commissionHistory) appState.user.commissionHistory = {};
                 if (!appState.user.taskStatuses) appState.user.taskStatuses = {};
+                if (appState.user.adsResetTime === undefined) appState.user.adsResetTime = 0;
                 if (appState.user.totalCommission === undefined) appState.user.totalCommission = 0;
                 if (appState.user.withdrawCount === undefined) appState.user.withdrawCount = 0;
                 if (appState.user.adClicks === undefined) appState.user.adClicks = 0;
-                if (!appState.user.lastAdCycle) appState.user.lastAdCycle = getCurrentAdCycle();
                 
                 if (appState.user.isBanned) {
                     document.getElementById('bannedOverlay').classList.add('active');
@@ -1982,28 +1998,26 @@ window.onload = () => {
                     return;
                 } else document.getElementById('bannedOverlay').classList.remove('active');
                 
-                const currentCycle = getCurrentAdCycle();
-                if (appState.user.lastAdCycle !== currentCycle) {
-                    const isNewDay = appState.user.lastAdCycle.slice(0, 10) !== currentCycle.slice(0, 10);
-                    await userRef.update({ dailyAds: {}, lastAdCycle: currentCycle, lastActive: today });
-                    appState.user.dailyAds = {};
-                    appState.user.lastAdCycle = currentCycle;
-                    if (isNewDay) toast('🌅 নতুন দিন শুরু! অ্যাড সাইকেল রিসেট হয়েছে।');
-                    else toast('🔄 নতুন সাইকেল! আবার অ্যাড দেখতে পারবেন।');
-                } else if (appState.user.lastActive !== today) {
+                // ✅ রিসেট টাইম চেক করুন — যদি সময় হয়ে গিয়ে থাকে
+                const resetTime = Number(appState.user.adsResetTime || 0);
+                if (resetTime > 0 && resetTime <= Date.now()) {
+                    await forceCycleReset();
+                }
+                
+                if (appState.user.lastActive !== today) {
                     await userRef.update({ lastActive: today });
                 }
                 
                 await updateTextElements();
                 renderAds();
                 renderNewTasks();
+                updateCycleUI();
                 
                 if (!isBooted) {
                     isBooted = true;
                     if (checkMaintenance()) { setLoading(false); return; }
                     if (checkBan()) { setLoading(false); return; }
                     
-                    // Fetch task statuses on boot
                     await fetchTaskStatuses();
                     
                     const needs = await needsVerification();
