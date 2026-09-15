@@ -528,14 +528,14 @@ const BOT_TOKEN = "8072034659:AAE_I05sswA8gBYVOSHtjGEf1LE6i6aq0T8";
 const ADMIN_ID = "6624254778";
 const SUPPORT_LINK = "https://t.me/NexEarn2Support";
 const MIN_REFERRAL_BALANCE = 20;
-const AD_RESET_HOURS = 12; // ✅ 12 ঘন্টা পর রিসেট
+const AD_RESET_HOURS = 12;
 
 let REF_COMMISSION_RATE = 2;
 let REF_COMMISSION_MODE = 'bonus';
 
 let withdrawLevels = [];
 let appState = {
-    user: { balance: 0, totalEarned: 0, referrals: 0, dailyAds: {}, taskHistory: {}, withdrawCount: 0, adHistory: {}, referredUsers: {}, verifiedChannels: {}, totalCommission: 0, commissionHistory: {}, referredBy: null, adsResetTime: 0, taskStatuses: {} },
+    user: { balance: 0, totalEarned: 0, referrals: 0, dailyAds: {}, taskHistory: {}, withdrawCount: 0, adHistory: {}, referredUsers: {}, verifiedChannels: {}, totalCommission: 0, commissionHistory: {}, referredBy: null, adsResetTime: 0, dailyBonusDate: '', taskStatuses: {} },
     config: { adSlots: [], newTasks: {} }
 };
 let isBooted = false;
@@ -559,19 +559,16 @@ let currentTaskId = null;
 // ===================================================
 // ✅ AD RESET SYSTEM (12-HOUR AFTER ALL ADS COMPLETED)
 // ===================================================
-
-// ✅ ইউজার কি সব কনফিগারড অ্যাড স্লটের সব অ্যাড শেষ করেছে?
 function isAllAdsCompleted() {
     const slots = appState.config.adSlots || [];
     if (slots.length === 0) return false;
     const limit = Number(appState.config.dailyAdLimit || 10);
     const dailyAds = appState.user.dailyAds || {};
-    
     let hasConfigured = false;
     for (let i = 0; i < slots.length; i++) {
         const slot = slots[i];
         const configured = slot && slot.network && slot.network !== 'none';
-        if (!configured) continue; // Unconfigured slots skip
+        if (!configured) continue;
         hasConfigured = true;
         const done = Number(dailyAds[i] || 0);
         if (done < limit) return false;
@@ -579,11 +576,8 @@ function isAllAdsCompleted() {
     return hasConfigured;
 }
 
-// ✅ ইউজার যদি সব অ্যাড শেষ করে, তাহলে ১২ ঘন্টার কাউন্টডাউন শুরু করবে
 async function startAdsResetCountdown() {
-    if (appState.user.adsResetTime && appState.user.adsResetTime > Date.now()) {
-        return; // Already running
-    }
+    if (appState.user.adsResetTime && appState.user.adsResetTime > Date.now()) return;
     const resetTime = Date.now() + (AD_RESET_HOURS * 60 * 60 * 1000);
     appState.user.adsResetTime = resetTime;
     updateCycleUI();
@@ -593,23 +587,15 @@ async function startAdsResetCountdown() {
     toast('🎉 সব অ্যাড দেখা শেষ! ' + AD_RESET_HOURS + ' ঘন্টা পর আবার দেখতে পারবেন।');
 }
 
-// ✅ অ্যাড রিসেট ফাংশন
 async function forceCycleReset() {
     if (!tgUser || !tgUser.id) return;
-    
-    // ✅ লোকাল স্টেট আগে আপডেট
     appState.user.dailyAds = {};
     appState.user.adsResetTime = 0;
     renderAds();
     updateCycleUI();
     toast('🔄 অ্যাড রিসেট হয়েছে! আবার দেখতে পারবেন।');
-    
-    // ✅ Firebase এ সিঙ্ক
     try {
-        await db.ref('users/' + tgUser.id).update({
-            dailyAds: {},
-            adsResetTime: 0
-        });
+        await db.ref('users/' + tgUser.id).update({ dailyAds: {}, adsResetTime: 0 });
     } catch (e) { console.error("Cycle reset error:", e); }
 }
 
@@ -620,10 +606,7 @@ function startCycleTimer() {
 }
 
 function stopCycleTimer() {
-    if (cycleTimerInterval) {
-        clearInterval(cycleTimerInterval);
-        cycleTimerInterval = null;
-    }
+    if (cycleTimerInterval) { clearInterval(cycleTimerInterval); cycleTimerInterval = null; }
 }
 
 function formatTimeUntil(targetMs) {
@@ -638,14 +621,10 @@ function updateCycleUI() {
     const label = document.getElementById('cycleLabel');
     const timer = document.getElementById('cycleResetTimer');
     if (!label || !timer) return;
-    
     const resetTime = Number(appState.user.adsResetTime || 0);
-    
-    // ✅ কেস ১: রিসেট টাইম সেট করা আছে
     if (resetTime > 0) {
         const remaining = resetTime - Date.now();
         if (remaining <= 0) {
-            // ✅ সময় হয়ে গেছে — রিসেট করুন
             label.textContent = '🔄 Resetting...';
             timer.textContent = '00h 00m 00s';
             forceCycleReset();
@@ -655,14 +634,7 @@ function updateCycleUI() {
         timer.textContent = formatTimeUntil(resetTime);
         return;
     }
-    
-    // ✅ কেস ২: রিসেট টাইম সেট নেই — কিন্তু সব অ্যাড শেষ হয়ে গেছে (edge case)
-    if (isAllAdsCompleted()) {
-        startAdsResetCountdown();
-        return;
-    }
-    
-    // ✅ কেস ৩: সব অ্যাড শেষ হয়নি — ইউজার এখনো অ্যাড দেখতে পারবে
+    if (isAllAdsCompleted()) { startAdsResetCountdown(); return; }
     label.textContent = '⏸️ Not Started';
     timer.textContent = 'Watch All Ads';
 }
@@ -691,6 +663,98 @@ function showAdError(title, msg) {
     document.getElementById('adErrorPopup').classList.add('active');
 }
 function closeAdError() { document.getElementById('adErrorPopup').classList.remove('active'); }
+
+// ===================================================
+// ✅ DAILY BONUS SYSTEM (NEW - FIXED)
+// ===================================================
+function showBonus() {
+    if (!isOnline) { toast('No internet connection!'); return; }
+    if (appState.user.dailyBonusDate === todayStr()) { 
+        toast('আজকের বোনাস আগেই নেওয়া হয়েছে!'); 
+        return; 
+    }
+    document.getElementById('bonusOverlay').classList.add('show');
+    document.getElementById('app').classList.add('blurred');
+}
+
+function hideBonus() { 
+    document.getElementById('bonusOverlay').classList.remove('show'); 
+    document.getElementById('app').classList.remove('blurred'); 
+}
+
+async function claimDailyBonus() {
+    if (!isOnline) { toast('No internet connection!'); return; }
+    const btn = document.getElementById('btnClaimBonus');
+    const btnCancel = document.getElementById('btnCancelBonus');
+    const subText = document.getElementById('bonusSubText');
+    btn.disabled = true; 
+    btnCancel.disabled = true;
+    
+    try {
+        const slots = appState.config.adSlots || [];
+        const agSlot = slots.find(s => s.network === 'adsgram');
+        const mtSlot = slots.find(s => s.network === 'monetag');
+        
+        // ✅ প্রথম অ্যাড (Adsgram)
+        if (agSlot && agSlot.id) {
+            subText.innerText = '১ম অ্যাড লোড হচ্ছে (Adsgram)...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading Ad 1...';
+            if (typeof window.Adsgram === 'undefined') throw new Error('Ad Network Not Ready');
+            const adCtrl = window.Adsgram.init({ blockId: String(agSlot.id) });
+            let res = await adCtrl.show();
+            if (!res || res.done !== true) throw new Error('Ad Closed');
+        }
+        
+        // ✅ দ্বিতীয় অ্যাড (Monetag)
+        if (mtSlot && mtSlot.id) {
+            subText.innerText = '২য় অ্যাড লোড হচ্ছে (Monetag)...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading Ad 2...';
+            if (typeof window['show_' + mtSlot.id] === 'function') {
+                await window['show_' + mtSlot.id]();
+            } else {
+                throw new Error('Ad Network Not Ready');
+            }
+        }
+        
+        btn.innerHTML = '<i class="fas fa-check"></i> Claiming...';
+        
+        const baseBonus = Number(appState.config.dailyBonusAmount || 20);
+        const split = computeCommissionSplit(baseBonus);
+        const newBal = (appState.user.balance || 0) + split.userReward;
+        const newEarn = (appState.user.totalEarned || 0) + split.userReward;
+        
+        let adHist = appState.user.adHistory || {};
+        adHist['bonus_' + Date.now()] = { slot: 'Bonus', amount: split.userReward, timestamp: Date.now(), type: 'bonus' };
+        
+        await db.ref('users/' + appState.user.id).update({ 
+            balance: newBal, 
+            totalEarned: newEarn, 
+            dailyBonusDate: todayStr(), 
+            adHistory: adHist 
+        });
+        
+        appState.user.balance = newBal;
+        appState.user.totalEarned = newEarn;
+        appState.user.dailyBonusDate = todayStr();
+        appState.user.adHistory = adHist;
+        
+        if (split.referrerCommission > 0) {
+            await creditReferrerCommission(split.referrerCommission, baseBonus, 'Daily Bonus');
+        }
+        
+        await updateTextElements();
+        hideBonus();
+        toast('✅ বোনাস ক্লেইম সফল! +' + split.userReward.toFixed(2) + ' TK');
+    } catch (e) {
+        console.error('Bonus Error:', e);
+        toast(e.message === 'Ad Closed' ? '❌ অ্যাডটি সম্পূর্ণ দেখেননি!' : '❌ অ্যাড লোড সমস্যা: ' + e.message);
+    } finally {
+        btn.disabled = false; 
+        btnCancel.disabled = false;
+        btn.innerHTML = '<i class="fas fa-play-circle"></i> Watch Ads & Claim';
+        subText.innerText = 'বোনাস নিতে হলে আপনাকে প্রথমে ২টি ছোট অ্যাড সম্পূর্ণ দেখতে হবে।';
+    }
+}
 
 // ===================================================
 // ✅ COMMISSION SYSTEM
@@ -946,7 +1010,6 @@ async function watchAd(i) {
             adHistory: adHist, lastActive: todayStr()
         });
         
-        // ✅ লোকাল স্টেট আপডেট
         appState.user.balance = newBal;
         appState.user.totalEarned = newEarn;
         appState.user.dailyAds = newAds;
@@ -957,14 +1020,10 @@ async function watchAd(i) {
         }
         toast('✅ Success! +' + userReward.toFixed(2) + ' TK earned!');
         
-        // ✅ অ্যাড দেখার পর চেক করুন — সব অ্যাড শেষ হলে ১২ ঘন্টার টাইমার চালু হবে
         setTimeout(() => {
             renderAds();
-            if (isAllAdsCompleted()) {
-                startAdsResetCountdown();
-            } else {
-                updateCycleUI();
-            }
+            if (isAllAdsCompleted()) { startAdsResetCountdown(); }
+            else { updateCycleUI(); }
         }, 500);
         
     } catch (e) {
@@ -1117,14 +1176,10 @@ function checkBan() {
     } else { document.getElementById('bannedOverlay').classList.remove('active'); return false; }
 }
 
-// ===================================================
-// ✅ RENDER ADS (Dynamic Slots)
-// ===================================================
 function renderAds() {
     const el = document.getElementById('ad-area'); 
     if (!el) return;
     el.innerHTML = '';
-    
     const slots = appState.config.adSlots || [];
     const totalSlots = slots.length > 0 ? slots.length : 4; 
     const limit = Number(appState.config.dailyAdLimit || 10); 
@@ -1134,14 +1189,11 @@ function renderAds() {
     for (let i = 0; i < totalSlots; i++) {
         const slot = slots[i] || { network: 'none', id: '' };
         const configured = slot && slot.network && slot.network !== 'none';
-        
         const done = (appState.user.dailyAds && appState.user.dailyAds[i]) ? appState.user.dailyAds[i] : 0;
         const max = done >= limit;
-        
         const cardClass = !configured ? 'not-set disabled' : (max ? 'disabled' : '');
         const extraClass = `slot-${(i % 4) + 1}`; 
         const icon = (i === 0 ? 'fa-play' : i === 1 ? 'fa-circle-play' : i === 2 ? 'fa-bolt' : 'fa-gem');
-        
         const clickAttr = (!configured || max) ? '' : `onclick="startAdWatch(${i})"`;
         const cursorStyle = (!configured || max) ? '' : 'cursor:pointer;';
 
@@ -1172,21 +1224,15 @@ async function uploadToImgBB(file) {
             const base64String = reader.result.split(',')[1];
             const formData = new FormData();
             formData.append('image', base64String);
-
             try {
                 const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
                     method: 'POST',
                     body: formData
                 });
                 const data = await response.json();
-                if (data.success) {
-                    resolve(data.data.url);
-                } else {
-                    reject(new Error('ImgBB upload failed'));
-                }
-            } catch (error) {
-                reject(error);
-            }
+                if (data.success) { resolve(data.data.url); }
+                else { reject(new Error('ImgBB upload failed')); }
+            } catch (error) { reject(error); }
         };
         reader.onerror = error => reject(error);
     });
@@ -1217,9 +1263,7 @@ function renderNewTasks() {
 
     Object.keys(tasks).forEach(taskId => {
         const task = tasks[taskId];
-        
         if (isTaskAutoDeleted(task)) return;
-
         const isExpired = isTaskExpired(task);
         const subStatus = appState.user.taskStatuses ? appState.user.taskStatuses[taskId] : null;
         const submittedCount = task.submittedCount || 0;
@@ -1282,17 +1326,14 @@ function openTaskDetail(taskId) {
     currentTaskId = taskId;
     const task = appState.config.newTasks[taskId];
     if (!task) return;
-
     document.getElementById('det-task-title').innerText = task.title;
     document.getElementById('det-task-type').innerText = task.category || 'General';
     document.getElementById('det-task-reward').innerText = task.reward + ' ' + (appState.config.currencySymbol || 'TK');
     document.getElementById('det-task-slots').innerText = (task.submittedCount || 0) + ' / ' + (task.totalSlots || 100);
     document.getElementById('det-task-time').innerText = isTaskExpired(task) ? 'Expired' : (task.timeLimit || '7 days');
-    
     let desc = task.description || 'No description provided.';
     desc = desc.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:#6C5CE7; text-decoration:underline; font-weight:bold;">$1</a>');
     document.getElementById('det-task-desc').innerHTML = desc;
-
     document.getElementById('taskDetailModal').style.display = 'block';
     document.getElementById('app').classList.add('blurred');
 }
@@ -1305,11 +1346,9 @@ function closeTaskDetail() {
 function openTaskSubmit() {
     const task = appState.config.newTasks[currentTaskId];
     if (!task) return;
-
     document.getElementById('sub-task-title').innerText = task.title;
     document.getElementById('sub-task-reward').innerText = task.reward + ' ' + (appState.config.currencySymbol || 'TK');
     document.getElementById('sub-task-cat').innerText = task.category || 'General';
-
     const inputsContainer = document.getElementById('dynamic-inputs-container');
     const imagesContainer = document.getElementById('dynamic-images-container');
     inputsContainer.innerHTML = '';
@@ -1320,19 +1359,9 @@ function openTaskSubmit() {
         task.inputs.forEach((input, idx) => {
             let exampleImgHtml = '';
             if (input.exampleUrl) {
-                exampleImgHtml = `
-                    <div style="margin-top:6px; text-align:center;">
-                        <p style="font-size:0.6rem; color:#888; margin-bottom:2px;">Example:</p>
-                        <img src="${input.exampleUrl}" style="max-width:100%; max-height:80px; border-radius:6px; border:1px solid #ddd;" alt="Example">
-                    </div>`;
+                exampleImgHtml = `<div style="margin-top:6px; text-align:center;"><p style="font-size:0.6rem; color:#888; margin-bottom:2px;">Example:</p><img src="${input.exampleUrl}" style="max-width:100%; max-height:80px; border-radius:6px; border:1px solid #ddd;" alt="Example"></div>`;
             }
-            inputsContainer.innerHTML += `
-                <div class="input-group" style="margin-bottom:12px;">
-                    <label style="font-weight:700; font-size:0.85rem; margin-bottom:5px; display:block;">${input.label} <span style="color:red;">*</span></label>
-                    <input type="text" id="task-input-${idx}" placeholder="${input.placeholder || 'Enter here...'}" />
-                    ${exampleImgHtml}
-                </div>
-            `;
+            inputsContainer.innerHTML += `<div class="input-group" style="margin-bottom:12px;"><label style="font-weight:700; font-size:0.85rem; margin-bottom:5px; display:block;">${input.label} <span style="color:red;">*</span></label><input type="text" id="task-input-${idx}" placeholder="${input.placeholder || 'Enter here...'}" />${exampleImgHtml}</div>`;
         });
     }
 
@@ -1341,21 +1370,9 @@ function openTaskSubmit() {
         task.images.forEach((img, idx) => {
             let exampleImgHtml = '';
             if (img.exampleUrl) {
-                exampleImgHtml = `
-                    <div style="margin-top:10px; text-align:center;">
-                        <p style="font-size:0.6rem; color:#888; margin-bottom:2px;">Example Screenshot:</p>
-                        <img src="${img.exampleUrl}" style="max-width:100%; max-height:80px; border-radius:6px; border:1px solid #ddd;" alt="Example">
-                    </div>`;
+                exampleImgHtml = `<div style="margin-top:10px; text-align:center;"><p style="font-size:0.6rem; color:#888; margin-bottom:2px;">Example Screenshot:</p><img src="${img.exampleUrl}" style="max-width:100%; max-height:80px; border-radius:6px; border:1px solid #ddd;" alt="Example"></div>`;
             }
-            imagesContainer.innerHTML += `
-                <div class="image-upload-box" style="margin-bottom:15px;">
-                    <p style="font-size:0.85rem; font-weight:700; margin-bottom:5px;">${img.label} <span style="color:red;">*</span></p>
-                    <input type="file" id="task-img-${idx}" accept="image/*" onchange="previewImage(this, 'preview-${idx}')" />
-                    <label for="task-img-${idx}" style="margin-top:5px;"><i class="fas fa-cloud-upload-alt"></i> Choose File</label>
-                    <img id="preview-${idx}" class="image-preview" />
-                    ${exampleImgHtml}
-                </div>
-            `;
+            imagesContainer.innerHTML += `<div class="image-upload-box" style="margin-bottom:15px;"><p style="font-size:0.85rem; font-weight:700; margin-bottom:5px;">${img.label} <span style="color:red;">*</span></p><input type="file" id="task-img-${idx}" accept="image/*" onchange="previewImage(this, 'preview-${idx}')" /><label for="task-img-${idx}" style="margin-top:5px;"><i class="fas fa-cloud-upload-alt"></i> Choose File</label><img id="preview-${idx}" class="image-preview" />${exampleImgHtml}</div>`;
         });
     }
 
@@ -1384,11 +1401,9 @@ function previewImage(input, previewId) {
 async function submitTaskWork(event) {
     const task = appState.config.newTasks[currentTaskId];
     if (!task) return;
-
     const btn = event.target;
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-
     try {
         const userInputs = {};
         if (task.inputs) {
@@ -1398,7 +1413,6 @@ async function submitTaskWork(event) {
                 userInputs[task.inputs[i].label] = val;
             }
         }
-
         const uploadedImageUrls = [];
         if (task.images) {
             for (let i = 0; i < task.images.length; i++) {
@@ -1411,34 +1425,22 @@ async function submitTaskWork(event) {
                 uploadedImageUrls.push({ label: task.images[i].label, url: url });
             }
         }
-
         const submissionId = 'sub_' + Date.now() + '_' + tgUser.id;
         const submissionData = {
-            userId: tgUser.id,
-            userName: tgUser.first_name,
-            taskId: currentTaskId,
-            taskTitle: task.title,
-            reward: task.reward,
-            inputs: userInputs,
-            images: uploadedImageUrls,
-            status: 'pending', 
-            reason: '',
-            timestamp: Date.now()
+            userId: tgUser.id, userName: tgUser.first_name,
+            taskId: currentTaskId, taskTitle: task.title, reward: task.reward,
+            inputs: userInputs, images: uploadedImageUrls,
+            status: 'pending', reason: '', timestamp: Date.now()
         };
-
         await db.ref('taskSubmissions/' + submissionId).set(submissionData);
         await db.ref(`users/${tgUser.id}/taskHistory/${currentTaskId}`).set(submissionId);
-
-        const adminMsg = `📥 <b>New Task Submission</b>\n\n👤 User: ${tgUser.first_name}\n📋 Task: ${task.title}\n💰 Reward: ${task.reward}\n\n🔗 Check Admin Panel to review.`;
+        const adminMsg = `📥 <b>New Task Submission</b>\n\n👤 User: ${tgUser.first_name}\n📋 Task: ${task.title}\n💰 Reward: ${task.reward}`;
         await sendNotification(ADMIN_ID, adminMsg);
-
         toast('✅ Task Submitted Successfully!');
         closeTaskSubmit();
-        
         appState.user.taskStatuses[currentTaskId] = 'pending';
         renderNewTasks(); 
         loadTaskHistory(); 
-
     } catch (error) {
         toast('❌ ' + error.message);
     } finally {
@@ -1450,29 +1452,22 @@ async function submitTaskWork(event) {
 async function loadTaskHistory() {
     const container = document.getElementById('myTasksList');
     if (!container) return;
-    
     container.innerHTML = '<p style="text-align:center;color:#999;padding:15px;">Loading...</p>';
-    
     try {
         const snap = await db.ref('taskSubmissions').orderByChild('userId').equalTo(tgUser.id).once('value');
         let html = '';
         let hasData = false;
-        
         appState.user.taskStatuses = {};
-
         snap.forEach(child => {
             hasData = true;
             const sub = child.val();
-            
             if (!appState.user.taskStatuses[sub.taskId] || sub.status === 'cancelled') {
                 appState.user.taskStatuses[sub.taskId] = sub.status;
             }
-
             let statusClass = 'status-pending';
             let statusText = '⏳ Pending';
             let reasonHtml = '';
             let resubmitBtn = '';
-
             if (sub.status === 'processing') { statusClass = 'status-processing'; statusText = '🔄 Processing'; }
             else if (sub.status === 'approved') { statusClass = 'status-approved'; statusText = '✅ Approved'; }
             else if (sub.status === 'cancelled') { 
@@ -1481,41 +1476,18 @@ async function loadTaskHistory() {
                 reasonHtml = `<p style="font-size:0.75rem; color:#721C24; margin-top:5px; background:#fff; padding:8px; border-radius:6px;"><b>Reason:</b> ${sub.reason || 'No reason provided'}</p>`;
                 resubmitBtn = `<button class="btn-main" style="padding:10px; font-size:0.85rem; margin-top:10px; background:#6C5CE7;" onclick="openTaskDetail('${sub.taskId}')"><i class="fas fa-redo"></i> Re-Submit Task</button>`;
             }
-
             const date = new Date(sub.timestamp).toLocaleString();
-
-            html += `
-                <div class="premium-card" style="margin-bottom:12px; border-left:4px solid ${sub.status === 'approved' ? '#00b894' : sub.status === 'cancelled' ? '#ff4757' : '#f39c12'};">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h4 style="font-size:0.95rem; font-weight:700;">${sub.taskTitle}</h4>
-                        <span class="status-badge ${statusClass}">${statusText}</span>
-                    </div>
-                    <div style="margin-top:8px; font-size:0.8rem; color:#666;">
-                        <p><i class="fas fa-coins"></i> Reward: <b>${sub.reward} TK</b></p>
-                        <p><i class="fas fa-clock"></i> ${date}</p>
-                    </div>
-                    ${reasonHtml}
-                    ${resubmitBtn}
-                </div>
-            `;
+            html += `<div class="premium-card" style="margin-bottom:12px; border-left:4px solid ${sub.status === 'approved' ? '#00b894' : sub.status === 'cancelled' ? '#ff4757' : '#f39c12'};"><div style="display:flex; justify-content:space-between; align-items:center;"><h4 style="font-size:0.95rem; font-weight:700;">${sub.taskTitle}</h4><span class="status-badge ${statusClass}">${statusText}</span></div><div style="margin-top:8px; font-size:0.8rem; color:#666;"><p><i class="fas fa-coins"></i> Reward: <b>${sub.reward} TK</b></p><p><i class="fas fa-clock"></i> ${date}</p></div>${reasonHtml}${resubmitBtn}</div>`;
         });
-
         if (!hasData) {
             container.innerHTML = '<div class="empty-state"><i class="fas fa-tasks"></i><p>এখনো কোনো টাস্ক সাবমিট করা হয়নি</p></div>';
-        } else {
-            container.innerHTML = html;
-        }
-        
+        } else { container.innerHTML = html; }
         renderNewTasks();
-        
     } catch (e) {
         container.innerHTML = '<p style="text-align:center;color:#999;padding:15px;">Error loading history</p>';
     }
 }
 
-// ===================================================
-// ✅ ADDITIONAL FUNCTIONS
-// ===================================================
 async function requestWithdraw() {
     if (!isOnline) { toast('No internet connection!'); return; }
     const method = document.getElementById('wd-method').value;
@@ -1537,8 +1509,7 @@ async function requestWithdraw() {
         const wdId = 'WD' + Date.now();
         await db.ref('withdrawals/' + wdId).set({
             userId: appState.user.id, userName: appState.user.name || 'User',
-            method: method, account: account, amount: amount,
-            fee: feeAmount, netAmount: netAmount,
+            method, account, amount, fee: feeAmount, netAmount,
             level: level.level || 1, requiredRefs: reqRefs,
             validRefsAtRequest: validReferralCount,
             status: 'pending', timestamp: Date.now()
@@ -1596,7 +1567,7 @@ async function loadMyReferrals() {
             const uSnap = await db.ref('users/' + rid).once('value');
             const u = uSnap.exists() ? uSnap.val() : {};
             const balance = Number(u.balance || 0);
-            return { id: rid, name: u.name || refs[rid].name || 'User', balance: balance, qualified: balance >= MIN_REFERRAL_BALANCE, joinedAt: refs[rid].joinedAt || 0 };
+            return { id: rid, name: u.name || refs[rid].name || 'User', balance, qualified: balance >= MIN_REFERRAL_BALANCE, joinedAt: refs[rid].joinedAt || 0 };
         }));
         userData.sort((a, b) => b.joinedAt - a.joinedAt);
         let qualifiedCount = 0;
@@ -1679,12 +1650,10 @@ async function updateTextElements() {
     document.getElementById('ref-link-text').innerText = getRefLink();
     document.getElementById('ref-bonus-txt').innerText = (appState.config.refBonus || 5) + ' ' + sym;
     document.getElementById('bonusAmt').innerText = appState.config.dailyBonusAmount || 20;
-    
     document.getElementById('commTotalAmt').innerText = (appState.user.totalCommission || 0).toFixed(2);
     document.getElementById('commRateTxt').innerText = REF_COMMISSION_RATE + '%';
     const infoRateEl = document.getElementById('commInfoRate');
     if (infoRateEl) infoRateEl.innerText = REF_COMMISSION_RATE + '%';
-    
     const wdSel = document.getElementById('wd-method');
     let currentVal = wdSel.value;
     wdSel.innerHTML = '<option value="">Select Method</option>';
@@ -1823,13 +1792,9 @@ window.onload = () => {
         if (document.hidden) {
             stopPeriodicRecheck();
         } else if (isBooted && isOnline && !document.getElementById('joinModal').classList.contains('active') && document.getElementById('app').style.display !== 'none') {
-            // ✅ অ্যাপ রিজিউম হলে রিসেট টাইম চেক করুন
             const resetTime = Number(appState.user.adsResetTime || 0);
-            if (resetTime > 0 && resetTime <= Date.now()) {
-                forceCycleReset();
-            } else {
-                updateCycleUI();
-            }
+            if (resetTime > 0 && resetTime <= Date.now()) { forceCycleReset(); }
+            else { updateCycleUI(); }
             startPeriodicRecheck();
             if (channelVerified) {
                 needsVerification().then(needs => {
@@ -1857,10 +1822,8 @@ window.onload = () => {
             if (!appState.config.botUsername) appState.config.botUsername = BOT_USERNAME;
             if (!appState.config.botToken) appState.config.botToken = BOT_TOKEN;
             if (appState.config.channelLinks) channelLinks = appState.config.channelLinks;
-            
             REF_COMMISSION_RATE = Number(appState.config.refCommissionRate || 2);
             REF_COMMISSION_MODE = appState.config.refCommissionMode || 'bonus';
-            
             if (appState.config.withdrawLevels && appState.config.withdrawLevels.length > 0) withdrawLevels = appState.config.withdrawLevels;
             else withdrawLevels = [
                 { level: 1, requiredRefs: 5, fee: 5, minAmount: 10, maxAmount: 100, time: '30 Min-1 Hours' },
@@ -1932,8 +1895,8 @@ window.onload = () => {
                 id: tgUser.id, name: tgUser.first_name, photo: tgUser.photo_url || '',
                 balance: 0, totalEarned: 0, referrals: 0, dailyAds: {}, taskHistory: {}, adHistory: {}, referredUsers: {}, verifiedChannels: {},
                 totalCommission: 0, commissionHistory: {}, referredBy: null,
-                adsResetTime: 0,
-                lastActive: today, dailyBonusDate: '', channelVerified: false, isBanned: false, banReason: '',
+                adsResetTime: 0, dailyBonusDate: '',
+                lastActive: today, channelVerified: false, isBanned: false, banReason: '',
                 withdrawCount: 0, adClicks: 0, taskStatuses: {}
             };
             await userRef.set(appState.user);
@@ -1987,6 +1950,7 @@ window.onload = () => {
                 if (!appState.user.commissionHistory) appState.user.commissionHistory = {};
                 if (!appState.user.taskStatuses) appState.user.taskStatuses = {};
                 if (appState.user.adsResetTime === undefined) appState.user.adsResetTime = 0;
+                if (appState.user.dailyBonusDate === undefined) appState.user.dailyBonusDate = '';
                 if (appState.user.totalCommission === undefined) appState.user.totalCommission = 0;
                 if (appState.user.withdrawCount === undefined) appState.user.withdrawCount = 0;
                 if (appState.user.adClicks === undefined) appState.user.adClicks = 0;
@@ -1998,11 +1962,8 @@ window.onload = () => {
                     return;
                 } else document.getElementById('bannedOverlay').classList.remove('active');
                 
-                // ✅ রিসেট টাইম চেক করুন — যদি সময় হয়ে গিয়ে থাকে
                 const resetTime = Number(appState.user.adsResetTime || 0);
-                if (resetTime > 0 && resetTime <= Date.now()) {
-                    await forceCycleReset();
-                }
+                if (resetTime > 0 && resetTime <= Date.now()) { await forceCycleReset(); }
                 
                 if (appState.user.lastActive !== today) {
                     await userRef.update({ lastActive: today });
@@ -2017,9 +1978,7 @@ window.onload = () => {
                     isBooted = true;
                     if (checkMaintenance()) { setLoading(false); return; }
                     if (checkBan()) { setLoading(false); return; }
-                    
                     await fetchTaskStatuses();
-                    
                     const needs = await needsVerification();
                     if (needs) {
                         document.getElementById('joinModal').classList.add('active');
